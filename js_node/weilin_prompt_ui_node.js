@@ -64,10 +64,13 @@ function removeNodeBySeed(seed) {
     globalNodeList.splice(index, 1);
   }
 }
+// 版本号，用于强制刷新缓存 - 修改此值可强制浏览器重新加载静态资源
+const WEILIN_VERSION = '1.0.1';
+
 function initWindow() {
   var script = document.createElement('script');
   // 设置 script 元素的属性
-  script.src = './weilin/prompt_ui/webjs'; // 注意确保这里的路径是正确的，并且服务器正在运行。
+  script.src = './weilin/prompt_ui/webjs?v=' + WEILIN_VERSION; // 注意确保这里的路径是正确的，并且服务器正在运行。
   script.type = 'text/javascript';
   script.async = true;
   document.head.appendChild(script);
@@ -77,13 +80,13 @@ function initWindow() {
   // 设置 link 元素的属性
   link.rel = 'stylesheet';
   link.type = 'text/css';
-  link.href = './weilin/prompt_ui/file/style.css'; // 确保这里的路径是正确的，并且服务器正在运行。
+  link.href = './weilin/prompt_ui/file/style.css?v=' + WEILIN_VERSION; // 确保这里的路径是正确的，并且服务器正在运行。
   document.head.appendChild(link);
 
   // loraStack 脚本载入
   var script = document.createElement('script');
   // 设置 script 元素的属性
-  script.src = './weilin/prompt_ui/file/lora_stack.js'; // 注意确保这里的路径是正确的，并且服务器正在运行。
+  script.src = './weilin/prompt_ui/file/lora_stack.js?v=' + WEILIN_VERSION; // 注意确保这里的路径是正确的，并且服务器正在运行。
   script.type = 'text/javascript';
   script.async = true;
   document.head.appendChild(script);
@@ -92,7 +95,7 @@ function initWindow() {
   // 设置 link 元素的属性
   link.rel = 'stylesheet';
   link.type = 'text/css';
-  link.href = './weilin/prompt_ui/file/lora_stack.css'; // 确保这里的路径是正确的，并且服务器正在运行。
+  link.href = './weilin/prompt_ui/file/lora_stack.css?v=' + WEILIN_VERSION; // 确保这里的路径是正确的，并且服务器正在运行。
   document.head.appendChild(link);
 }
 initWindow()
@@ -638,7 +641,7 @@ function createLoraStackWidget(node, seed, ptEl) {
   previewWidget.contentEl.innerHTML = `
     <div class="weilin-comfyui-lora-header">
         <div class="weilin-comfyui-header-actions">
-            <button class="weilin-comfyui-add-btn" onclick="openLoraManager(this)" id="addLoraBtn" data-seed="`+prSeed+`" title="${localLang === 'zh' ? '添加Lora' : 'Add Lora' }">
+            <button class="weilin-comfyui-add-btn" id="addLoraBtn_`+prSeed+`" data-seed="`+prSeed+`" title="${localLang === 'zh' ? '添加Lora' : 'Add Lora' }">
                 <svg viewBox="0 0 24 24" width="16" height="16">
                     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                 </svg>
@@ -653,6 +656,26 @@ function createLoraStackWidget(node, seed, ptEl) {
   `
   previewWidget.contentEl.className = "weilin-comfyui-lora-content"
   previewWidget.parentEl.appendChild(previewWidget.contentEl)
+  
+  // 使用 addEventListener 绑定点击事件，更可靠
+  const addLoraBtn = document.getElementById('addLoraBtn_' + prSeed);
+  if (addLoraBtn) {
+    addLoraBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const seed = this.getAttribute('data-seed');
+      if (seed && typeof openLoraManager === 'function') {
+        openLoraManager(this);
+      }
+    });
+    // 阻止事件冒泡，防止被 LiteGraph 拦截
+    addLoraBtn.addEventListener('mousedown', function(e) {
+      e.stopPropagation();
+    });
+    addLoraBtn.addEventListener('mouseup', function(e) {
+      e.stopPropagation();
+    });
+  }
 
   setTimeout(() => {
     if (prTempLoraEl.value.length > 0) {
