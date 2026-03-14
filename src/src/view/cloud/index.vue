@@ -1,7 +1,7 @@
 <template>
     <div class="cloud-manager">
         <!-- 顶部工具栏 -->
-        <div class="toolbar">
+        <div class="weilin-toolbar">
             <button class="refresh-btn" @click="refreshTree">
                 <svg viewBox="0 0 24 24" width="16" height="16" class="tag-icon">
                     <path
@@ -213,10 +213,14 @@ onMounted(() => {
     padding: 4px;
 }
 
-.toolbar {
+/* 防御性样式：确保不被其他插件覆盖 */
+.weilin-toolbar {
+    height: auto !important;
+    min-height: 40px !important;
     display: flex;
     gap: 8px;
     margin-bottom: 16px;
+    box-sizing: border-box !important;
 }
 
 .database-btn {

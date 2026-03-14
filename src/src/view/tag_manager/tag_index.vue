@@ -1,8 +1,8 @@
 <template>
   <div class="tag-manager">
     <!-- 顶部工具栏 -->
-    <div class="toolbar">
-      <div class="toolbar-top">
+    <div class="weilin-toolbar">
+      <div class="weilin-toolbar-top">
         <button class="refresh-btn" @click="refreshTags">
           <svg viewBox="0 0 24 24" width="16" height="16" class="refresh-icon">
             <path
@@ -39,7 +39,7 @@
       </div>
 
       <!-- 高级设置 -->
-      <div class="toolbar-bottom">
+      <div class="weilin-toolbar-bottom">
         <div class="group-edit-mode">
           <label>
             <input type="checkbox" v-model="isAutoAddSearchTag" :true-value="1" :false-value="0" />
@@ -1604,6 +1604,13 @@ const resetTabSizeConfig = () => {
 </script>
 
 <style scoped>
+/* 全局防御：防止其他插件覆盖 weilin 命名空间的样式 */
+[class^="weilin-"],
+[class*=" weilin-"] {
+  height: auto !important;
+  box-sizing: border-box !important;
+}
+
 .tag-manager {
   display: flex;
   flex-direction: column;
@@ -2300,12 +2307,16 @@ const resetTabSizeConfig = () => {
   font-size: 14px;
 }
 
-.toolbar {
+/* 防御性样式：确保不被其他插件覆盖 */
+.weilin-toolbar {
+  height: auto !important;
+  min-height: 40px !important;
   flex-direction: column;
   padding: 12px 16px;
+  box-sizing: border-box !important;
 }
 
-.toolbar .toolbar-top {
+.weilin-toolbar-top {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -2358,7 +2369,7 @@ const resetTabSizeConfig = () => {
   margin-top: 3px;
 }
 
-.toolbar-bottom {
+.weilin-toolbar-bottom {
   display: flex;
   align-items: center;
   gap: 12px;
