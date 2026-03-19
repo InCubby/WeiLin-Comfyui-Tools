@@ -390,6 +390,10 @@ waitForApp((app) => {
           }
         }
 
+        // 为不同的按钮使用不同的ID，避免冲突（必须在使用前声明）
+        let promptBoxRandomID = ""
+        let loraStackRandomID = ""
+
         // 监听lora数据变化，通知UI窗口同步
         if (nodeData.name === "WeiLinPromptUI" || nodeData.name === "WeiLinPromptUIOnlyLoraStack") {
           // 监听 lora_str 变化
@@ -558,10 +562,6 @@ waitForApp((app) => {
         // console.log(thisNodeSeed)
 
         //console.log(globalNodeList)
-
-        // 为不同的按钮使用不同的ID，避免冲突
-        let promptBoxRandomID = ""
-        let loraStackRandomID = ""
 
         // 定义消息处理函数，保存引用以便后续移除
         const messageHandler = (event) => {
@@ -771,8 +771,13 @@ waitForApp((app) => {
             }
 
             const data = JSON.stringify(jsonData)
-            // 使用 thisNodeSeed 确保与节点内的LoRA堆使用相同的ID
-            window.parent.postMessage({ type: 'weilin_prompt_ui_open_node_lora_stack_window', seed: thisNodeSeed, prompt: data, node: nodeData.name }, '*')
+            // 区分两种节点类型，使用不同的消息类型
+            // WeiLinPromptUI: 使用独立的LoRA堆窗口，与内嵌LoRA堆同步
+            // WeiLinPromptUIOnlyLoraStack: 使用独立的LoRA堆窗口，独立管理
+            const messageType = nodeData.name === "WeiLinPromptUI" 
+              ? 'weilin_prompt_ui_open_prompt_lora_stack_window' 
+              : 'weilin_prompt_ui_open_node_lora_stack_window';
+            window.parent.postMessage({ type: messageType, seed: thisNodeSeed, prompt: data, node: nodeData.name }, '*')
           });
         }
 

@@ -97,13 +97,40 @@ def validate_conditioning_output(conditioning_data):
     return True
 
 
-def get_lora_trigger_words(lora_path, lora_name):
+def get_lora_trigger_words(lora_path, lora_name, force_fetch_civitai=False):
     """
-    从LoRA文件中获取触发词
+    从LoRA文件中获取触发词（优化版）
+    
+    整合了 ComfyUI-Lora-Auto-Trigger-Words 的实现逻辑
+    
     优先级：
-    1. 从模型元数据中提取第一个训练词 (ss_tag_frequency)
-    2. 从模型元数据中获取输出名称 (ss_output_name)
-    3. 使用LoRA文件名作为触发词
+    1. Civitai API (trainedWords) - 最高优先级，数据最准确
+    2. 从模型元数据中提取训练词 (ss_tag_frequency) - 按训练频率排序
+    3. 从模型元数据中获取输出名称 (ss_output_name)
+    4. 使用LoRA文件名作为触发词
+    
+    Args:
+        lora_path: LoRA文件的完整路径
+        lora_name: LoRA文件名（不含扩展名）
+        force_fetch_civitai: 是否强制从Civitai重新获取（忽略缓存）
+        
+    Returns:
+        第一个触发词字符串
+    """
+    try:
+        from .app.server.prompt_api.trigger_words import get_first_trigger_word
+        return get_first_trigger_word(lora_path, lora_name, force_fetch_civitai)
+    except ImportError as e:
+        print(f"[TriggerWords] 导入模块失败，使用回退逻辑: {e}")
+        # 回退到原有逻辑（向后兼容）
+        return _get_lora_trigger_words_fallback(lora_path, lora_name)
+
+
+def _get_lora_trigger_words_fallback(lora_path, lora_name):
+    """
+    触发词获取的回退逻辑（向后兼容）
+    
+    当新模块导入失败时使用此函数
     """
     trigger_words = ""
 
@@ -760,13 +787,13 @@ class WeiLinPromptUIWithoutLora:
                 "ui": {"positive": [str(positive)]},
                 "result": (
                     text_dec,
-                    opt_clip,
+                    None,
                     opt_clip,
                 ),
             }
         return (
             text_dec,
-            opt_clip,
+            None,
             opt_clip,
         )
 

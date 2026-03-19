@@ -1071,6 +1071,8 @@
   // 用于节流的时间戳
   const lastUpdateTime = ref(0)
   const throttleInterval = 16 // 约60fps
+  // 标记事件监听器是否已绑定
+  const isBoxSelectEventsBound = ref(false)
 
   const showTagTipsBox = ref(false)
   const tagTipsPosition = ref({
@@ -2765,6 +2767,11 @@
     const targetToken = tokens.value[index]
 
     // 检查是否是 Lora 标签，如果是则同步更新 selectedLoras
+    // 注意：先完成 inputText 的更新，再更新 selectedLoras
+    // 避免 lora_stack.vue 的 watch 在 inputText 更新过程中触发
+    let shouldUpdateSelectedLoras = false
+    let loraIndexToRemove = -1
+
     if (targetToken.isLoraTag) {
       // 解析 Lora 标签获取 Lora 名称
       const match4 = targetToken.text.match(/<wlr:([^:]+):([^:]+):([^:]+):([^>]+)>/)
@@ -2776,7 +2783,7 @@
         loraName = match3[1]
       }
 
-      // 从 selectedLoras 中移除对应的 Lora
+      // 标记需要从 selectedLoras 中移除对应的 Lora
       if (loraName) {
         const loraIndex = selectedLoras.value.findIndex(
           (lora) =>
@@ -2784,7 +2791,8 @@
             (lora.lora && lora.lora.replace('.safetensors', '') === loraName)
         )
         if (loraIndex > -1) {
-          selectedLoras.value = selectedLoras.value.filter((_, i) => i !== loraIndex)
+          shouldUpdateSelectedLoras = true
+          loraIndexToRemove = loraIndex
         }
       }
     }
@@ -2891,6 +2899,12 @@
             return `${acc}, ${token.text}${shouldAddComma ? ',' : ''}`
           }, '')
         : ''
+
+    // 在 inputText 更新完成后，再更新 selectedLoras
+    // 这样可以避免 lora_stack.vue 的 watch 在 inputText 更新过程中触发
+    if (shouldUpdateSelectedLoras && loraIndexToRemove > -1) {
+      selectedLoras.value = selectedLoras.value.filter((_, i) => i !== loraIndexToRemove)
+    }
 
     finishPromptPutItHistory()
     unsavedChanges.value = true
@@ -3146,36 +3160,45 @@
       restoreTextareaHeight()
     })
 
-    // 添加框选功能的事件监听 - 修复嵌套nextTick问题
-    // 直接在主nextTick后绑定事件，不再使用嵌套的nextTick
-    setTimeout(() => {
-      // 优先通过ref获取元素
-      if (!tokensContainerRef.value) {
-        tokensContainerRef.value = document.querySelector('.tokens-container')
-      }
+    // 添加框选功能的事件监听 - 使用watch监听tokens变化
+    // 当tokens有内容时自动绑定事件监听器
+    watch(
+      () => tokens.value.length,
+      (newLength) => {
+        if (newLength > 0 && !isBoxSelectEventsBound.value) {
+          nextTick(() => {
+            setTimeout(() => {
+              // 优先通过ref获取元素
+              if (!tokensContainerRef.value) {
+                tokensContainerRef.value = document.querySelector('.tokens-container')
+              }
 
-      if (tokensContainerRef.value) {
-        // 移除可能存在的旧监听器，避免重复绑定
-        tokensContainerRef.value.removeEventListener('mousedown', handleMouseDown)
-        tokensContainerRef.value.removeEventListener('mousemove', handleMouseMove)
-        tokensContainerRef.value.removeEventListener('mouseup', handleMouseUp)
-        tokensContainerRef.value.removeEventListener('mouseleave', handleMouseUp)
+              if (tokensContainerRef.value) {
+                // 移除可能存在的旧监听器，避免重复绑定
+                tokensContainerRef.value.removeEventListener('mousedown', handleMouseDown)
+                tokensContainerRef.value.removeEventListener('mousemove', handleMouseMove)
+                tokensContainerRef.value.removeEventListener('mouseup', handleMouseUp)
+                tokensContainerRef.value.removeEventListener('mouseleave', handleMouseUp)
 
-        // 重新绑定监听器
-        tokensContainerRef.value.addEventListener('mousedown', handleMouseDown)
-        tokensContainerRef.value.addEventListener('mousemove', handleMouseMove)
-        tokensContainerRef.value.addEventListener('mouseup', handleMouseUp)
-        tokensContainerRef.value.addEventListener('mouseleave', handleMouseUp)
+                // 重新绑定监听器
+                tokensContainerRef.value.addEventListener('mousedown', handleMouseDown)
+                tokensContainerRef.value.addEventListener('mousemove', handleMouseMove)
+                tokensContainerRef.value.addEventListener('mouseup', handleMouseUp)
+                tokensContainerRef.value.addEventListener('mouseleave', handleMouseUp)
 
-        // 确保容器有合适的样式允许框选
-        tokensContainerRef.value.style.userSelect = 'none'
-        tokensContainerRef.value.style.cursor = 'default'
+                // 确保容器有合适的样式允许框选
+                tokensContainerRef.value.style.userSelect = 'none'
+                tokensContainerRef.value.style.cursor = 'default'
 
-        console.log('框选功能事件监听器绑定成功')
-      } else {
-        console.warn('未能找到tokens-container元素，框选功能可能无法正常工作')
-      }
-    }, 100) // 短暂延迟确保DOM完全渲染
+                isBoxSelectEventsBound.value = true
+                console.log('框选功能事件监听器绑定成功')
+              }
+            }, 100)
+          })
+        }
+      },
+      { immediate: true }
+    )
   })
 
   onBeforeUnmount(() => {
@@ -3727,6 +3750,16 @@
 
   // 处理消息
   const handleMessage = (event) => {
+    // 防止处理来自其他源的消息
+    if (!event.data || !event.data.type) {
+      return
+    }
+
+    // 只处理我们自己的消息类型
+    if (!event.data.type.startsWith('weilin_prompt_ui_')) {
+      return
+    }
+
     if (event.data.type === 'weilin_prompt_ui_insertTag') {
       // 在输入框末尾添加标签文本
       const currentText = inputText.value

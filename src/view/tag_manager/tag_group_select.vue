@@ -186,6 +186,16 @@
 
   // 处理消息
   const handleMessage = (event) => {
+    // 防止处理来自其他源的消息
+    if (!event.data || !event.data.type) {
+      return
+    }
+
+    // 只处理我们自己的消息类型
+    if (!event.data.type.startsWith('weilin_prompt_ui_')) {
+      return
+    }
+
     // console.log(event.data.type)
     if (event.data.type === 'weilin_prompt_ui_tag_manager_refresh_select') {
       refreshTagsGoThis()

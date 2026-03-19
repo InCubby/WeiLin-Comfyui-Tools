@@ -535,6 +535,16 @@
 
   // 处理消息
   const handleMessage = (event) => {
+    // 防止处理来自其他源的消息
+    if (!event.data || !event.data.type) {
+      return
+    }
+
+    // 只处理我们自己的消息类型
+    if (!event.data.type.startsWith('weilin_prompt_ui_')) {
+      return
+    }
+
     if (event.data.type === 'weilin_prompt_ui_openTagManager') {
       tagManager.value = 'manager'
       windows.value.tag.visible = true
@@ -628,7 +638,15 @@
     } else if (event.data.type === 'weilin_prompt_ui_open_cloud_window') {
       windows.value.cloud_window.visible = true
       windowManager.setActiveWindow('cloud_window')
+    } else if (event.data.type === 'weilin_prompt_ui_open_prompt_lora_stack_window') {
+      // WeiLinPromptUI 的 LoRA 堆窗口 - 与内嵌 LoRA 堆同步
+      windows.value.lora_stack_window.visible = true
+      waitForRef(loraStackRef, (ref) => {
+        ref.initLoraStack(event.data.prompt, event.data.seed)
+      })
+      windowManager.setActiveWindow('lora_stack_window')
     } else if (event.data.type === 'weilin_prompt_ui_open_node_lora_stack_window') {
+      // WeiLinPromptUIOnlyLoraStack 的 LoRA 堆窗口 - 独立管理
       windows.value.lora_stack_window.visible = true
       waitForRef(loraStackRef, (ref) => {
         ref.initLoraStack(event.data.prompt, event.data.seed)

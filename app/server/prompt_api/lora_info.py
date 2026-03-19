@@ -361,7 +361,13 @@ def download_image(url, filename, directory):
 
 
 def _merge_metadata(info_data: dict, data_meta: dict) -> bool:
-    """Returns true if data was saved."""
+    """
+    合并模型元数据到info_data
+    
+    优化版：按训练频率排序触发词，与 ComfyUI-Lora-Auto-Trigger-Words 保持一致
+    
+    Returns true if data was saved.
+    """
     should_save = False
 
     base_model_file = get_dict_value(data_meta, "ss_sd_model_name", None)
@@ -370,18 +376,30 @@ def _merge_metadata(info_data: dict, data_meta: dict) -> bool:
 
     # Loop over metadata tags
     trained_words = {}
-    if "ss_tag_frequency" in data_meta and isinstance(
-        data_meta["ss_tag_frequency"], dict
-    ):
-        for bucket_value in data_meta["ss_tag_frequency"].values():
-            if isinstance(bucket_value, dict):
-                for tag, count in bucket_value.items():
-                    if tag not in trained_words:
-                        trained_words[tag] = {"word": tag, "count": 0, "metadata": True}
-                    trained_words[tag]["count"] = trained_words[tag]["count"] + count
+    if "ss_tag_frequency" in data_meta:
+        tag_freq_data = data_meta["ss_tag_frequency"]
+        
+        # 如果是字符串，需要解析JSON（某些模型存储为JSON字符串）
+        if isinstance(tag_freq_data, str):
+            try:
+                tag_freq_data = json.loads(tag_freq_data)
+            except json.JSONDecodeError:
+                tag_freq_data = {}
+        
+        if isinstance(tag_freq_data, dict):
+            for bucket_value in tag_freq_data.values():
+                if isinstance(bucket_value, dict):
+                    for tag, count in bucket_value.items():
+                        tag = str(tag).strip()
+                        if tag:
+                            if tag not in trained_words:
+                                trained_words[tag] = {"word": tag, "count": 0, "metadata": True}
+                            trained_words[tag]["count"] = trained_words[tag]["count"] + count
 
     if "trainedWords" not in info_data:
-        info_data["trainedWords"] = list(trained_words.values())
+        # 按训练次数降序排序（与 ComfyUI-Lora-Auto-Trigger-Words 保持一致）
+        sorted_words = sorted(trained_words.values(), key=lambda x: x["count"], reverse=True)
+        info_data["trainedWords"] = sorted_words
         should_save = True
     else:
         # We can't merge, because the list may have other data, like it's part of civitaidata.
@@ -392,7 +410,11 @@ def _merge_metadata(info_data: dict, data_meta: dict) -> bool:
             if new_key not in merged_dict:
                 merged_dict[new_key] = {}
             merged_dict[new_key] = {**merged_dict[new_key], **new_word_data}
-        info_data["trainedWords"] = list(merged_dict.values())
+        
+        # 按训练次数排序（有count的排前面，没有count的保持原顺序）
+        merged_list = list(merged_dict.values())
+        merged_list.sort(key=lambda x: x.get("count", 99999), reverse=True)
+        info_data["trainedWords"] = merged_list
         should_save = True
 
     # trained_words = list(trained_words.values())
@@ -408,7 +430,13 @@ def _merge_metadata(info_data: dict, data_meta: dict) -> bool:
 
 
 def _merge_civitai_data(info_data: dict, data_civitai: dict) -> bool:
-    """Returns true if data was saved."""
+    """
+    合并Civitai数据到info_data
+    
+    优化版：Civitai触发词作为最高优先级，放在trainedWords列表最前面
+    
+    Returns true if data was saved.
+    """
     should_save = False
 
     if "name" not in info_data:
@@ -435,22 +463,30 @@ def _merge_civitai_data(info_data: dict, data_civitai: dict) -> bool:
         civitai_words = re.sub(r"^,", "", civitai_words)
         civitai_words = re.sub(r",$", "", civitai_words)
         if civitai_words:
-            civitai_words = civitai_words.split(",")
+            civitai_words_list = civitai_words.split(",")
             if "trainedWords" not in info_data:
                 info_data["trainedWords"] = []
-            for trigger_word in civitai_words:
-                word_data = next(
-                    (
-                        data
-                        for data in info_data["trainedWords"]
-                        if data["word"] == trigger_word
-                    ),
-                    None,
-                )
-                if word_data is None:
-                    word_data = {"word": trigger_word}
-                    info_data["trainedWords"].append(word_data)
-                word_data["civitai"] = True
+            
+            # 创建一个有序字典来保持Civitai触发词的顺序
+            existing_words = {data["word"]: data for data in info_data["trainedWords"]}
+            
+            # 将Civitai触发词插入到列表开头（最高优先级）
+            civitai_word_data_list = []
+            for trigger_word in civitai_words_list:
+                trigger_word = trigger_word.strip()
+                if not trigger_word:
+                    continue
+                if trigger_word in existing_words:
+                    # 更新现有条目
+                    existing_words[trigger_word]["civitai"] = True
+                else:
+                    # 创建新条目
+                    civitai_word_data_list.append({"word": trigger_word, "civitai": True})
+            
+            # 合并：Civitai触发词在前，其他触发词在后
+            non_civitai_words = [data for data in info_data["trainedWords"] if not data.get("civitai", False)]
+            info_data["trainedWords"] = civitai_word_data_list + [existing_words.get(data["word"], data) for data in info_data["trainedWords"] if data.get("civitai", False) and data["word"] not in {w["word"] for w in civitai_word_data_list}] + non_civitai_words
+            should_save = True
 
     if "sha256" not in info_data:
         info_data["sha256"] = data_civitai["_sha256"]

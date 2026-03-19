@@ -188,8 +188,29 @@ function renderLoraItem(seed, index, lora) {
        e.stopPropagation();
    });
 
-   loraItem.querySelector('.weilin-comfyui-look-on-btn').addEventListener('click', () => lookOnLora(lora.lora));
-   loraItem.querySelector('.weilin-comfyui-remove-btn').addEventListener('click', () => removeLora(seed, index));
+   loraItem.querySelector('.weilin-comfyui-look-on-btn').addEventListener('click', (e) => {
+       e.preventDefault();
+       e.stopPropagation();
+       lookOnLora(lora.lora);
+   });
+   loraItem.querySelector('.weilin-comfyui-look-on-btn').addEventListener('mousedown', (e) => {
+       e.stopPropagation();
+   });
+   loraItem.querySelector('.weilin-comfyui-look-on-btn').addEventListener('mouseup', (e) => {
+       e.stopPropagation();
+   });
+
+   loraItem.querySelector('.weilin-comfyui-remove-btn').addEventListener('click', (e) => {
+       e.preventDefault();
+       e.stopPropagation();
+       removeLora(seed, index);
+   });
+   loraItem.querySelector('.weilin-comfyui-remove-btn').addEventListener('mousedown', (e) => {
+       e.stopPropagation();
+   });
+   loraItem.querySelector('.weilin-comfyui-remove-btn').addEventListener('mouseup', (e) => {
+       e.stopPropagation();
+   });
 
    const weightInputs = loraItem.querySelectorAll('.weilin-comfyui-lora-weight');
    weightInputs.forEach(input => {
@@ -213,6 +234,17 @@ function renderLoraItem(seed, index, lora) {
                updateLoraStackInfoToWindows(seed);
            }
        });
+   });
+
+   // 防止点击 LoRA 项时触发其他事件（如 LiteGraph 的节点选择）
+   loraItem.addEventListener('mousedown', (e) => {
+       e.stopPropagation();
+   });
+   loraItem.addEventListener('mouseup', (e) => {
+       e.stopPropagation();
+   });
+   loraItem.addEventListener('click', (e) => {
+       e.stopPropagation();
    });
 
    loraListContainer.appendChild(loraItem);
