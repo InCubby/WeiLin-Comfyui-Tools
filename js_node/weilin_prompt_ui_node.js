@@ -314,6 +314,9 @@ waitForApp((app) => {
         // ========================================
         const fixCurrentNodeDomWidgets = () => {
           if (!this.widgets) return;
+          // WithoutLora 仅使用原生节点输入组件，保留 Comfy 原生缩放链，
+          // 避免小画布/缩放时 textarea 与 canvas widget 叠层错位。
+          if (nodeData.name === "WeiLinPromptUIWithoutLora") return;
           const processedDomWidgets = new Set();
           
           this.widgets.forEach(widget => {
@@ -328,24 +331,20 @@ waitForApp((app) => {
                   }
                   processedDomWidgets.add(parent);
 
-                  // 修复当前节点上的所有dom-widget祖先，避免布局错位
                   const isFirstFix = !parent.classList.contains('weilin-owned-dom-widget');
-                  parent.classList.add('weilin-owned-dom-widget');
-                  // 设置pointer-events: none让画布可以交互
                   parent.style.setProperty('pointer-events', 'none', 'important');
-                  // 设置position: absolute让容器跟随节点
+                  parent.classList.add('weilin-owned-dom-widget');
                   parent.style.setProperty('position', 'absolute', 'important');
-                  // 移除size-full类
                   parent.classList.remove('size-full');
+                  if (isFirstFix) {
+                    console.log('[WeiLin] Fixed dom-widget for node:', nodeData.name);
+                  }
                   
                   // 确保内部元素可以交互
                   if (widget.element) {
                     widget.element.style.setProperty('pointer-events', 'auto', 'important');
                   }
-                  
-                  if (isFirstFix) {
-                    console.log('[WeiLin] Fixed dom-widget for node:', nodeData.name);
-                  }
+                  break;
                 }
                 parent = parent.parentElement;
               }
