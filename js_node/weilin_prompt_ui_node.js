@@ -314,6 +314,7 @@ waitForApp((app) => {
         // ========================================
         const fixCurrentNodeDomWidgets = () => {
           if (!this.widgets) return;
+          const processedDomWidgets = new Set();
           
           this.widgets.forEach(widget => {
             if (widget.element) {
@@ -321,8 +322,14 @@ waitForApp((app) => {
               let parent = widget.element.parentElement;
               while (parent) {
                 if (parent.classList && parent.classList.contains('dom-widget')) {
-                  // 只修复当前节点的dom-widget
-                  // 添加作用域标记，避免全局样式影响其他插件节点
+                  if (processedDomWidgets.has(parent)) {
+                    parent = parent.parentElement;
+                    continue;
+                  }
+                  processedDomWidgets.add(parent);
+
+                  // 修复当前节点上的所有dom-widget祖先，避免布局错位
+                  const isFirstFix = !parent.classList.contains('weilin-owned-dom-widget');
                   parent.classList.add('weilin-owned-dom-widget');
                   // 设置pointer-events: none让画布可以交互
                   parent.style.setProperty('pointer-events', 'none', 'important');
@@ -336,8 +343,9 @@ waitForApp((app) => {
                     widget.element.style.setProperty('pointer-events', 'auto', 'important');
                   }
                   
-                  console.log('[WeiLin] Fixed dom-widget for node:', nodeData.name);
-                  break;
+                  if (isFirstFix) {
+                    console.log('[WeiLin] Fixed dom-widget for node:', nodeData.name);
+                  }
                 }
                 parent = parent.parentElement;
               }
