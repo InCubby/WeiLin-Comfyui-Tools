@@ -322,6 +322,8 @@ waitForApp((app) => {
               while (parent) {
                 if (parent.classList && parent.classList.contains('dom-widget')) {
                   // 只修复当前节点的dom-widget
+                  // 添加作用域标记，避免全局样式影响其他插件节点
+                  parent.classList.add('weilin-owned-dom-widget');
                   // 设置pointer-events: none让画布可以交互
                   parent.style.setProperty('pointer-events', 'none', 'important');
                   // 设置position: absolute让容器跟随节点
