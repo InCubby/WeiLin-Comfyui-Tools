@@ -79,6 +79,7 @@
   const emit = defineEmits(['update:position', 'update:size', 'active', 'close'])
   const windowRef = ref(null)
   let interactable = null
+  let activeInteraction = null
 
   // 当前位置和大小状态
   const currentPosition = ref({ x: 0, y: 0 })
@@ -131,6 +132,31 @@
     }
   }
 
+  const forceStopInteraction = () => {
+    if (!activeInteraction) {
+      return
+    }
+    activeInteraction.stop()
+    activeInteraction = null
+  }
+
+  const isPointerReleased = (event) => {
+    const buttons = event?.buttons ?? event?.originalEvent?.buttons
+    return buttons === 0
+  }
+
+  const ensurePointerPressed = (event) => {
+    if (!isPointerReleased(event)) {
+      return false
+    }
+    forceStopInteraction()
+    return true
+  }
+
+  const handleWindowBlur = () => {
+    forceStopInteraction()
+  }
+
   const initInteract = () => {
     if (!windowRef.value) return
 
@@ -139,13 +165,22 @@
         allowFrom: '.weilin_prompt_ui_window-header',
         ignoreFrom: '.weilin_prompt_ui_close-btn,.weilin_prompt_ui_resize-handle',
         listeners: {
+          start(event) {
+            activeInteraction = event.interaction
+          },
           move(event) {
+            if (ensurePointerPressed(event)) {
+              return
+            }
             const next = clampPosition(
               currentPosition.value.x + event.dx,
               currentPosition.value.y + event.dy
             )
             currentPosition.value = next
             emit('update:position', next)
+          },
+          end() {
+            activeInteraction = null
           }
         }
       })
@@ -162,7 +197,13 @@
           })
         ],
         listeners: {
+          start(event) {
+            activeInteraction = event.interaction
+          },
           move(event) {
+            if (ensurePointerPressed(event)) {
+              return
+            }
             const nextSize = {
               width: event.rect.width,
               height: event.rect.height
@@ -177,6 +218,9 @@
             currentSize.value = nextSize
             emit('update:position', nextPosition)
             emit('update:size', nextSize)
+          },
+          end() {
+            activeInteraction = null
           }
         }
       })
@@ -197,6 +241,9 @@
     }
 
     initInteract()
+    window.addEventListener('blur', handleWindowBlur)
+    window.addEventListener('mouseup', forceStopInteraction)
+    window.addEventListener('pointerup', forceStopInteraction)
   })
 
   // 组件卸载时清理定时器和交互绑定
@@ -205,6 +252,10 @@
       clearTimeout(scrollThrottleTimer)
       scrollThrottleTimer = null
     }
+    window.removeEventListener('blur', handleWindowBlur)
+    window.removeEventListener('mouseup', forceStopInteraction)
+    window.removeEventListener('pointerup', forceStopInteraction)
+    forceStopInteraction()
     if (interactable) {
       interactable.unset()
       interactable = null
