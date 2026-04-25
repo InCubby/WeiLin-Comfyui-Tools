@@ -3,13 +3,7 @@
     <div
       ref="windowRef"
       class="weilin_prompt_ui_draggable-window"
-      :style="{
-        left: `${currentPosition.x}px`,
-        top: `${currentPosition.y}px`,
-        width: `${currentSize.width}px`,
-        height: `${currentSize.height}px`,
-        zIndex: zIndex
-      }"
+      :style="windowStyle"
       @mousedown="setActive"
     >
       <!-- 窗口标题栏 -->
@@ -23,10 +17,7 @@
       <!-- 内容区域 -->
       <div
         class="weilin_prompt_ui_window-content"
-        :style="{
-          overflowY: contentScrollable ? 'auto' : 'hidden',
-          overflowX: 'hidden'
-        }"
+        :style="contentStyle"
         @scroll="handleScroll"
       >
         <slot></slot>
@@ -37,7 +28,7 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, onUnmounted, watch } from 'vue'
+  import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
   import interact from 'interactjs'
 
   const props = defineProps({
@@ -83,6 +74,17 @@
   // 当前位置和大小状态
   const currentPosition = ref({ x: 0, y: 0 })
   const currentSize = ref({ width: 600, height: 400 })
+  const windowStyle = computed(() => ({
+    left: `${currentPosition.value.x}px`,
+    top: `${currentPosition.value.y}px`,
+    width: `${currentSize.value.width}px`,
+    height: `${currentSize.value.height}px`,
+    zIndex: props.zIndex
+  }))
+  const contentStyle = computed(() => ({
+    overflowY: props.contentScrollable ? 'auto' : 'hidden',
+    overflowX: 'hidden'
+  }))
 
   // 仅在坐标/尺寸实际变化时同步，避免高频无效赋值
   watch(
