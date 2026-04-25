@@ -464,7 +464,6 @@ WeiLin-Comfyui-Tools
 │       └── user_init - 用户设置初始化业务层
 ├── dist - 前端编译后的文件
 ├── init.json - AI服务的Key保存文件
-├── install_request.py - 自动安装功能
 ├── js_node - comfyui的JS业务代码
 ├── lora_userdatas - 用户Lora的本地数据
 ├── pyproject.toml - comfyui的仓库文件

@@ -9,12 +9,6 @@ js_dir = os.path.join(custom_node_dir, "js_node")
 nodes.EXTENSION_WEB_DIRS["weilin-comfyui-tools"] = js_dir
 
 
-# Server Init
-from .install_request import *
-
-install_requirements()
-
-
 import json
 import locale
 import logging

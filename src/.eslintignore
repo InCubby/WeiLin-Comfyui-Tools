@@ -35,4 +35,3 @@ coverage
 # 特定文件
 CHANGELOG.md
 LICENSE
-check-dependencies.js

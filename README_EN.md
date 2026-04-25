@@ -447,7 +447,6 @@ WeiLin-Comfyui-Tools
 │       └── user_init - user settings initialization business layer
 ├── dist - compiled front-end files
 ├── init.json - file for saving AI service keys
-├── install_request.py - automatic installation function
 ├── js_node - JS business code for comfyui
 ├── lora_userdatas - local data for user Lora
 ├── pyproject.toml - repository file for comfyui
