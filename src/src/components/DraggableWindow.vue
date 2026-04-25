@@ -71,6 +71,14 @@
     name: {
       type: String,
       default: 'default_window_name'
+    },
+    minWidth: {
+      type: Number,
+      default: 200
+    },
+    minHeight: {
+      type: Number,
+      default: 200
     }
   })
 
@@ -193,7 +201,7 @@
         },
         modifiers: [
           interact.modifiers.restrictSize({
-            min: { width: 200, height: 200 }
+            min: { width: props.minWidth, height: props.minHeight }
           })
         ],
         listeners: {
@@ -326,7 +334,7 @@
 
   .weilin_prompt_ui_window-content {
     flex: 1;
-    overflow: hidden auto;
+    overflow: hidden;
     padding: 16px;
     background: var(--weilin-prompt-ui-primary-bg);
   }

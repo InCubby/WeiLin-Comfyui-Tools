@@ -822,7 +822,7 @@
     border-right: 1px solid var(--weilin-prompt-ui-border-color);
     background: var(--weilin-prompt-ui-primary-bg);
     height: 100%;
-    max-height: calc(100vh - var(--weilin-left-panel-offset, 100px));
+    min-height: 0;
     overflow: hidden;
     margin-right: 3px;
   }
@@ -893,8 +893,8 @@
 
   .mlm-list {
     margin-top: 8px;
-    max-height: var(--weilin-main-label-list-max-height, 720px);
-    flex: 0 0 auto;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
     padding-right: 4px;
   }
