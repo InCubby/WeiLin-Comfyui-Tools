@@ -722,7 +722,7 @@
       }
 
       const response = await fetch(
-        'https://raw.githubusercontent.com/weilin9999/WeiLin-Comfyui-Tools/refs/heads/main/src/src/utils/version.js'
+        'https://raw.githubusercontent.com/weilin9999/WeiLin-Comfyui-Tools/refs/heads/main/src/utils/version.js'
       )
       if (!response.ok) {
         console.error('获取版本信息失败:', response.status)
