@@ -34,6 +34,7 @@ class WeiLinPromptUI:
                 "auto_random": ("BOOLEAN", {"default": False}),
             },
             "optional": {
+                "opt_text": ("STRING", {"default": "", "forceInput": True}),
                 "lora_str": (
                     "STRING",
                     {
@@ -50,7 +51,6 @@ class WeiLinPromptUI:
                         "placeholder": "random template path name",
                     },
                 ),
-                "opt_text": ("STRING", {"default": ""}),
                 "opt_clip": ("CLIP",),
                 "opt_model": ("MODEL",),
             },

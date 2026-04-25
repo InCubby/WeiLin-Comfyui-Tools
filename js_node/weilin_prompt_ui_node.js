@@ -872,8 +872,10 @@ function hideWidgetForGood(node, widget, suffix = '') {
   widget.origSerializeValue = widget.serializeValue
   widget.computeSize = () => [0, -4] // -4 is due to the gap litegraph adds between widgets automatically
   widget.type = "converted-widget" + suffix
-  widget.element.setAttribute("id", "weilin-hidden-weight");
-  widget.element.style.display = 'none'
+  if (widget.element) {
+    widget.element.setAttribute("id", "weilin-hidden-weight");
+    widget.element.style.display = 'none'
+  }
   // 启用序列化，确保widget值被保存到工作流JSON中
   widget.serializeValue = () => {
       const rawValue = widget.value ?? widget.element?.value

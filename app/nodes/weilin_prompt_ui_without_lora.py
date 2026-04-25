@@ -28,6 +28,7 @@ class WeiLinPromptUIWithoutLora:
                 "auto_random": ("BOOLEAN", {"default": False}),
             },
             "optional": {
+                "opt_text": ("STRING", {"default": "", "forceInput": True}),
                 "random_template": (
                     "STRING",
                     {
@@ -36,7 +37,6 @@ class WeiLinPromptUIWithoutLora:
                         "placeholder": "random template path name",
                     },
                 ),
-                "opt_text": ("STRING", {"default": ""}),
                 "opt_clip": ("CLIP",),
             },
         }
