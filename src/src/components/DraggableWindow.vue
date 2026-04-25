@@ -32,23 +32,6 @@
         <slot></slot>
       </div>
 
-      <!-- 调整大小的手柄（四角） -->
-      <div
-        class="weilin_prompt_ui_resize-handle weilin_prompt_ui_resize-handle-nw"
-        :title="t('common.windowSize')"
-      ></div>
-      <div
-        class="weilin_prompt_ui_resize-handle weilin_prompt_ui_resize-handle-ne"
-        :title="t('common.windowSize')"
-      ></div>
-      <div
-        class="weilin_prompt_ui_resize-handle weilin_prompt_ui_resize-handle-sw"
-        :title="t('common.windowSize')"
-      ></div>
-      <div
-        class="weilin_prompt_ui_resize-handle weilin_prompt_ui_resize-handle-se"
-        :title="t('common.windowSize')"
-      ></div>
     </div>
   </Teleport>
 </template>
@@ -56,7 +39,6 @@
 <script setup>
   import { ref, onMounted, onUnmounted, watch } from 'vue'
   import interact from 'interactjs'
-  import { useI18n } from 'vue-i18n'
 
   const props = defineProps({
     title: {
@@ -92,8 +74,6 @@
       default: true
     }
   })
-
-  const { t } = useI18n()
 
   const emit = defineEmits(['update:position', 'update:size', 'active', 'close'])
   const windowRef = ref(null)
@@ -182,7 +162,7 @@
     interactable = interact(windowRef.value)
       .draggable({
         allowFrom: '.weilin_prompt_ui_window-header',
-        ignoreFrom: '.weilin_prompt_ui_close-btn,.weilin_prompt_ui_resize-handle',
+        ignoreFrom: '.weilin_prompt_ui_close-btn',
         listeners: {
           start(event) {
             activeInteraction = event.interaction
@@ -204,12 +184,8 @@
         }
       })
       .resizable({
-        edges: {
-          top: '.weilin_prompt_ui_resize-handle-nw, .weilin_prompt_ui_resize-handle-ne',
-          right: '.weilin_prompt_ui_resize-handle-ne, .weilin_prompt_ui_resize-handle-se',
-          bottom: '.weilin_prompt_ui_resize-handle-sw, .weilin_prompt_ui_resize-handle-se',
-          left: '.weilin_prompt_ui_resize-handle-nw, .weilin_prompt_ui_resize-handle-sw'
-        },
+        edges: { top: true, right: true, bottom: true, left: true },
+        margin: 8,
         modifiers: [
           interact.modifiers.restrictSize({
             min: { width: props.minWidth, height: props.minHeight }
@@ -347,69 +323,6 @@
     flex: 1;
     padding: 16px;
     background: var(--weilin-prompt-ui-primary-bg);
-  }
-
-  .weilin_prompt_ui_resize-handle {
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    user-select: none;
-    opacity: 0.75;
-    transition: opacity 0.2s ease;
-  }
-
-  .weilin_prompt_ui_resize-handle:hover {
-    opacity: 1;
-  }
-
-  .weilin_prompt_ui_resize-handle::after {
-    content: '';
-    position: absolute;
-    inset: 2px;
-  }
-
-  .weilin_prompt_ui_resize-handle-se {
-    right: 0;
-    bottom: 0;
-    cursor: se-resize;
-  }
-
-  .weilin_prompt_ui_resize-handle-se::after {
-    border-right: 2px solid #999;
-    border-bottom: 2px solid #999;
-  }
-
-  .weilin_prompt_ui_resize-handle-ne {
-    right: 0;
-    top: 0;
-    cursor: ne-resize;
-  }
-
-  .weilin_prompt_ui_resize-handle-ne::after {
-    border-right: 2px solid #999;
-    border-top: 2px solid #999;
-  }
-
-  .weilin_prompt_ui_resize-handle-sw {
-    left: 0;
-    bottom: 0;
-    cursor: sw-resize;
-  }
-
-  .weilin_prompt_ui_resize-handle-sw::after {
-    border-left: 2px solid #999;
-    border-bottom: 2px solid #999;
-  }
-
-  .weilin_prompt_ui_resize-handle-nw {
-    left: 0;
-    top: 0;
-    cursor: nw-resize;
-  }
-
-  .weilin_prompt_ui_resize-handle-nw::after {
-    border-left: 2px solid #999;
-    border-top: 2px solid #999;
   }
 
   .weilin_prompt_ui_window-content::-webkit-scrollbar {
