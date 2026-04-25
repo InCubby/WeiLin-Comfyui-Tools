@@ -13,7 +13,8 @@
     <MainLabelManager v-if="isLabelManagerVisible" ref="mainLabelManagerRef" :selected-id="selectedMainLabelId"
       @select="onSelectMainLabel" />
     <!-- 主要内容容器 -->
-    <div :class="`${prefix}main-content`" :style="{ width: mainContentWidth }">
+    <div :class="`${prefix}main-content`"
+      :style="{ width: mainContentWidth, paddingLeft: isLabelManagerVisible ? '8px' : '0px' }">
       <!-- 操作栏 -->
       <div class="center-container">
 

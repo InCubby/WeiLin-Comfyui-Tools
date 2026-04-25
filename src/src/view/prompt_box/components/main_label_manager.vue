@@ -818,13 +818,12 @@
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    padding: 12px 4px;
+    padding: 12px 8px 12px 4px;
     border-right: 1px solid var(--weilin-prompt-ui-border-color);
     background: var(--weilin-prompt-ui-primary-bg);
     height: 100%;
     min-height: 0;
     overflow: hidden;
-    margin-right: 3px;
   }
 
   .mlm-header {
