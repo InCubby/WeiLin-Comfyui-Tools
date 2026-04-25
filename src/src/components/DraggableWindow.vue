@@ -4,14 +4,14 @@
       ref="windowRef"
       class="weilin_prompt_ui_draggable-window"
       :style="windowStyle"
-      @mousedown="setActive"
+      @mousedown="emit('active')"
     >
       <!-- 窗口标题栏 -->
-      <div class="weilin_prompt_ui_window-header" @mousedown.stop="handleHeaderMouseDown">
+      <div class="weilin_prompt_ui_window-header" @mousedown.stop="emit('active')">
         <div class="weilin_prompt_ui_window-title">
           {{ title }}
         </div>
-        <button class="weilin_prompt_ui_close-btn" @click="close">×</button>
+        <button class="weilin_prompt_ui_close-btn" @click="emit('close')">×</button>
       </div>
 
       <!-- 内容区域 -->
@@ -89,31 +89,10 @@
     overflowX: 'hidden'
   }))
 
-  // 仅在坐标/尺寸实际变化时同步，避免高频无效赋值
   watch(
-    () => props.position,
-    (newPosition) => {
-      if (!newPosition) return
-      if (
-        newPosition.x === currentPosition.value.x &&
-        newPosition.y === currentPosition.value.y
-      )
-        return
-      currentPosition.value = { x: newPosition.x, y: newPosition.y }
-    },
-    { immediate: true }
-  )
-
-  watch(
-    () => props.size,
-    (newSize) => {
-      if (!newSize) return
-      if (
-        newSize.width === currentSize.value.width &&
-        newSize.height === currentSize.value.height
-      )
-        return
-      currentSize.value = { width: newSize.width, height: newSize.height }
+    () => [props.position?.x, props.position?.y, props.size?.width, props.size?.height],
+    ([x, y, width, height]) => {
+      syncStateFromProps(x, y, width, height)
     },
     { immediate: true }
   )
@@ -143,42 +122,6 @@
     }
   }
 
-  const forceStopInteraction = () => {
-    flushPendingEmit()
-    if (!activeInteraction) {
-      return
-    }
-    activeInteraction.stop()
-    activeInteraction = null
-  }
-
-  const flushPendingEmit = () => {
-    if (pendingPosition) {
-      emit('update:position', pendingPosition)
-      pendingPosition = null
-    }
-    if (pendingSize) {
-      emit('update:size', pendingSize)
-      pendingSize = null
-    }
-  }
-
-  const scheduleEmit = ({ position, size }) => {
-    if (position) {
-      pendingPosition = position
-    }
-    if (size) {
-      pendingSize = size
-    }
-    if (emitRafId !== null) {
-      return
-    }
-    emitRafId = window.requestAnimationFrame(() => {
-      emitRafId = null
-      flushPendingEmit()
-    })
-  }
-
   const isPointerReleased = (event) => {
     const buttons = event?.buttons ?? event?.originalEvent?.buttons
     return buttons === 0
@@ -188,12 +131,12 @@
     if (!isPointerReleased(event)) {
       return false
     }
-    forceStopInteraction()
+    endInteraction()
     return true
   }
 
   const handleWindowBlur = () => {
-    forceStopInteraction()
+    endInteraction()
   }
 
   const initInteract = () => {
@@ -215,15 +158,10 @@
               currentPosition.value.x + event.dx,
               currentPosition.value.y + event.dy
             )
-            if (next.x === currentPosition.value.x && next.y === currentPosition.value.y) {
-              return
-            }
-            currentPosition.value = next
-            scheduleEmit({ position: next })
+            applyWindowStateChange({ position: next })
           },
           end() {
-            flushPendingEmit()
-            activeInteraction = null
+            endInteraction()
           }
         }
       })
@@ -252,29 +190,10 @@
               currentPosition.value.y + event.deltaRect.top,
               nextSize.width
             )
-            const positionChanged =
-              nextPosition.x !== currentPosition.value.x ||
-              nextPosition.y !== currentPosition.value.y
-            const sizeChanged =
-              nextSize.width !== currentSize.value.width ||
-              nextSize.height !== currentSize.value.height
-            if (!positionChanged && !sizeChanged) {
-              return
-            }
-            if (positionChanged) {
-              currentPosition.value = nextPosition
-            }
-            if (sizeChanged) {
-              currentSize.value = nextSize
-            }
-            scheduleEmit({
-              position: positionChanged ? nextPosition : null,
-              size: sizeChanged ? nextSize : null
-            })
+            applyWindowStateChange({ position: nextPosition, size: nextSize })
           },
           end() {
-            flushPendingEmit()
-            activeInteraction = null
+            endInteraction()
           }
         }
       })
@@ -296,8 +215,8 @@
 
     initInteract()
     window.addEventListener('blur', handleWindowBlur)
-    window.addEventListener('mouseup', forceStopInteraction)
-    window.addEventListener('pointerup', forceStopInteraction)
+    window.addEventListener('mouseup', endInteraction)
+    window.addEventListener('pointerup', endInteraction)
   })
 
   // 组件卸载时清理定时器和交互绑定
@@ -307,32 +226,95 @@
       scrollThrottleTimer = null
     }
     window.removeEventListener('blur', handleWindowBlur)
-    window.removeEventListener('mouseup', forceStopInteraction)
-    window.removeEventListener('pointerup', forceStopInteraction)
-    if (emitRafId !== null) {
-      window.cancelAnimationFrame(emitRafId)
-      emitRafId = null
-    }
-    flushPendingEmit()
-    forceStopInteraction()
+    window.removeEventListener('mouseup', endInteraction)
+    window.removeEventListener('pointerup', endInteraction)
+    endInteraction({ cancelRaf: true })
     if (interactable) {
       interactable.unset()
       interactable = null
     }
   })
 
-  const setActive = () => {
-    emit('active')
+  // 同步外部位置与尺寸到本地状态。
+  function syncStateFromProps(x, y, width, height) {
+    const positionChanged = x !== currentPosition.value.x || y !== currentPosition.value.y
+    if (positionChanged) {
+      currentPosition.value = { x, y }
+    }
+    const sizeChanged = width !== currentSize.value.width || height !== currentSize.value.height
+    if (sizeChanged) {
+      currentSize.value = { width, height }
+    }
   }
 
-  const close = () => {
-    emit('close')
+  // 按动画帧合并并发送窗口状态更新。
+  function queueWindowEmit({ position = null, size = null } = {}) {
+    if (position) {
+      pendingPosition = position
+    }
+    if (size) {
+      pendingSize = size
+    }
+    if (emitRafId !== null) {
+      return
+    }
+    emitRafId = window.requestAnimationFrame(() => {
+      emitRafId = null
+      flushPendingEmit()
+    })
   }
 
-  // 处理标题栏点击
-  const handleHeaderMouseDown = () => {
-    // 先设置为活动窗口，拖拽行为由 interact.js 处理
-    setActive()
+  // 立即发送当前队列中的状态更新。
+  function flushPendingEmit() {
+    if (pendingPosition) {
+      emit('update:position', pendingPosition)
+      pendingPosition = null
+    }
+    if (pendingSize) {
+      emit('update:size', pendingSize)
+      pendingSize = null
+    }
+  }
+
+  // 统一处理位置与尺寸变化并按需同步到外层。
+  function applyWindowStateChange({ position = null, size = null } = {}) {
+    const positionChanged =
+      !!position &&
+      (position.x !== currentPosition.value.x || position.y !== currentPosition.value.y)
+    const sizeChanged =
+      !!size && (size.width !== currentSize.value.width || size.height !== currentSize.value.height)
+    if (!positionChanged && !sizeChanged) {
+      return false
+    }
+    if (positionChanged) {
+      currentPosition.value = position
+    }
+    if (sizeChanged) {
+      currentSize.value = size
+    }
+    queueWindowEmit({
+      position: positionChanged ? position : null,
+      size: sizeChanged ? size : null
+    })
+    return true
+  }
+
+  // 结束当前交互并确保最终状态已同步。
+  function endInteraction(options = {}) {
+    const cancelRaf = !!options?.cancelRaf
+    if (cancelRaf && emitRafId !== null) {
+      window.cancelAnimationFrame(emitRafId)
+      emitRafId = null
+    }
+    flushPendingEmit()
+    if (!activeInteraction) {
+      return
+    }
+    const canCheckInteracting = typeof activeInteraction.interacting === 'function'
+    if (!canCheckInteracting || activeInteraction.interacting()) {
+      activeInteraction.stop()
+    }
+    activeInteraction = null
   }
 </script>
 
