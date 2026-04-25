@@ -22,7 +22,7 @@ line-length = 88
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B"]
 ignore = [
-    "E402",   # 模块级导入不在文件顶部 (ComfyUI插件需要先设置EXTENSION_WEB_DIRS)
+    "E402",   # 模块级导入不在文件顶部 (ComfyUI入口文件允许少量初始化代码)
     "E501",   # 行过长 (长字符串和URL)
     "F403",   # 星号导入 (ComfyUI插件常见模式)
     "F405",   # 星号导入可能未定义 (ComfyUI插件常见模式)
