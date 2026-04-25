@@ -84,26 +84,33 @@
   const currentPosition = ref({ x: 0, y: 0 })
   const currentSize = ref({ width: 600, height: 400 })
 
-  // 监听 props 中的 position 变化 - 优化：移除频繁的postMessage
+  // 仅在坐标/尺寸实际变化时同步，避免高频无效赋值
   watch(
     () => props.position,
     (newPosition) => {
-      if (newPosition) {
-        currentPosition.value = { ...newPosition }
-      }
+      if (!newPosition) return
+      if (
+        newPosition.x === currentPosition.value.x &&
+        newPosition.y === currentPosition.value.y
+      )
+        return
+      currentPosition.value = { x: newPosition.x, y: newPosition.y }
     },
-    { immediate: true, deep: true }
+    { immediate: true }
   )
 
-  // 监听 props 中的 size 变化 - 优化：移除频繁的postMessage
   watch(
     () => props.size,
     (newSize) => {
-      if (newSize) {
-        currentSize.value = { ...newSize }
-      }
+      if (!newSize) return
+      if (
+        newSize.width === currentSize.value.width &&
+        newSize.height === currentSize.value.height
+      )
+        return
+      currentSize.value = { width: newSize.width, height: newSize.height }
     },
-    { immediate: true, deep: true }
+    { immediate: true }
   )
 
   // 优化：使用节流函数限制滚动事件频率
