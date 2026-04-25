@@ -1138,7 +1138,12 @@
 .center-container {
   display: flex;
   flex-wrap: nowrap;
+  flex: 0 0 auto;
+  height: 64px;
+  min-height: 64px;
+  max-height: 64px;
   overflow-x: auto;
+  overflow-y: hidden;
   white-space: nowrap;
   align-items: center;
   scrollbar-width: thin; /* Firefox */
