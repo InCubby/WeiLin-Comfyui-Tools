@@ -70,6 +70,9 @@
   const windowRef = ref(null)
   let interactable = null
   let activeInteraction = null
+  let emitRafId = null
+  let pendingPosition = null
+  let pendingSize = null
 
   // 当前位置和大小状态
   const currentPosition = ref({ x: 0, y: 0 })
@@ -141,11 +144,39 @@
   }
 
   const forceStopInteraction = () => {
+    flushPendingEmit()
     if (!activeInteraction) {
       return
     }
     activeInteraction.stop()
     activeInteraction = null
+  }
+
+  const flushPendingEmit = () => {
+    if (pendingPosition) {
+      emit('update:position', pendingPosition)
+      pendingPosition = null
+    }
+    if (pendingSize) {
+      emit('update:size', pendingSize)
+      pendingSize = null
+    }
+  }
+
+  const scheduleEmit = ({ position, size }) => {
+    if (position) {
+      pendingPosition = position
+    }
+    if (size) {
+      pendingSize = size
+    }
+    if (emitRafId !== null) {
+      return
+    }
+    emitRafId = window.requestAnimationFrame(() => {
+      emitRafId = null
+      flushPendingEmit()
+    })
   }
 
   const isPointerReleased = (event) => {
@@ -184,10 +215,14 @@
               currentPosition.value.x + event.dx,
               currentPosition.value.y + event.dy
             )
+            if (next.x === currentPosition.value.x && next.y === currentPosition.value.y) {
+              return
+            }
             currentPosition.value = next
-            emit('update:position', next)
+            scheduleEmit({ position: next })
           },
           end() {
+            flushPendingEmit()
             activeInteraction = null
           }
         }
@@ -217,13 +252,28 @@
               currentPosition.value.y + event.deltaRect.top,
               nextSize.width
             )
-
-            currentPosition.value = nextPosition
-            currentSize.value = nextSize
-            emit('update:position', nextPosition)
-            emit('update:size', nextSize)
+            const positionChanged =
+              nextPosition.x !== currentPosition.value.x ||
+              nextPosition.y !== currentPosition.value.y
+            const sizeChanged =
+              nextSize.width !== currentSize.value.width ||
+              nextSize.height !== currentSize.value.height
+            if (!positionChanged && !sizeChanged) {
+              return
+            }
+            if (positionChanged) {
+              currentPosition.value = nextPosition
+            }
+            if (sizeChanged) {
+              currentSize.value = nextSize
+            }
+            scheduleEmit({
+              position: positionChanged ? nextPosition : null,
+              size: sizeChanged ? nextSize : null
+            })
           },
           end() {
+            flushPendingEmit()
             activeInteraction = null
           }
         }
@@ -259,6 +309,11 @@
     window.removeEventListener('blur', handleWindowBlur)
     window.removeEventListener('mouseup', forceStopInteraction)
     window.removeEventListener('pointerup', forceStopInteraction)
+    if (emitRafId !== null) {
+      window.cancelAnimationFrame(emitRafId)
+      emitRafId = null
+    }
+    flushPendingEmit()
     forceStopInteraction()
     if (interactable) {
       interactable.unset()
