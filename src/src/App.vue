@@ -11,6 +11,7 @@
       :size="windows.prompt.size"
       :min-width="560"
       :min-height="340"
+      :content-scrollable="false"
       :z-index="windowManager.getZIndex('prompt')"
       @update:position="updatePosition('prompt', $event)"
       @update:size="updateSize('prompt', $event)"

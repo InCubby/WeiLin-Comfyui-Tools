@@ -205,9 +205,10 @@
 
       </div>
 
-      <div style="position: relative;" ref="parentCneterBox">
-        <!-- 输入框区域 -->
-        <!-- 移除事件 @change="finishPromptPutItHistory" -->
+      <div class="weilin_prompt_ui_main-scroll">
+        <div style="position: relative;" ref="parentCneterBox">
+          <!-- 输入框区域 -->
+          <!-- 移除事件 @change="finishPromptPutItHistory" -->
         <textarea v-model="inputText" class="input-area" @input="handleInput" :placeholder="t('promptBox.placeholder')"
           @keydown="handleKeydown" @blur="onBlur" rows="6" ref="inputAreaRef" @mouseup="saveTextareaHeight"
           @resize="saveTextareaHeight"></textarea>
@@ -622,6 +623,7 @@
         <div class="tag-manager-container" v-show="showTagManager">
           <TagManager />
         </div>
+      </div>
       </div>
 
     </div>

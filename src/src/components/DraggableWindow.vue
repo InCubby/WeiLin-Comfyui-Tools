@@ -21,7 +21,14 @@
       </div>
 
       <!-- 内容区域 -->
-      <div class="weilin_prompt_ui_window-content" @scroll="handleScroll">
+      <div
+        class="weilin_prompt_ui_window-content"
+        :style="{
+          overflowY: contentScrollable ? 'auto' : 'hidden',
+          overflowX: 'hidden'
+        }"
+        @scroll="handleScroll"
+      >
         <slot></slot>
       </div>
 
@@ -79,6 +86,10 @@
     minHeight: {
       type: Number,
       default: 200
+    },
+    contentScrollable: {
+      type: Boolean,
+      default: true
     }
   })
 
@@ -334,7 +345,6 @@
 
   .weilin_prompt_ui_window-content {
     flex: 1;
-    overflow: hidden;
     padding: 16px;
     background: var(--weilin-prompt-ui-primary-bg);
   }
