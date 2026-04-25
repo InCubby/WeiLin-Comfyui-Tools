@@ -7,6 +7,11 @@ class PromptTextUtils:
 
     @staticmethod
     def compose_text_and_lora_from_positive(positive, opt_text=""):
+        if opt_text is None:
+            opt_text = ""
+        elif not isinstance(opt_text, str):
+            opt_text = ""
+
         try:
             json_object = json.loads(positive)
         except ValueError:

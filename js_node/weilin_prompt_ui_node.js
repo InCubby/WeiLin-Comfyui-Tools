@@ -365,6 +365,7 @@ waitForApp((app) => {
         setTimeout(fixCurrentNodeDomWidgets, 1000);
 
         if (nodeData.name === "WeiLinPromptUI" || nodeData.name === "WeiLinPromptUIWithoutLora") {
+          hideWidgetForGood(this, this.widgets.find(w => w.name === "opt_text"))
           hideWidgetForGood(this, this.widgets.find(w => w.name === "random_template"))
         }
         if (nodeData.name === "WeiLinPromptUI" || nodeData.name === "WeiLinPromptUIOnlyLoraStack") {
@@ -855,6 +856,16 @@ waitForApp((app) => {
 //from melmass
 // https://github.com/kijai/ComfyUI-KJNodes/blob/main/web/js/spline_editor.js
 function hideWidgetForGood(node, widget, suffix = '') {
+  if (!widget) return
+
+  const hiddenStringWidgetNames = new Set(["opt_text", "random_template", "lora_str"])
+  if (hiddenStringWidgetNames.has(widget.name)) {
+    const normalized = typeof widget.value === "string"
+      ? widget.value
+      : (typeof widget.element?.value === "string" ? widget.element.value : "")
+    widget.value = normalized
+    if (widget.element) widget.element.value = normalized
+  }
 
   widget.origType = widget.type
   widget.origComputeSize = widget.computeSize
@@ -865,7 +876,11 @@ function hideWidgetForGood(node, widget, suffix = '') {
   widget.element.style.display = 'none'
   // 启用序列化，确保widget值被保存到工作流JSON中
   widget.serializeValue = () => {
-      return widget.value;
+      const rawValue = widget.value ?? widget.element?.value
+      if (hiddenStringWidgetNames.has(widget.name)) {
+        return typeof rawValue === "string" ? rawValue : ""
+      }
+      return rawValue
   }
 
   // Hide any linked widgets, e.g. seed+seedControl
