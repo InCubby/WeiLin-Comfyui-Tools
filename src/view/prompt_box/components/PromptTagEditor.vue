@@ -176,6 +176,7 @@
           :token="token"
           :index="index"
           :is-drag-source="isDragging && dragStartIndex === index"
+          :is-dragging="isDragging"
           :show-drop-indicator="shouldShowDropIndicator(index)"
           :show-delete-button="showDeleteButton"
           :is-text-translatable="isTextTranslatable"
@@ -747,6 +748,16 @@ const setDropSlot = (slotIndex) => {
   dropSlotIndex.value = safeIndex
 }
 
+const resolvePointerSlot = (index, event) => {
+  const currentTarget = event?.currentTarget
+  if (!currentTarget || typeof currentTarget.querySelector !== 'function') return index
+  const tokenBox = currentTarget.querySelector('.token-item-box')
+  const rectTarget = tokenBox || currentTarget
+  if (!rectTarget || typeof rectTarget.getBoundingClientRect !== 'function') return index
+  const rect = rectTarget.getBoundingClientRect()
+  return event.clientX > rect.left + rect.width / 2 ? index + 1 : index
+}
+
 const commitDrop = (slotIndex) => {
   if (!isDragging.value || dragStartIndex.value === null) {
     resetDragState()
@@ -804,12 +815,12 @@ const handleDragOver = (index, event) => {
   if (event.dataTransfer) {
     event.dataTransfer.dropEffect = 'move'
   }
-  setDropSlot(index)
+  setDropSlot(resolvePointerSlot(index, event))
 }
 
 const handleDrop = (index, event) => {
   event.preventDefault()
-  commitDrop(index)
+  commitDrop(resolvePointerSlot(index, event))
 }
 
 const handleSlotDragOver = (slotIndex, event) => {
@@ -1004,10 +1015,11 @@ defineExpose({
 }
 
 .token-drop-end-zone {
-  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
   width: 16px;
-  min-height: 34px;
-  vertical-align: middle;
   opacity: 0;
 }
 </style>

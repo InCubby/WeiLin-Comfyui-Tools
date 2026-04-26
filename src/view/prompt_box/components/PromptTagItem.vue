@@ -15,7 +15,8 @@
       :style="{ backgroundColor: token.color }"
       :class="{
         'token-item-box-disabled': token.isHidden,
-        'token-item-box-drag-source': isDragSource
+        'token-item-box-drag-source': isDragSource,
+        'token-item-box-dragging': isDragging
       }"
       @dragstart="emit('drag-start', index, $event)"
       @dragend="emit('drag-end', index, $event)"
@@ -134,6 +135,10 @@
       default: true
     },
     isDragSource: {
+      type: Boolean,
+      default: false
+    },
+    isDragging: {
       type: Boolean,
       default: false
     },
@@ -353,6 +358,12 @@
     border-color: var(--weilin-prompt-ui-border-color);
     transform: translateY(-1px);
     box-shadow: 0 2px 4px var(--weilin-prompt-ui-shadow-color);
+  }
+
+  .token-item-box-dragging,
+  .token-item-box-dragging:hover {
+    transform: none;
+    box-shadow: none;
   }
 
   .quick-delete-btn {
