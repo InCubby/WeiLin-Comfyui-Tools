@@ -853,11 +853,20 @@ const handleDragStart = (index, event) => {
     return
   }
   initializeDragState(index)
+  try {
+    // Some browsers require setData to start native HTML5 drag behavior.
+    event.dataTransfer.setData('text/plain', String(index))
+  } catch {
+    // Ignore and continue for browsers that do not require/allow this.
+  }
   event.dataTransfer.effectAllowed = 'move'
 }
 
 const handleDragOver = (index, event) => {
   event.preventDefault()
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = 'move'
+  }
   const tokenEl = getEventElement(event, '.token-item-box')
   if (tokenEl) {
     scheduleDropVisualUpdate(index, tokenEl, false)
@@ -873,6 +882,9 @@ const handleDrop = (index, event) => {
 
 const handleSlotDragOver = (slotIndex, event) => {
   event.preventDefault()
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = 'move'
+  }
   const endZone = getEventElement(event, '.token-drop-end-zone')
   if (endZone) {
     scheduleDropVisualUpdate(slotIndex, endZone, true)
@@ -1052,8 +1064,9 @@ defineExpose({
 
 .token-counter {
   position: absolute;
-  bottom: 5px;
-  left: 5px;
+  right: 8px;
+  bottom: 8px;
+  left: auto;
   z-index: 10;
   color: #aaa;
   background-color: #f0f0f0;
