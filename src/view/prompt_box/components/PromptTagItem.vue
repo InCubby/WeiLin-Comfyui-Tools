@@ -390,7 +390,6 @@
   }
 
   .token-item-box-drag-source {
-    opacity: 0;
-    transition: none;
+    opacity: 1;
   }
 </style>

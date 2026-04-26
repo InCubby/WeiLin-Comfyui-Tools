@@ -726,7 +726,7 @@ const dropIndicatorStyle = ref({
   display: 'none',
   left: '0px',
   top: '0px',
-  height: '34px'
+  height: '24px'
 })
 let dragVisualRafId = 0
 let pendingDropVisual = null
@@ -748,19 +748,43 @@ const getEventElement = (event, selector) => {
   return null
 }
 
-const updateDropIndicatorByRect = (rect, preferCenter = false) => {
+const getDropIndicatorXBySlot = (slotIndex, fallbackRect, preferCenter = false) => {
+  const container = tokensContainerRef.value
+  if (!container) return null
+
+  const tokenElements = Array.from(container.querySelectorAll('.token-item-box'))
+  const prevRect = slotIndex > 0 ? tokenElements[slotIndex - 1]?.getBoundingClientRect() : null
+  const nextRect = slotIndex < tokenElements.length ? tokenElements[slotIndex]?.getBoundingClientRect() : null
+
+  if (prevRect && nextRect) {
+    return (prevRect.right + nextRect.left) / 2
+  }
+  if (nextRect) {
+    return nextRect.left - 6
+  }
+  if (prevRect) {
+    return prevRect.right + 6
+  }
+  if (fallbackRect) {
+    return preferCenter ? fallbackRect.left + fallbackRect.width / 2 : fallbackRect.left
+  }
+  return null
+}
+
+const updateDropIndicatorByRect = (slotIndex, rect, preferCenter = false) => {
   const container = tokensContainerRef.value
   if (!container || !rect) return
   const containerRect = container.getBoundingClientRect()
-  const leftOffset = preferCenter ? rect.left + rect.width / 2 : rect.left
-  const left = leftOffset - containerRect.left - 1
-  const top = rect.top - containerRect.top
-  const height = Math.max(30, rect.height)
+  const indicatorX = getDropIndicatorXBySlot(slotIndex, rect, preferCenter)
+  if (indicatorX === null) return
+  const indicatorHeight = Math.max(18, rect.height - 8)
+  const left = indicatorX - containerRect.left - 1
+  const top = rect.top - containerRect.top + (rect.height - indicatorHeight) / 2
   dropIndicatorStyle.value = {
     display: 'block',
     left: `${left}px`,
     top: `${top}px`,
-    height: `${height}px`
+    height: `${indicatorHeight}px`
   }
 }
 
@@ -775,7 +799,7 @@ const scheduleDropVisualUpdate = (slotIndex, element, preferCenter = false) => {
     pendingDropVisual = null
     setDropSlot(nextSlot)
     if (nextElement) {
-      updateDropIndicatorByRect(nextElement.getBoundingClientRect(), center)
+      updateDropIndicatorByRect(nextSlot, nextElement.getBoundingClientRect(), center)
     }
   })
 }
