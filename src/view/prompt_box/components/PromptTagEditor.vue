@@ -1101,14 +1101,16 @@ defineExpose({
 
 .tokens-container {
   position: relative;
+  column-gap: 9px;
+  row-gap: 8px;
 }
 
 .token-drop-indicator {
   position: absolute;
   z-index: 20;
-  width: 2px;
+  width: 3px;
   background: #58b8ff;
-  border-radius: 2px;
+  border-radius: 999px;
   box-shadow: 0 0 8px rgb(88 184 255 / 45%);
   pointer-events: none;
 }
