@@ -354,6 +354,7 @@ const selectedTokens = ref([])
 const showSelectionActions = ref(false)
 const selectionActionsPosition = ref({ top: '0px', left: '0px' })
 const isOverSelectionActions = ref(false)
+const suppressNextOutsideClick = ref(false)
 
 const selectedTokenSet = computed(() => new Set(selectedTokens.value))
 const selectionBoxStyle = computed(() => {
@@ -817,6 +818,8 @@ const handleSelectionMouseUp = () => {
 
   if (!isSelecting.value) return
   isSelecting.value = false
+  // 框选抬起后浏览器会紧跟触发一次 click，忽略这一次避免选中态被立即清空。
+  suppressNextOutsideClick.value = true
   showSelectionActionsMenu()
 }
 
@@ -825,11 +828,15 @@ const handleSelectionActionsLeave = () => {
 }
 
 const handleSelectionActionsOutsideClick = (event) => {
+  if (suppressNextOutsideClick.value) {
+    suppressNextOutsideClick.value = false
+    return
+  }
   if (!showSelectionActions.value) return
   const isInsideActions = event.target.closest('.selection-actions-controls')
   if (isInsideActions) return
   const isInsideTokensContainer = tokensContainerRef.value?.contains?.(event.target)
-  if (!isInsideTokensContainer || !event.target.closest('.token-item-box')) {
+  if (!isInsideTokensContainer) {
     clearSelectedTokens()
   }
 }
