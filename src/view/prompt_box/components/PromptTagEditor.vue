@@ -728,7 +728,7 @@ const dropIndicatorStyle = ref({
   top: '0px',
   height: '24px'
 })
-const DROP_INDICATOR_WIDTH = 2
+const DROP_INDICATOR_WIDTH = 3
 let dragVisualRafId = 0
 let pendingDropVisual = null
 
@@ -1104,10 +1104,10 @@ defineExpose({
 .token-drop-indicator {
   position: absolute;
   z-index: 20;
-  width: 2px;
+  width: 3px;
   background: #58b8ff;
   border-radius: 999px;
-  box-shadow: 0 0 8px rgb(88 184 255 / 45%);
+  box-shadow: none;
   pointer-events: none;
 }
 
