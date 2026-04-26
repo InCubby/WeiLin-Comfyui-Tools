@@ -728,7 +728,7 @@ const dropIndicatorStyle = ref({
   top: '0px',
   height: '24px'
 })
-const DROP_INDICATOR_WIDTH = 3
+const DROP_INDICATOR_WIDTH = 2
 let dragVisualRafId = 0
 let pendingDropVisual = null
 
@@ -773,21 +773,23 @@ const scheduleDropVisualUpdate = (slotIndex, element, preferCenter = false) => {
     const halfGap = gap / 2
 
     // 按插槽语义计算蓝条 X：在相邻 Tag 中点，或在首尾位置取半个 gap。
-    let indicatorX = null
+    let indicatorLeftViewport = null
     if (prevRect && nextRect) {
-      indicatorX = (prevRect.right + nextRect.left) / 2
+      const betweenWidth = nextRect.left - prevRect.right
+      indicatorLeftViewport = prevRect.right + (betweenWidth - DROP_INDICATOR_WIDTH) / 2
     } else if (nextRect) {
-      indicatorX = nextRect.left - halfGap
+      indicatorLeftViewport = nextRect.left - halfGap - DROP_INDICATOR_WIDTH / 2
     } else if (prevRect) {
-      indicatorX = prevRect.right + halfGap
+      indicatorLeftViewport = prevRect.right + halfGap - DROP_INDICATOR_WIDTH / 2
     } else {
-      indicatorX = center ? rect.left + rect.width / 2 : rect.left
+      const fallbackX = center ? rect.left + rect.width / 2 : rect.left
+      indicatorLeftViewport = fallbackX - DROP_INDICATOR_WIDTH / 2
     }
-    if (indicatorX === null) return
+    if (indicatorLeftViewport === null) return
 
     // 将视口坐标换算为容器内坐标，用于绝对定位蓝条。
     const indicatorHeight = Math.max(18, rect.height - 8)
-    const left = indicatorX - containerRect.left - DROP_INDICATOR_WIDTH / 2
+    const left = indicatorLeftViewport - containerRect.left
     const top = rect.top - containerRect.top + (rect.height - indicatorHeight) / 2
     dropIndicatorStyle.value = {
       display: 'block',
@@ -1102,7 +1104,7 @@ defineExpose({
 .token-drop-indicator {
   position: absolute;
   z-index: 20;
-  width: 3px;
+  width: 2px;
   background: #58b8ff;
   border-radius: 999px;
   box-shadow: 0 0 8px rgb(88 184 255 / 45%);
