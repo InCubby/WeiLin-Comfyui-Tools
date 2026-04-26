@@ -1010,7 +1010,7 @@ defineExpose({
 
 .tokens-container {
   position: relative;
-  column-gap: 3px;
+  column-gap: 9px;
   row-gap: 8px;
 }
 

@@ -1,15 +1,9 @@
 <template>
   <div
     class="token-item-wrapper"
-    ref="wrapperRef"
     @dragover.prevent="emit('drag-over', index, $event)"
     @drop="emit('drop', index, $event)"
   >
-    <div
-      class="token-item-drop-indicator"
-      :class="{ 'token-item-drop-indicator-active': showDropIndicator }"
-    ></div>
-
     <div
       class="token-item-box"
       :draggable="!token.isEditing"
@@ -17,7 +11,8 @@
       :class="{
         'token-item-box-disabled': token.isHidden,
         'token-item-box-drag-source': isDragSource,
-        'token-item-box-dragging': isDragging
+        'token-item-box-dragging': isDragging,
+        'token-item-box-drop-target': showDropIndicator
       }"
       @dragstart="emit('drag-start', index, $event)"
       @dragend="emit('drag-end', index, $event)"
@@ -118,7 +113,6 @@
 </template>
 
 <script setup>
-  import { nextTick, onMounted, onUpdated, ref } from 'vue'
   import { useI18n } from 'vue-i18n'
 
   const { t } = useI18n()
@@ -173,46 +167,11 @@
   const setInputRef = (el) => {
     emit('register-input-ref', props.index, el)
   }
-
-  const wrapperRef = ref(null)
-
-  const syncWrapperWidthByRenderedSize = () => {
-    const wrapper = wrapperRef.value
-    if (!wrapper) return
-
-    wrapper.style.width = 'auto'
-    const renderedWidth = wrapper.getBoundingClientRect().width
-    const ceilWidth = Math.ceil(renderedWidth)
-    if (!Number.isFinite(ceilWidth) || ceilWidth <= 0) return
-    wrapper.style.width = `${ceilWidth}px`
-  }
-
-  onMounted(async () => {
-    await nextTick()
-    syncWrapperWidthByRenderedSize()
-  })
-
-  onUpdated(() => {
-    syncWrapperWidthByRenderedSize()
-  })
 </script>
 
 <style scoped>
   .token-item-wrapper {
-    display: inline-flex;
-    align-items: stretch;
-  }
-
-  .token-item-drop-indicator {
-    width: 3px;
-    margin: 3px 3px 3px 0;
-    border-radius: 999px;
-    background: transparent;
-    flex: 0 0 auto;
-  }
-
-  .token-item-drop-indicator-active {
-    background: #58b8ff;
+    display: inline-block;
   }
 
   .token-item {
@@ -371,6 +330,23 @@
     line-height: 1.5;
     box-shadow: 0 1px 2px var(--weilin-prompt-ui-shadow-color);
     cursor: grab;
+  }
+
+  .token-item-box-drop-target {
+    position: relative;
+  }
+
+  .token-item-box-drop-target::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 3px;
+    bottom: 3px;
+    width: 3px;
+    border-radius: 999px;
+    background: #58b8ff;
+    pointer-events: none;
+    z-index: 3;
   }
 
   .token-item-box:active {
