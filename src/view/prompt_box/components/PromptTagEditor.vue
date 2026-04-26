@@ -1,6 +1,6 @@
 <template>
   <div class="prompt-tag-editor">
-    <div style="position: relative;" :ref="setParentCenterBoxRef">
+    <div style="position: relative;" :ref="props.editorRefs.setParentCneterBoxRef">
       <textarea
         :value="inputText"
         class="input-area"
@@ -83,7 +83,7 @@
       <button
         v-if="isClearAllEnabled"
         class="translate-btn clear-all-btn"
-        @click="handleClearAllClick"
+        @click="emit('clear-all')"
         :title="t('promptBox.oneClickCleanAll')"
       >
         <svg class="utils-item-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1605" width="24" height="24">
@@ -106,7 +106,7 @@
       <button
         v-if="isClearDisabledEnabled"
         class="translate-btn clear-disabled-btn"
-        @click="handleClearDisabledClick"
+        @click="emit('clear-disabled')"
         :title="t('promptBox.oneClickClearDisabled')"
       >
         <svg class="utils-item-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1605" width="24" height="24">
@@ -141,9 +141,9 @@
         <PromptTagItem
           :token="token"
           :index="index"
-          :is-drag-source="isDragging && dragStartIndex === index"
+          :is-drag-source="isDragSource(index)"
           :is-dragging="isDragging"
-          :is-selected="isTokenSelected(index)"
+          :is-selected="selectedTokenSet.has(index)"
           :show-drop-indicator="shouldShowDropIndicator(index)"
           :show-delete-button="showDeleteButton"
           :is-text-translatable="isTextTranslatable"
@@ -174,8 +174,6 @@
       v-show="showSelectionActions"
       class="token-controls selection-actions-controls"
       :style="selectionActionsPosition"
-      @mouseenter="isOverSelectionActions = true"
-      @mouseleave="handleSelectionActionsLeave"
     >
       <div class="weilin-comfyui-selection-actions-content">
         <div class="weilin-comfyui-selection-actions-count">选中 {{ selectedTokens.length }} 个标签</div>
@@ -219,7 +217,7 @@
       class="token-controls"
       :style="controlsPosition"
       @mouseenter="isOverControls = true"
-      @mouseleave="handleControlsLeave"
+      @mouseleave="isOverControls = false; handleMouseLeave()"
     >
       <div class="weight-control">
         <input type="number" v-model.number="weightValue" step="0.1" class="weight-input" @change="applyWeight" />
@@ -277,7 +275,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUpdate, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUpdate, onMounted, onUnmounted, ref, unref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { translatorApi } from '@/api/translator'
 import message from '@/utils/message'
@@ -289,48 +287,129 @@ const { t } = useI18n()
 const emit = defineEmits(['clear-all', 'clear-disabled'])
 
 const props = defineProps({
-  setParentCneterBoxRef: { type: Function, required: true },
-  setInputAreaRef: { type: Function, required: true },
-  setAutocompleteContainerRef: { type: Function, required: true },
-  setSelectedItemRef: { type: Function, required: true },
-  inputText: { type: String, default: '' },
-  tokenCount: { type: Number, default: 0 },
-  autocompletePosition: { type: Object, required: true },
-  adjustedAutocompletePosition: { type: Object, required: true },
-  showAutocomplete: { type: Boolean, default: false },
-  saveAutoCompleteWidth: { type: Number, default: 450 },
-  saveAutoCompleteHeight: { type: Number, default: 350 },
-  autocompleteResults: { type: Array, default: () => [] },
-  selectedAutocompleteIndex: { type: Number, default: 0 },
+  editorRefs: { type: Object, required: true },
+  editorState: { type: Object, required: true },
+  editorHandlers: { type: Object, default: () => ({}) },
   isTranslateTagEnabled: { type: Boolean, default: false },
   isDeleteButtonEnabled: { type: Boolean, default: false },
   isClearAllEnabled: { type: Boolean, default: false },
   isClearDisabledEnabled: { type: Boolean, default: false },
   tokens: { type: Array, default: () => [] },
-  handleInput: { type: Function, required: true },
-  handleKeydown: { type: Function, required: true },
-  onBlur: { type: Function, required: true },
-  saveTextareaHeight: { type: Function, required: true },
-  closeAutocomplete: { type: Function, required: true },
-  selectAutocomplete: { type: Function, required: true },
   isTextTranslatable: { type: Function, required: true }
 })
 
-const setParentCenterBoxRef = (el) => {
-  props.setParentCneterBoxRef(el)
+const inputAreaRef = ref(null)
+const autocompleteContainerRef = ref(null)
+const selectedItemRef = ref(null)
+
+const readEditorState = (key, fallback) => {
+  const source = props.editorState?.[key]
+  const value = unref(source)
+  return value ?? fallback
+}
+
+const writeEditorState = (key, value) => {
+  const target = props.editorState?.[key]
+  if (target && typeof target === 'object' && 'value' in target) {
+    target.value = value
+  }
 }
 
 const setInputAreaRef = (el) => {
-  props.setInputAreaRef(el)
+  inputAreaRef.value = el
+  props.editorRefs?.setInputAreaRef?.(el)
 }
 
 const setAutocompleteContainerRef = (el) => {
-  props.setAutocompleteContainerRef(el)
+  autocompleteContainerRef.value = el
+  props.editorRefs?.setAutocompleteContainerRef?.(el)
 }
 
 const setSelectedItemRef = (el, index) => {
-  if (el && index === props.selectedAutocompleteIndex) {
-    props.setSelectedItemRef(el)
+  if (!el || index !== selectedAutocompleteIndex.value) return
+  selectedItemRef.value = el
+  props.editorRefs?.setSelectedItemRef?.(el)
+}
+
+const inputText = computed(() => readEditorState('inputText', ''))
+const tokenCount = computed(() => readEditorState('tokenCount', 0))
+const autocompletePosition = computed(() => readEditorState('autocompletePosition', { top: 0, left: 0 }))
+const adjustedAutocompletePosition = computed(() => readEditorState('adjustedAutocompletePosition', { left: 0 }))
+const showAutocomplete = computed(() => readEditorState('showAutocomplete', false))
+const saveAutoCompleteWidth = computed(() => readEditorState('saveAutoCompleteWidth', 450))
+const saveAutoCompleteHeight = computed(() => readEditorState('saveAutoCompleteHeight', 350))
+const autocompleteResults = computed(() => readEditorState('autocompleteResults', []))
+const selectedAutocompleteIndex = computed(() => readEditorState('selectedAutocompleteIndex', 0))
+
+const scrollToSelectedItem = () => {
+  nextTick(() => {
+    if (!selectedItemRef.value || !autocompleteContainerRef.value) return
+    const container = autocompleteContainerRef.value
+    const selectedItem = selectedItemRef.value
+    const containerRect = container.getBoundingClientRect()
+    const selectedRect = selectedItem.getBoundingClientRect()
+    const isAbove = selectedRect.top < containerRect.top
+    const isBelow = selectedRect.bottom > containerRect.bottom
+
+    if (isAbove) {
+      container.scrollTop += selectedRect.top - containerRect.top
+    } else if (isBelow) {
+      container.scrollTop += selectedRect.bottom - containerRect.bottom
+    }
+  })
+}
+
+const closeAutocomplete = () => {
+  writeEditorState('showAutocomplete', false)
+}
+
+const saveTextareaHeight = () => {
+  if (inputAreaRef.value) {
+    const height = inputAreaRef.value.style.height || `${inputAreaRef.value.offsetHeight}px`
+    localStorage.setItem('weilinPromptTextAreaHeight', height)
+  }
+}
+
+const selectAutocomplete = (index, event) => {
+  props.editorHandlers?.selectAutocomplete?.(index, event)
+}
+
+const onBlur = (event) => {
+  props.editorHandlers?.onBlur?.(event)
+}
+
+const handleInput = (event) => {
+  props.editorHandlers?.handleInput?.(event)
+}
+
+const handleKeydown = (event) => {
+  if (!showAutocomplete.value) return
+
+  if (event.key === 'ArrowDown') {
+    event.preventDefault()
+    const nextIndex = Math.min(selectedAutocompleteIndex.value + 1, autocompleteResults.value.length - 1)
+    writeEditorState('selectedAutocompleteIndex', nextIndex)
+    scrollToSelectedItem()
+    return
+  }
+
+  if (event.key === 'ArrowUp') {
+    event.preventDefault()
+    const nextIndex = Math.max(selectedAutocompleteIndex.value - 1, 0)
+    writeEditorState('selectedAutocompleteIndex', nextIndex)
+    scrollToSelectedItem()
+    return
+  }
+
+  if (event.key === 'Tab' || event.key === 'Enter') {
+    event.preventDefault()
+    selectAutocomplete(selectedAutocompleteIndex.value, null)
+    return
+  }
+
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    closeAutocomplete()
   }
 }
 
@@ -353,7 +432,6 @@ const selectionEnd = ref({ x: 0, y: 0 })
 const selectedTokens = ref([])
 const showSelectionActions = ref(false)
 const selectionActionsPosition = ref({ top: '0px', left: '0px' })
-const isOverSelectionActions = ref(false)
 const suppressNextOutsideClick = ref(false)
 
 const selectedTokenSet = computed(() => new Set(selectedTokens.value))
@@ -383,13 +461,9 @@ const BRACKET_CLOSE_SET = new Set(Object.values(BRACKET_MAP))
 
 const showDeleteButton = ref(localStorage.getItem('weilin_prompt_ui_show_delete_button') !== 'false')
 
-const saveShowDeleteButtonSetting = () => {
-  localStorage.setItem('weilin_prompt_ui_show_delete_button', String(showDeleteButton.value))
-}
-
 const toggleDeleteButton = () => {
   showDeleteButton.value = !showDeleteButton.value
-  saveShowDeleteButtonSetting()
+  localStorage.setItem('weilin_prompt_ui_show_delete_button', String(showDeleteButton.value))
 }
 
 const handleStorageChange = (e) => {
@@ -398,24 +472,11 @@ const handleStorageChange = (e) => {
   }
 }
 
-const handleClearAllClick = () => {
-  emit('clear-all')
-}
-
-const handleClearDisabledClick = () => {
-  emit('clear-disabled')
-}
-
-const extractTranslatedText = (res) => {
-  const translated = typeof res?.data === 'string' ? res.data.trim() : ''
-  return translated
-}
-
 const translateTextByMode = async (sourceText) => {
   const trimmed = sourceText?.trim()
   if (!trimmed) return ''
   const res = await translatorApi.translaterText('', trimmed)
-  return extractTranslatedText(res)
+  return typeof res?.data === 'string' ? res.data.trim() : ''
 }
 
 const generateUniqueId = () => {
@@ -504,12 +565,6 @@ const showControls = (index, event) => {
   showTagTipsBox.value = true
 }
 
-const hideControls = () => {
-  if (!isOverControls.value) {
-    activeControls.value = null
-  }
-}
-
 const handleMouseLeave = () => {
   if (hideTimeout.value) {
     clearTimeout(hideTimeout.value)
@@ -517,17 +572,12 @@ const handleMouseLeave = () => {
 
   hideTimeout.value = setTimeout(() => {
     if (!isOverControls.value) {
-      hideControls()
+      activeControls.value = null
     }
     hideTimeout.value = null
   }, 100)
 
   showTagTipsBox.value = false
-}
-
-const handleControlsLeave = () => {
-  isOverControls.value = false
-  handleMouseLeave()
 }
 
 const registerTokenInputRef = (index, el) => {
@@ -691,8 +741,6 @@ const openFavourTag = (tokenInfo) => {
   }
 }
 
-const isTokenSelected = (index) => selectedTokenSet.value.has(index)
-
 const getContainerPointer = (event) => {
   const container = tokensContainerRef.value
   if (!container) return { x: 0, y: 0 }
@@ -703,14 +751,6 @@ const getContainerPointer = (event) => {
   }
 }
 
-const getSelectionBounds = () => {
-  const left = Math.min(selectionStart.value.x, selectionEnd.value.x)
-  const top = Math.min(selectionStart.value.y, selectionEnd.value.y)
-  const right = Math.max(selectionStart.value.x, selectionEnd.value.x)
-  const bottom = Math.max(selectionStart.value.y, selectionEnd.value.y)
-  return { left, top, right, bottom }
-}
-
 const updateSelectedTokensFromBox = () => {
   const container = tokensContainerRef.value
   if (!container) return
@@ -718,7 +758,12 @@ const updateSelectedTokensFromBox = () => {
   const containerRect = container.getBoundingClientRect()
   const scrollLeft = container.scrollLeft || 0
   const scrollTop = container.scrollTop || 0
-  const bounds = getSelectionBounds()
+  const bounds = {
+    left: Math.min(selectionStart.value.x, selectionEnd.value.x),
+    top: Math.min(selectionStart.value.y, selectionEnd.value.y),
+    right: Math.max(selectionStart.value.x, selectionEnd.value.x),
+    bottom: Math.max(selectionStart.value.y, selectionEnd.value.y)
+  }
   const nextSelected = []
 
   const tokenBoxes = container.querySelectorAll('.token-item-box')
@@ -743,31 +788,8 @@ const updateSelectedTokensFromBox = () => {
 }
 
 const clearSelectedTokens = () => {
-  selectedTokens.value = []
-  showSelectionActions.value = false
-}
-
-const closeSelectionActions = () => {
   showSelectionActions.value = false
   selectedTokens.value = []
-}
-
-const showSelectionActionsMenu = () => {
-  if (!selectedTokens.value.length) {
-    showSelectionActions.value = false
-    return
-  }
-  const containerRect = tokensContainerRef.value?.getBoundingClientRect()
-  if (!containerRect) {
-    showSelectionActions.value = false
-    return
-  }
-  const bounds = getSelectionBounds()
-  selectionActionsPosition.value = {
-    top: `${Math.max(containerRect.top + bounds.top - 50, 0)}px`,
-    left: `${containerRect.left + (bounds.left + bounds.right) / 2}px`
-  }
-  showSelectionActions.value = true
 }
 
 const handleSelectionMouseDown = (event) => {
@@ -789,7 +811,7 @@ const handleSelectionMouseDown = (event) => {
   selectionEnd.value = point
   isPotentialSelection.value = true
   isSelecting.value = false
-  closeSelectionActions()
+  clearSelectedTokens()
 }
 
 const handleSelectionMouseMove = (event) => {
@@ -820,11 +842,23 @@ const handleSelectionMouseUp = () => {
   isSelecting.value = false
   // 框选抬起后浏览器会紧跟触发一次 click，忽略这一次避免选中态被立即清空。
   suppressNextOutsideClick.value = true
-  showSelectionActionsMenu()
-}
-
-const handleSelectionActionsLeave = () => {
-  isOverSelectionActions.value = false
+  if (!selectedTokens.value.length) {
+    showSelectionActions.value = false
+    return
+  }
+  const containerRect = tokensContainerRef.value?.getBoundingClientRect()
+  if (!containerRect) {
+    showSelectionActions.value = false
+    return
+  }
+  const left = Math.min(selectionStart.value.x, selectionEnd.value.x)
+  const top = Math.min(selectionStart.value.y, selectionEnd.value.y)
+  const right = Math.max(selectionStart.value.x, selectionEnd.value.x)
+  selectionActionsPosition.value = {
+    top: `${Math.max(containerRect.top + top - 50, 0)}px`,
+    left: `${containerRect.left + (left + right) / 2}px`
+  }
+  showSelectionActions.value = true
 }
 
 const handleSelectionActionsOutsideClick = (event) => {
@@ -850,7 +884,7 @@ const copySelectedTokens = async () => {
     .join(', ')
 
   if (!text) {
-    closeSelectionActions()
+    clearSelectedTokens()
     return
   }
 
@@ -859,7 +893,7 @@ const copySelectedTokens = async () => {
   } catch {
     // Ignore clipboard failure and keep behavior non-blocking.
   }
-  closeSelectionActions()
+  clearSelectedTokens()
 }
 
 const disableSelectedTokens = () => {
@@ -870,7 +904,7 @@ const disableSelectedTokens = () => {
     token.isHidden = true
     token.hiddenHint = t('promptBox.hiddenHint')
   }
-  closeSelectionActions()
+  clearSelectedTokens()
 }
 
 const enableSelectedTokens = () => {
@@ -881,7 +915,7 @@ const enableSelectedTokens = () => {
     token.isHidden = false
     token.hiddenHint = ''
   }
-  closeSelectionActions()
+  clearSelectedTokens()
 }
 
 const deleteSelectedTokens = () => {
@@ -902,23 +936,78 @@ const deleteSelectedTokens = () => {
   if (activeControls.value !== null && selectedSet.has(activeControls.value)) {
     activeControls.value = null
   }
-  closeSelectionActions()
+  clearSelectedTokens()
 }
 
 const isDragging = ref(false)
 const dragStartIndex = ref(null)
+const draggedTokens = ref([])
 const dropSlotIndex = ref(null)
 const didDrop = ref(false)
 
-const shouldShowDropIndicator = (index) => {
-  if (!isDragging.value || dropSlotIndex.value !== index) return false
-  if (dragStartIndex.value === null) return false
-  return dropSlotIndex.value !== dragStartIndex.value && dropSlotIndex.value !== dragStartIndex.value + 1
+const normalizeDragIndices = (indices) => {
+  const len = props.tokens.length
+  const unique = new Set()
+  const normalized = []
+  for (const rawIndex of indices) {
+    const index = Number(rawIndex)
+    if (!Number.isInteger(index) || index < 0 || index >= len || unique.has(index)) continue
+    unique.add(index)
+    normalized.push(index)
+  }
+  normalized.sort((a, b) => a - b)
+  return normalized
 }
 
-const initializeDragState = (index) => {
+const isDragSource = (index) => {
+  if (!isDragging.value) return false
+  if (draggedTokens.value.length > 0) {
+    return draggedTokens.value.includes(index)
+  }
+  return dragStartIndex.value === index
+}
+
+const buildDropResult = (slotIndex) => {
+  const draggedIndices = draggedTokens.value.length > 0
+    ? draggedTokens.value
+    : (dragStartIndex.value === null ? [] : normalizeDragIndices([dragStartIndex.value]))
+  if (!draggedIndices.length) return null
+
+  const sourceTokens = props.tokens
+  const boundedSlot = Math.max(0, Math.min(slotIndex, sourceTokens.length))
+  const draggedSet = new Set(draggedIndices)
+  const draggedItems = draggedIndices
+    .map(index => sourceTokens[index])
+    .filter(Boolean)
+  if (!draggedItems.length) return null
+
+  const remainingTokens = sourceTokens.filter((_, index) => !draggedSet.has(index))
+  const removedBeforeTarget = draggedIndices.filter(index => index < boundedSlot).length
+  let insertIndex = boundedSlot - removedBeforeTarget
+  insertIndex = Math.max(0, Math.min(insertIndex, remainingTokens.length))
+
+  const nextTokens = [...remainingTokens]
+  nextTokens.splice(insertIndex, 0, ...draggedItems)
+  const moved = nextTokens.some((token, index) => token !== sourceTokens[index])
+
+  return {
+    moved,
+    nextTokens,
+    draggedIndices,
+    selectedIndices: draggedItems.map((_, offset) => insertIndex + offset)
+  }
+}
+
+const shouldShowDropIndicator = (index) => {
+  if (!isDragging.value || dropSlotIndex.value !== index) return false
+  const result = buildDropResult(dropSlotIndex.value)
+  return !!result?.moved
+}
+
+const initializeDragState = (index, draggedIndices) => {
   isDragging.value = true
   dragStartIndex.value = index
+  draggedTokens.value = normalizeDragIndices(draggedIndices)
   dropSlotIndex.value = null
   didDrop.value = false
 }
@@ -926,17 +1015,8 @@ const initializeDragState = (index) => {
 const resetDragState = () => {
   isDragging.value = false
   dragStartIndex.value = null
+  draggedTokens.value = []
   dropSlotIndex.value = null
-}
-
-const setTokensInPlace = (newTokens) => {
-  props.tokens.splice(0, props.tokens.length, ...newTokens)
-}
-
-const setDropSlot = (slotIndex) => {
-  if (!isDragging.value) return
-  const safeIndex = Math.max(0, Math.min(slotIndex, props.tokens.length))
-  dropSlotIndex.value = safeIndex
 }
 
 const resolvePointerSlot = (index, event) => {
@@ -955,32 +1035,18 @@ const commitDrop = (slotIndex) => {
     return
   }
 
-  const fromIndex = dragStartIndex.value
-  const toBeforeIndex = Math.max(0, Math.min(slotIndex, props.tokens.length))
-
-  // Same visual position: before itself or before immediate next token.
-  if (toBeforeIndex === fromIndex || toBeforeIndex === fromIndex + 1) {
+  const selectedBeforeDrag = new Set(selectedTokens.value)
+  const result = buildDropResult(slotIndex)
+  if (!result || !result.moved) {
     resetDragState()
     return
   }
 
-  const movingToken = props.tokens[fromIndex]
-  if (!movingToken) {
-    resetDragState()
-    return
+  props.tokens.splice(0, props.tokens.length, ...result.nextTokens)
+  const draggedFromSelection = result.draggedIndices.some(index => selectedBeforeDrag.has(index))
+  if (draggedFromSelection) {
+    selectedTokens.value = result.selectedIndices
   }
-
-  const nextTokens = [...props.tokens]
-  nextTokens.splice(fromIndex, 1)
-
-  let insertIndex = toBeforeIndex
-  if (toBeforeIndex > fromIndex) {
-    insertIndex = toBeforeIndex - 1
-  }
-
-  insertIndex = Math.max(0, Math.min(insertIndex, nextTokens.length))
-  nextTokens.splice(insertIndex, 0, movingToken)
-  setTokensInPlace(nextTokens)
 
   didDrop.value = true
   resetDragState()
@@ -991,8 +1057,15 @@ const handleDragStart = (index, event) => {
     event.preventDefault()
     return
   }
-  clearSelectedTokens()
-  initializeDragState(index)
+  const shouldUseSelectionDrag = selectedTokenSet.value.has(index) && selectedTokens.value.length > 1
+  const draggedIndices = shouldUseSelectionDrag
+    ? normalizeDragIndices(selectedTokens.value)
+    : [index]
+
+  if (!selectedTokenSet.value.has(index)) {
+    clearSelectedTokens()
+  }
+  initializeDragState(index, draggedIndices)
   try {
     // Some browsers require setData to start native HTML5 drag behavior.
     event.dataTransfer.setData('text/plain', String(index))
@@ -1007,7 +1080,9 @@ const handleDragOver = (index, event) => {
   if (event.dataTransfer) {
     event.dataTransfer.dropEffect = 'move'
   }
-  setDropSlot(resolvePointerSlot(index, event))
+  if (!isDragging.value) return
+  const slotIndex = resolvePointerSlot(index, event)
+  dropSlotIndex.value = Math.max(0, Math.min(slotIndex, props.tokens.length))
 }
 
 const handleDrop = (index, event) => {
@@ -1020,7 +1095,8 @@ const handleSlotDragOver = (slotIndex, event) => {
   if (event.dataTransfer) {
     event.dataTransfer.dropEffect = 'move'
   }
-  setDropSlot(slotIndex)
+  if (!isDragging.value) return
+  dropSlotIndex.value = Math.max(0, Math.min(slotIndex, props.tokens.length))
 }
 
 const handleSlotDrop = (slotIndex, event) => {

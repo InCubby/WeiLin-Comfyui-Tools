@@ -155,30 +155,14 @@
       <div class="weilin_prompt_ui_main-scroll">
         <PromptTagEditor
           ref="promptTagEditorRef"
-          :set-parent-cneter-box-ref="setParentCneterBoxRef"
-          :set-input-area-ref="setInputAreaRef"
-          :set-autocomplete-container-ref="setAutocompleteContainerRef"
-          :set-selected-item-ref="setSelectedItemRef"
-          :input-text="inputText"
-          :token-count="tokenCount"
-          :autocomplete-position="autocompletePosition"
-          :adjusted-autocomplete-position="adjustedAutocompletePosition"
-          :show-autocomplete="showAutocomplete"
-          :save-auto-complete-width="saveAutoCompleteWidth"
-          :save-auto-complete-height="saveAutoCompleteHeight"
-          :autocomplete-results="autocompleteResults"
-          :selected-autocomplete-index="selectedAutocompleteIndex"
+          :editor-refs="editorRefs"
+          :editor-state="editorState"
+          :editor-handlers="editorHandlers"
           :is-translate-tag-enabled="isTranslateTagEnabled"
           :is-delete-button-enabled="isDeleteButtonEnabled"
           :is-clear-all-enabled="isClearAllEnabled"
           :is-clear-disabled-enabled="isClearDisabledEnabled"
           :tokens="tokens"
-          :handle-input="handleInput"
-          :handle-keydown="handleKeydown"
-          :on-blur="onBlur"
-          :save-textarea-height="saveTextareaHeight"
-          :close-autocomplete="closeAutocomplete"
-          :select-autocomplete="selectAutocomplete"
           :is-text-translatable="isTextTranslatable"
           @clear-all="clearAllPrompt"
           @clear-disabled="clearDisabledTags"
@@ -290,6 +274,31 @@ const setSelectedItemRef = (el) => {
 }
 const saveAutoCompleteWidth = ref(localStorage.getItem('weilin_prompt_ui_auto_box_width') || 450);
 const saveAutoCompleteHeight = ref(localStorage.getItem('weilin_prompt_ui_auto_box_height') || 350);
+
+const editorRefs = {
+  setParentCneterBoxRef,
+  setInputAreaRef,
+  setAutocompleteContainerRef,
+  setSelectedItemRef
+}
+
+const editorState = computed(() => ({
+  inputText,
+  tokenCount,
+  autocompletePosition,
+  adjustedAutocompletePosition,
+  showAutocomplete,
+  saveAutoCompleteWidth,
+  saveAutoCompleteHeight,
+  autocompleteResults,
+  selectedAutocompleteIndex
+}))
+
+const editorHandlers = computed(() => ({
+  handleInput,
+  onBlur,
+  selectAutocomplete
+}))
 
 const showTagTipsBox = ref(false);
 const tagTipsPosition = ref({
@@ -1811,14 +1820,6 @@ const updateAutocompletePosition = () => {
   }
 };
 
-// 保存文本区域高度到localStorage
-const saveTextareaHeight = () => {
-  if (inputAreaRef.value) {
-    const height = inputAreaRef.value.style.height || `${inputAreaRef.value.offsetHeight}px`;
-    localStorage.setItem('weilinPromptTextAreaHeight', height);
-  }
-};
-
 // 从localStorage恢复文本区域高度
 const restoreTextareaHeight = () => {
   const savedHeight = localStorage.getItem('weilinPromptTextAreaHeight');
@@ -1963,53 +1964,6 @@ const triggerAutocomplete = (inputValue) => {
     console.error('Autocomplete error:', error);
     showAutocomplete.value = false;
   }
-};
-
-// 处理键盘事件
-const handleKeydown = (event) => {
-  if (showAutocomplete.value) {
-    if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      selectedAutocompleteIndex.value = Math.min(selectedAutocompleteIndex.value + 1, autocompleteResults.value.length - 1);
-      scrollToSelectedItem();
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault();
-      selectedAutocompleteIndex.value = Math.max(selectedAutocompleteIndex.value - 1, 0);
-      scrollToSelectedItem();
-    } else if (event.key === 'Tab' || event.key === 'Enter') {
-      event.preventDefault();
-      selectAutocomplete(selectedAutocompleteIndex.value, null, true);
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      closeAutocomplete();
-    }
-  }
-};
-
-// 添加滚动到选中项的函数
-const scrollToSelectedItem = () => {
-  nextTick(() => {
-    if (selectedItemRef.value && autocompleteContainerRef.value) {
-      const container = autocompleteContainerRef.value;
-      const selectedItem = selectedItemRef.value;
-
-      // 获取容器和选中项的位置信息
-      const containerRect = container.getBoundingClientRect();
-      const selectedRect = selectedItem.getBoundingClientRect();
-
-      // 判断选中项是否在可视区域内
-      const isAbove = selectedRect.top < containerRect.top;
-      const isBelow = selectedRect.bottom > containerRect.bottom;
-
-      if (isAbove) {
-        // 如果选中项在可视区域上方，滚动到顶部
-        container.scrollTop = container.scrollTop + (selectedRect.top - containerRect.top);
-      } else if (isBelow) {
-        // 如果选中项在可视区域下方，滚动到底部
-        container.scrollTop = container.scrollTop + (selectedRect.bottom - containerRect.bottom);
-      }
-    }
-  });
 };
 
 // 计算调整后的自动补全位置
