@@ -12,7 +12,8 @@
         'token-item-box-disabled': token.isHidden,
         'token-item-box-drag-source': isDragSource,
         'token-item-box-dragging': isDragging,
-        'token-item-box-drop-target': showDropIndicator
+        'token-item-box-drop-target': showDropIndicator,
+        'token-item-box-selected': isSelected
       }"
       @dragstart="emit('drag-start', index, $event)"
       @dragend="emit('drag-end', index, $event)"
@@ -35,22 +36,7 @@
     </div>
 
     <div
-      v-else-if="token.isLoraTag"
-      class="lora-tag-icon"
-      :title="t('promptBox.loraTag')"
-      @mouseenter="emit('show-controls', index, $event)"
-      @mouseleave="emit('mouse-leave', index)"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15">
-        <path
-          d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"
-        />
-      </svg>
-      <span style="margin-left: 5px;">{{ token.text }}</span>
-    </div>
-
-    <div
-      v-else-if="token.text && !token.isLoraTag"
+      v-else-if="token.text"
       class="token-item"
       :class="{ punctuation: token.isPunctuation }"
       @mouseenter="emit('show-controls', index, $event)"
@@ -85,7 +71,7 @@
 
       <div
         class="translation-result"
-        v-if="token.text !== '\n' && token.text !== '\t' && !token.isLoraTag"
+        v-if="token.text !== '\n' && token.text !== '\t'"
       >
       <div
         v-if="isTextTranslatable(token.text)"
@@ -139,6 +125,10 @@
       default: false
     },
     showDropIndicator: {
+      type: Boolean,
+      default: false
+    },
+    isSelected: {
       type: Boolean,
       default: false
     },
@@ -379,18 +369,6 @@
   .quick-delete-btn:hover {
     opacity: 1;
     background: rgb(255 77 79 / 0.1);
-  }
-
-  .lora-tag-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    margin-right: 4px;
-  }
-
-  .lora-tag-icon svg {
-    fill: #a7a8a9;
   }
 
   .token-item-box-disabled {

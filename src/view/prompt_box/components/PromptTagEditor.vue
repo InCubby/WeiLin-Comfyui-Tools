@@ -127,13 +127,23 @@
       </button>
     </div>
 
-    <div class="tokens-container" v-if="tokens.length > 0">
+    <div
+      ref="tokensContainerRef"
+      class="tokens-container"
+      v-if="tokens.length > 0"
+      @mousedown="handleSelectionMouseDown"
+      @mousemove="handleSelectionMouseMove"
+      @mouseup="handleSelectionMouseUp"
+      @mouseleave="handleSelectionMouseUp"
+    >
+      <div v-if="isSelecting" class="selection-box" :style="selectionBoxStyle"></div>
       <template v-for="(token, index) in tokens" :key="'tag-wrapper-' + index">
         <PromptTagItem
           :token="token"
           :index="index"
           :is-drag-source="isDragging && dragStartIndex === index"
           :is-dragging="isDragging"
+          :is-selected="isTokenSelected(index)"
           :show-drop-indicator="shouldShowDropIndicator(index)"
           :show-delete-button="showDeleteButton"
           :is-text-translatable="isTextTranslatable"
@@ -160,6 +170,44 @@
       ></div>
     </div>
 
+    <div
+      v-show="showSelectionActions"
+      class="token-controls selection-actions-controls"
+      :style="selectionActionsPosition"
+      @mouseenter="isOverSelectionActions = true"
+      @mouseleave="handleSelectionActionsLeave"
+    >
+      <div class="weilin-comfyui-selection-actions-content">
+        <div class="weilin-comfyui-selection-actions-count">选中 {{ selectedTokens.length }} 个标签</div>
+        <div class="weilin-comfyui-selection-actions-buttons">
+          <button class="delete-btn copy-btn" @click="copySelectedTokens" title="复制">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+            </svg>
+          </button>
+          <button class="delete-btn" @click="disableSelectedTokens" title="禁用">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" fill="none" stroke="#ff4d4f" stroke-width="2" />
+              <path d="M8.5 8.5l7 7" stroke="#ff4d4f" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+          <button class="delete-btn enable-btn" @click="enableSelectedTokens" title="启用">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+            </svg>
+          </button>
+          <button class="delete-btn" @click="deleteSelectedTokens" title="删除">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div v-if="showTagTipsBox" class="tag-tips-box" :style="tagTipsPosition">
       <div class="tag-tips-content">
         <p v-html="t('promptBox.tagTips')"></p>
@@ -173,20 +221,9 @@
       @mouseenter="isOverControls = true"
       @mouseleave="handleControlsLeave"
     >
-      <div class="weight-control" v-if="!tokens[activeControls]?.isLoraTag">
+      <div class="weight-control">
         <input type="number" v-model.number="weightValue" step="0.1" class="weight-input" @change="applyWeight" />
         <span class="weight-label">{{ t('promptBox.weight') }}</span>
-      </div>
-
-      <div class="lora-weight-controls" v-if="tokens[activeControls]?.isLoraTag">
-        <div class="weight-control">
-          <input type="number" v-model.number="loraModelWeight" step="0.1" class="weight-input" @change="applyLoraWeights" />
-          <span class="weight-label">{{ t('promptBox.modelWeight') }}</span>
-        </div>
-        <div class="weight-control">
-          <input type="number" v-model.number="loraTextWeight" step="0.1" class="weight-input" @change="applyLoraWeights" />
-          <span class="weight-label">{{ t('promptBox.textWeight') }}</span>
-        </div>
       </div>
 
       <button class="favour-btn" @click="openFavourTag(tokens[activeControls])" :title="t('promptBox.favour')">
@@ -201,7 +238,7 @@
         </svg>
       </button>
 
-      <div class="bracket-btn-group" v-if="!tokens[activeControls]?.isLoraTag">
+      <div class="bracket-btn-group">
         <div class="bracket-btn-container">
           <div class="bracket-btn">()</div>
           <div class="vertical-btn-group">
@@ -240,7 +277,7 @@
 </template>
 
 <script setup>
-import { onBeforeUpdate, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onBeforeUpdate, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { translatorApi } from '@/api/translator'
 import message from '@/utils/message'
@@ -303,12 +340,34 @@ const controlsPosition = ref({ top: '0px', left: '0px' })
 const showTagTipsBox = ref(false)
 const tagTipsPosition = ref({ top: '0px', left: '0px' })
 const weightValue = ref(1)
-const loraModelWeight = ref(0.5)
-const loraTextWeight = ref(0.5)
 const hideTimeout = ref(null)
 const tokenInputRefs = {}
 const tokenIdCounter = ref(0)
 const favourItemRef = ref(null)
+const tokensContainerRef = ref(null)
+
+const isPotentialSelection = ref(false)
+const isSelecting = ref(false)
+const selectionStart = ref({ x: 0, y: 0 })
+const selectionEnd = ref({ x: 0, y: 0 })
+const selectedTokens = ref([])
+const showSelectionActions = ref(false)
+const selectionActionsPosition = ref({ top: '0px', left: '0px' })
+const isOverSelectionActions = ref(false)
+
+const selectedTokenSet = computed(() => new Set(selectedTokens.value))
+const selectionBoxStyle = computed(() => {
+  const left = Math.min(selectionStart.value.x, selectionEnd.value.x)
+  const top = Math.min(selectionStart.value.y, selectionEnd.value.y)
+  const width = Math.abs(selectionEnd.value.x - selectionStart.value.x)
+  const height = Math.abs(selectionEnd.value.y - selectionStart.value.y)
+  return {
+    left: `${left}px`,
+    top: `${top}px`,
+    width: `${width}px`,
+    height: `${height}px`
+  }
+})
 
 const BRACKET_MAP = Object.freeze({
   '(': ')',
@@ -441,9 +500,7 @@ const showControls = (index, event) => {
     top: `${rect.bottom + window.scrollY + rect.height + 10}px`,
     left: `${rect.left + rect.width / 2}px`
   }
-  if (!props.tokens[index].isLoraTag) {
-    showTagTipsBox.value = true
-  }
+  showTagTipsBox.value = true
 }
 
 const hideControls = () => {
@@ -557,7 +614,7 @@ const toggleHidden = (index) => {
   if (index < 0 || index >= props.tokens.length) return
   if (props.tokens[index].text === '\n' || props.tokens[index].text === '\t') return
   props.tokens[index].isHidden = !props.tokens[index].isHidden
-  props.tokens[index].hiddenHint = props.tokens[index].isHidden ? props.t('promptBox.hiddenHint') : ''
+  props.tokens[index].hiddenHint = props.tokens[index].isHidden ? t('promptBox.hiddenHint') : ''
 }
 
 const applyWeight = () => {
@@ -613,16 +670,6 @@ const applyWeight = () => {
   props.tokens[activeControls.value].text = newText
 }
 
-const applyLoraWeights = () => {
-  if (activeControls.value === null || !props.tokens[activeControls.value]?.isLoraTag) return
-  const token = props.tokens[activeControls.value]
-  const match = token.text.match(/<wlr:([^:]+):([^:]+):([^>]+)>/)
-  if (!match) return
-
-  const loraName = match[1]
-  token.text = `<wlr:${loraName}:${loraModelWeight.value}:${loraTextWeight.value}>`
-}
-
 const wrapWith = (bracketType) => {
   if (activeControls.value === null || !props.tokens[activeControls.value]) return
   const bracketPair = BRACKET_MAP[bracketType]
@@ -641,6 +688,208 @@ const openFavourTag = (tokenInfo) => {
   if (favourItemRef.value && tokenInfo) {
     favourItemRef.value.open(tokenInfo.text, tokenInfo.translate)
   }
+}
+
+const isTokenSelected = (index) => selectedTokenSet.value.has(index)
+
+const getContainerPointer = (event) => {
+  const container = tokensContainerRef.value
+  if (!container) return { x: 0, y: 0 }
+  const rect = container.getBoundingClientRect()
+  return {
+    x: Math.min(Math.max(event.clientX - rect.left, 0), rect.width),
+    y: Math.min(Math.max(event.clientY - rect.top, 0), rect.height)
+  }
+}
+
+const getSelectionBounds = () => {
+  const left = Math.min(selectionStart.value.x, selectionEnd.value.x)
+  const top = Math.min(selectionStart.value.y, selectionEnd.value.y)
+  const right = Math.max(selectionStart.value.x, selectionEnd.value.x)
+  const bottom = Math.max(selectionStart.value.y, selectionEnd.value.y)
+  return { left, top, right, bottom }
+}
+
+const updateSelectedTokensFromBox = () => {
+  const container = tokensContainerRef.value
+  if (!container) return
+
+  const containerRect = container.getBoundingClientRect()
+  const scrollLeft = container.scrollLeft || 0
+  const scrollTop = container.scrollTop || 0
+  const bounds = getSelectionBounds()
+  const nextSelected = []
+
+  const tokenBoxes = container.querySelectorAll('.token-item-box')
+  tokenBoxes.forEach((box, index) => {
+    const rect = box.getBoundingClientRect()
+    const boxLeft = rect.left - containerRect.left + scrollLeft
+    const boxTop = rect.top - containerRect.top + scrollTop
+    const boxRight = boxLeft + rect.width
+    const boxBottom = boxTop + rect.height
+    const isIntersecting = (
+      boxRight >= bounds.left &&
+      boxLeft <= bounds.right &&
+      boxBottom >= bounds.top &&
+      boxTop <= bounds.bottom
+    )
+    if (isIntersecting) {
+      nextSelected.push(index)
+    }
+  })
+
+  selectedTokens.value = nextSelected
+}
+
+const clearSelectedTokens = () => {
+  selectedTokens.value = []
+  showSelectionActions.value = false
+}
+
+const closeSelectionActions = () => {
+  showSelectionActions.value = false
+  selectedTokens.value = []
+}
+
+const showSelectionActionsMenu = () => {
+  if (!selectedTokens.value.length) {
+    showSelectionActions.value = false
+    return
+  }
+  const containerRect = tokensContainerRef.value?.getBoundingClientRect()
+  if (!containerRect) {
+    showSelectionActions.value = false
+    return
+  }
+  const bounds = getSelectionBounds()
+  selectionActionsPosition.value = {
+    top: `${Math.max(containerRect.top + bounds.top - 50, 0)}px`,
+    left: `${containerRect.left + (bounds.left + bounds.right) / 2}px`
+  }
+  showSelectionActions.value = true
+}
+
+const handleSelectionMouseDown = (event) => {
+  if (event.button !== 0 || event.ctrlKey || event.metaKey || isDragging.value) return
+
+  const interactiveTarget = event.target.closest(
+    '.token-item-box, .token-item, .newline-token, .tab-token, .delete-btn, .weight-control, .bracket-btn, .translate-button, .tag-tips-box, .token-controls'
+  )
+  if (interactiveTarget) return
+
+  const point = getContainerPointer(event)
+  selectionStart.value = point
+  selectionEnd.value = point
+  isPotentialSelection.value = true
+  isSelecting.value = false
+  closeSelectionActions()
+}
+
+const handleSelectionMouseMove = (event) => {
+  if (!isPotentialSelection.value && !isSelecting.value) return
+
+  const point = getContainerPointer(event)
+  if (isPotentialSelection.value && !isSelecting.value) {
+    const dx = point.x - selectionStart.value.x
+    const dy = point.y - selectionStart.value.y
+    if (Math.sqrt(dx * dx + dy * dy) <= 3) return
+    isSelecting.value = true
+    selectedTokens.value = []
+  }
+
+  if (!isSelecting.value) return
+  event.preventDefault()
+  selectionEnd.value = point
+  updateSelectedTokensFromBox()
+}
+
+const handleSelectionMouseUp = () => {
+  if (isPotentialSelection.value && !isSelecting.value) {
+    clearSelectedTokens()
+  }
+  isPotentialSelection.value = false
+
+  if (!isSelecting.value) return
+  isSelecting.value = false
+  showSelectionActionsMenu()
+}
+
+const handleSelectionActionsLeave = () => {
+  isOverSelectionActions.value = false
+}
+
+const handleSelectionActionsOutsideClick = (event) => {
+  if (!showSelectionActions.value) return
+  const isInsideActions = event.target.closest('.selection-actions-controls')
+  if (isInsideActions) return
+  const isInsideTokensContainer = tokensContainerRef.value?.contains?.(event.target)
+  if (!isInsideTokensContainer || !event.target.closest('.token-item-box')) {
+    clearSelectedTokens()
+  }
+}
+
+const copySelectedTokens = async () => {
+  if (!selectedTokens.value.length) return
+  const text = [...selectedTokens.value]
+    .sort((a, b) => a - b)
+    .map(index => props.tokens[index]?.text || '')
+    .filter(Boolean)
+    .join(', ')
+
+  if (!text) {
+    closeSelectionActions()
+    return
+  }
+
+  try {
+    await navigator.clipboard.writeText(text)
+  } catch {
+    // Ignore clipboard failure and keep behavior non-blocking.
+  }
+  closeSelectionActions()
+}
+
+const disableSelectedTokens = () => {
+  if (!selectedTokens.value.length) return
+  for (const index of selectedTokens.value) {
+    const token = props.tokens[index]
+    if (!token || token.text === '\n' || token.text === '\t') continue
+    token.isHidden = true
+    token.hiddenHint = t('promptBox.hiddenHint')
+  }
+  closeSelectionActions()
+}
+
+const enableSelectedTokens = () => {
+  if (!selectedTokens.value.length) return
+  for (const index of selectedTokens.value) {
+    const token = props.tokens[index]
+    if (!token) continue
+    token.isHidden = false
+    token.hiddenHint = ''
+  }
+  closeSelectionActions()
+}
+
+const deleteSelectedTokens = () => {
+  if (!selectedTokens.value.length) return
+  if (!confirm(`确定要删除选中的 ${selectedTokens.value.length} 个标签吗？`)) {
+    clearSelectedTokens()
+    return
+  }
+
+  const selectedSet = new Set(selectedTokens.value)
+  const sortedIndices = [...selectedTokens.value].sort((a, b) => b - a)
+  for (const index of sortedIndices) {
+    if (index >= 0 && index < props.tokens.length) {
+      props.tokens.splice(index, 1)
+    }
+  }
+
+  if (activeControls.value !== null && selectedSet.has(activeControls.value)) {
+    activeControls.value = null
+  }
+  closeSelectionActions()
 }
 
 const isDragging = ref(false)
@@ -729,6 +978,7 @@ const handleDragStart = (index, event) => {
     event.preventDefault()
     return
   }
+  clearSelectedTokens()
   initializeDragState(index)
   try {
     // Some browsers require setData to start native HTML5 drag behavior.
@@ -784,8 +1034,7 @@ const oneClickTranslatePrompt = async () => {
     const token = tokenList[i]
     if (
       token.translate &&
-      (token.translate === token.text || /[a-zA-Z]/.test(token.translate)) &&
-      !(typeof token.text === 'string' && token.text.startsWith('<wlr'))
+      (token.translate === token.text || /[a-zA-Z]/.test(token.translate))
     ) {
       totalCount++
     }
@@ -800,8 +1049,7 @@ const oneClickTranslatePrompt = async () => {
       const token = tokenList[i]
       if (
         token.translate &&
-        (token.translate === token.text || /[a-zA-Z]/.test(token.translate)) &&
-        !(typeof token.text === 'string' && token.text.startsWith('<wlr'))
+        (token.translate === token.text || /[a-zA-Z]/.test(token.translate))
       ) {
         batchData.push(token.text)
         tokenIndices.push(i)
@@ -881,20 +1129,12 @@ const getPromptText = () => {
   return props.tokens.length > 0 ? buildPromptTextFromTokens() : props.inputText
 }
 
-watch(activeControls, (newVal) => {
-  if (newVal !== null && props.tokens[newVal]?.isLoraTag) {
-    const text = props.tokens[newVal].text
-    const match = text.match(/<wlr:([^:]+):([^:]+):([^>]+)>/)
-    if (match) {
-      loraModelWeight.value = parseFloat(match[2])
-      loraTextWeight.value = parseFloat(match[3])
-    }
-  }
-})
-
 watch(() => props.tokens.length, (len) => {
   if (activeControls.value !== null && activeControls.value >= len) {
     activeControls.value = null
+  }
+  if (selectedTokens.value.some(index => index >= len)) {
+    clearSelectedTokens()
   }
 })
 
@@ -906,10 +1146,12 @@ onBeforeUpdate(() => {
 
 onMounted(() => {
   window.addEventListener('storage', handleStorageChange)
+  document.addEventListener('click', handleSelectionActionsOutsideClick)
 })
 
 onUnmounted(() => {
   window.removeEventListener('storage', handleStorageChange)
+  document.removeEventListener('click', handleSelectionActionsOutsideClick)
   if (hideTimeout.value) {
     clearTimeout(hideTimeout.value)
     hideTimeout.value = null
@@ -941,6 +1183,19 @@ defineExpose({
   position: relative;
   column-gap: 9px;
   row-gap: 8px;
+}
+
+.selection-box {
+  position: absolute;
+  border: 2px dashed #4285f4;
+  background-color: rgb(66 133 244 / 0.2);
+  box-shadow: 0 0 8px rgb(66 133 244 / 0.3);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.selection-actions-controls {
+  z-index: 1200;
 }
 
 .token-drop-end-zone {

@@ -21,9 +21,6 @@
       <div class="weilin_prompt_ui_menu-item" @click="handleMenuItemClick('item2')">
         {{ t('floatingBall.tagManager') }}
       </div>
-      <div class="weilin_prompt_ui_menu-item" @click="handleMenuItemClick('item3')">
-        {{ t('floatingBall.loraManager') }}
-      </div>
       <div class="weilin_prompt_ui_menu-item" @click="handleMenuItemClick('item4')">
         {{ t('floatingBall.aiWindow') }}
       </div>
@@ -248,14 +245,6 @@
         window.parent.postMessage(
           {
             type: 'weilin_prompt_ui_open_global_tag_manager'
-          },
-          '*'
-        )
-        break
-      case 'item3':
-        window.parent.postMessage(
-          {
-            type: 'weilin_prompt_ui_open_global_lora_manager'
           },
           '*'
         )

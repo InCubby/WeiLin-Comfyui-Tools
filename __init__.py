@@ -1,18 +1,12 @@
 # 导入后端服务路由（导入即注册）
 from .app.server import prompt_server as _prompt_server  # noqa: F401
-from .app.nodes import (
-    WeiLinPromptUI,
-    WeiLinPromptUIOnlyLoraStack,
-    WeiLinPromptUIWithoutLora,
-)
+from .app.nodes import WeiLinPromptUI
 from .app.utils.node_locale_utils import NodeLocaleUtils
 
 # A dictionary that contains all nodes you want to export with their names
 # NOTE: names should be globally unique
 NODE_CLASS_MAPPINGS = {
     "WeiLinPromptUI": WeiLinPromptUI,
-    "WeiLinPromptUIWithoutLora": WeiLinPromptUIWithoutLora,
-    "WeiLinPromptUIOnlyLoraStack": WeiLinPromptUIOnlyLoraStack,
 }
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes

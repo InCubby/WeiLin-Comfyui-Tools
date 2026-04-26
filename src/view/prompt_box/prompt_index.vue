@@ -5,9 +5,6 @@
       <div v-if="toastVisible" class="weilin-toast" role="status" aria-live="polite">已更新标签</div>
     </transition>
 
-    <!-- Lora栈 -->
-    <LoraStack v-if="props.promptManager === 'prompt'" :is-open="loraOpen" :selected-loras="selectedLoras"
-      @close="closeLora" />
     <!-- 主标签管理器（左侧边栏） -->
     <!-- <MainLabelManager ref="mainLabelManagerRef" :selected-id="selectedMainLabelId" @select="onSelectMainLabel" /> -->
     <MainLabelManager v-if="isLabelManagerVisible" ref="mainLabelManagerRef" :selected-id="selectedMainLabelId"
@@ -89,17 +86,6 @@
                 d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z" />
             </svg>
             <span class="action-text">{{ t('controls.danbooruManager') }}</span>
-          </button>
-        </div>
-
-        <div class="action-item" v-if="props.hasPromptLoraStack">
-          <button class="tag-manager-btn" @click="toggleLora" :title="t('controls.loraStack')">
-            <svg sxmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" class="tag-icon" width="24" height="24">
-              <path
-                d="M902.5 485.1c-59-17.5-113.8-3.4-155 27.7V365.1c0-45.2-36.9-82.1-82.1-82.1H511.2c31.1-41.2 45.2-96 27.7-155C522.2 71.6 475 26.1 418 12 303.4-16.5 200.9 69.4 200.9 179.3c0 39.1 13.5 74.7 35.3 103.7H82.1C36.9 283 0 319.9 0 365.1v113.1c0 25.5 27.9 38.8 49.5 25.3 38.8-24.3 87.8-33.6 139.4-19.5 57 15.6 103.4 62.5 118.4 119.7 30.1 115.5-56.2 219.4-166.8 219.4-33.5 0-64.7-9.6-91.1-26.2C27.8 783.4 0 796.8 0 822.2v113.2c0 45.2 36.9 82.1 82.1 82.1h583.3c45.2 0 82.1-36.9 82.1-82.1V787.7c29 21.9 64.6 35.3 103.7 35.3 109.9 0 195.8-102.5 167.3-217.1-14.1-56.9-59.7-104.1-116-120.8z">
-              </path>
-            </svg>
-            <span class="action-text">{{ t('controls.loraStack') }}</span>
           </button>
         </div>
 
@@ -198,39 +184,6 @@
           @clear-disabled="clearDisabledTags"
         />
 
-      <div v-show="showSelectionActions" class="token-controls" :style="selectionActionsPosition"
-        @mouseenter="isOverControls = true" @mouseleave="handleControlsLeave">
-        <div class="weilin-comfyui-selection-actions-content">
-          <div class="weilin-comfyui-selection-actions-count">选中 {{ selectedTokens.length }} 个标签</div>
-          <div class="weilin-comfyui-selection-actions-buttons">
-            <button class="delete-btn copy-btn" @click="copySelectedTokens" title="复制">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
-              </svg>
-            </button>
-            <button class="delete-btn" @click="disableSelectedTokens" title="禁用">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" fill="none" stroke="#ff4d4f" stroke-width="2" />
-                <path d="M8.5 8.5l7 7" stroke="#ff4d4f" stroke-width="2" stroke-linecap="round" />
-              </svg>
-            </button>
-            <button class="delete-btn enable-btn" @click="enableSelectedTokens" title="启用">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-              </svg>
-            </button>
-            <button class="delete-btn" @click="deleteSelectedTokens" title="删除">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
       <!-- 标签管理器容器 -->
       <div class="tag-manager-section">
         <div class="tag-manager-header" @click="toggleTagManager">
@@ -266,7 +219,6 @@ import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import SettingDialog from './components/setting_dialog.vue'
 import ThemeSwitch from '@/components/ThemeSwitch.vue'
 import TagManager from '@/view/tag_manager/tag_index.vue'  // 导入 TagManager 组件
-import LoraStack from './components/lora_stack.vue'
 import PromptTagEditor from './components/PromptTagEditor.vue'
 import MainLabelManager from './components/main_label_manager.vue'
 import { translatorApi } from '@/api/translator'
@@ -300,10 +252,6 @@ const props = defineProps({
     type: String,
     default: 'prompt_global'
   },
-  hasPromptLoraStack: {
-    type: Boolean,
-    default: false
-  },
 })
 
 const parentCneterBox = ref(null)
@@ -332,10 +280,6 @@ const settingDialog = ref(null)
 const langBtnRef = ref(null)
 const languageSwitcherRef = ref(null)
 
-// Lora选择信息
-const selectedLoras = ref([])
-const loraOpen = ref(false)
-
 // 添加自动补全相关的 ref
 const showAutocomplete = ref(false);
 const autocompleteResults = ref([]);
@@ -346,25 +290,6 @@ const setSelectedItemRef = (el) => {
 }
 const saveAutoCompleteWidth = ref(localStorage.getItem('weilin_prompt_ui_auto_box_width') || 450);
 const saveAutoCompleteHeight = ref(localStorage.getItem('weilin_prompt_ui_auto_box_height') || 350);
-
-
-// 框选功能相关变量
-const isSelecting = ref(false)
-const selectionStart = ref({ x: 0, y: 0 })
-const selectionEnd = ref({ x: 0, y: 0 })
-const selectedTokens = ref([])
-const selectionBoxId = 'weilin-selection-box'
-const tokensContainerRef = ref(null)
-const isBoxSelectMode = ref(false) // 标记当前是否在框选模式
-const isPotentialBoxSelection = ref(false) // 标记潜在的框选操作，用于区分点击和拖动
-const showSelectionActions = ref(false)
-const selectionActionsPosition = ref({ top: '0px', left: '0px' })
-// 用于防止更新操作频繁触发的标志
-const isUpdatingSelectionBox = ref(false) // 控制选择框更新
-const isUpdatingSelectedTokens = ref(false) // 控制标签选中状态更新
-// 用于节流的时间戳
-const lastUpdateTime = ref(0)
-const throttleInterval = 16 // 约60fps
 
 const showTagTipsBox = ref(false);
 const tagTipsPosition = ref({
@@ -458,14 +383,6 @@ const generateUniqueId = () => {
   return `token_${tokenIdCounter.value}_${Date.now()}`;
 };
 
-const toggleLora = () => {
-  loraOpen.value = !loraOpen.value
-}
-
-const closeLora = () => {
-  loraOpen.value = false
-}
-
 // 左侧主标签管理器交互与主内容宽度计算
 const mainLabelManagerRef = ref(null)
 const promptTagEditorRef = ref(null)
@@ -478,13 +395,9 @@ const MAIN_LABELS_STORAGE_KEY = 'weilin_prompt_ui_main_labels_v1'
 const mainContentWidth = computed(() => {
   // 根据 isLabelManagerVisible 决定左侧标签管理器的宽度
   const labelManagerWidth = isLabelManagerVisible.value ? 280 : 0;
-  const left = (loraOpen.value ? 300 : 0) + labelManagerWidth; // Lora(可变) + 主标签管理器(可变)
+  const left = labelManagerWidth;
   return `calc(100% - ${left}px)`;
 });
-// const mainContentWidth = computed(() => {
-//   const left = (loraOpen.value ? 300 : 0) + 280 // Lora(可变) + 主标签管理器(固定)
-//   return `calc(100% - ${left}px)`
-// })
 
 let suppressUnsavedOnce = false
 const onSelectMainLabel = (item) => {
@@ -738,48 +651,6 @@ const applyWeight = () => {
   tokens.value[activeControls.value].text = newText;
   updateInputText();
 };
-
-
-// Lora权重控制
-const loraModelWeight = ref(0.5);
-const loraTextWeight = ref(0.5);
-const setLoraModelWeight = (value) => {
-  loraModelWeight.value = value
-}
-const setLoraTextWeight = (value) => {
-  loraTextWeight.value = value
-}
-
-// 当选择一个Lora标签时，解析其权重
-watch(activeControls, (newVal) => {
-  if (newVal !== null && tokens.value[newVal]?.isLoraTag) {
-    // 解析Lora标签格式 <wlr:LoraName:weight1:weight2>
-    const text = tokens.value[newVal].text;
-    const match = text.match(/<wlr:([^:]+):([^:]+):([^>]+)>/);
-    if (match) {
-      loraModelWeight.value = parseFloat(match[2]);
-      loraTextWeight.value = parseFloat(match[3]);
-    }
-  }
-});
-
-// 应用Lora权重
-const applyLoraWeights = () => {
-  if (activeControls.value !== null && tokens.value[activeControls.value]?.isLoraTag) {
-    const token = tokens.value[activeControls.value];
-    const match = token.text.match(/<wlr:([^:]+):([^:]+):([^>]+)>/);
-    if (match) {
-      const loraName = match[1];
-      // 创建新的Lora标签文本
-      const newText = `<wlr:${loraName}:${loraModelWeight.value}:${loraTextWeight.value}>`;
-      // 更新token文本
-      token.text = newText;
-      // 更新输入文本
-      updateInputText();
-    }
-  }
-};
-
 
 // 修改wrapWith函数
 const wrapWith = (bracketType) => {
@@ -1338,17 +1209,11 @@ const processInput = async () => {
     } else if (segment.trim()) {
       // 处理非空文本
       const trimmedSegment = segment.trim();
-      // 检查是否是Lora标签格式 <wlr:LoraName:weight1:weight2>
-      const isLoraTag = /^<wlr:[^:]+:\d+(\.\d+)?:\d+(\.\d+)?>$/.test(trimmedSegment);
 
       // 优先匹配非隐藏的token
       let matched = false;
       for (const [index, token] of existingTokensMap) {
         if (token.text === trimmedSegment && !token.isHidden && !result.includes(token)) {
-          // 如果是已存在的token，确保更新其Lora标签状态
-          if (isLoraTag && !token.isLoraTag) {
-            token.isLoraTag = true;
-          }
           result.push(token);
           existingTokensMap.delete(index);
           matched = true;
@@ -1360,10 +1225,6 @@ const processInput = async () => {
       if (!matched) {
         for (const [index, token] of existingTokensMap) {
           if (token.text === trimmedSegment && !result.includes(token)) {
-            // 如果是已存在的token，确保更新其Lora标签状态
-            if (isLoraTag && !token.isLoraTag) {
-              token.isLoraTag = true;
-            }
             result.push(token);
             existingTokensMap.delete(index);
             matched = true;
@@ -1380,8 +1241,7 @@ const processInput = async () => {
           isPunctuation: false,
           isEditing: false,
           isHidden: false,
-          color: '',
-          isLoraTag: isLoraTag // 添加Lora标签标识
+          color: ''
         });
       }
     }
@@ -1545,36 +1405,15 @@ const finishPromptPutItHistory = () => {
   // console.log('finishPromptPutItHistory 被调用', new Error().stack);
   // 去除空格、换行和制表符
   const trimmedInput = inputText.value.replace(/[\s\t\n]+/g, '');
-  if (selectedLoras.value.length > 0) {
-    if (trimmedInput.length > 0) {
-      const tempLora = selectedLoras.value.filter(lora => !lora.hidden);
-      let putJson = {
-        prompt: inputText.value,
-        lora: "",
-        temp_prompt: tokens.value,
-        temp_lora: selectedLoras.value
-      }
-      if (tempLora.length > 0) {
-        putJson.lora = tempLora
-      }
-      const jsonStr = JSON.stringify(putJson)
-      if (tempInputText.value != jsonStr) {
-        tempInputText.value = jsonStr
-        historyApi.saveHistory({ tag: jsonStr })
-      }
+  if (trimmedInput.length > 0) {
+    const putJson = {
+      prompt: inputText.value,
+      temp_prompt: tokens.value
     }
-  } else {
-    if (tempInputText.value != inputText.value) {
-      const putJson = {
-        prompt: inputText.value,
-        lora: "",
-        temp_prompt: tokens.value,
-        temp_lora: ""
-      }
-      const jsonStr = JSON.stringify(putJson)
-      if (trimmedInput.length > 0) {
-        historyApi.saveHistory({ tag: jsonStr })
-      }
+    const jsonStr = JSON.stringify(putJson)
+    if (tempInputText.value != jsonStr) {
+      tempInputText.value = jsonStr
+      historyApi.saveHistory({ tag: jsonStr })
     }
   }
   postMessageToWindowsPrompt()
@@ -1582,49 +1421,21 @@ const finishPromptPutItHistory = () => {
 }
 
 const postMessageToWindowsPrompt = () => {
-  if (selectedLoras.value.length > 0) {
-    tempInputText.value = inputText.value
-    const tempLora = selectedLoras.value.filter(lora => !lora.hidden);
-    let putJson = {
-      prompt: inputText.value,
-      lora: "",
-      temp_prompt: tokens.value,
-      temp_lora: selectedLoras.value
-    }
-    if (tempLora.length > 0) {
-      putJson.lora = tempLora
-    }
-    const jsonStr = JSON.stringify(putJson)
-    window.postMessage({
-      type: 'weilin_prompt_ui_prompt_finish_prompt',
-      data: jsonStr
-    }, '*')
-    // console.log('postMessageToWindowsPrompt sent with lora:', jsonStr);
-  } else {
-    tempInputText.value = inputText.value
-    const putJson = {
-      prompt: inputText.value,
-      lora: "",
-      temp_prompt: tokens.value,
-      temp_lora: ""
-    }
-    const jsonStr = JSON.stringify(putJson)
-    window.postMessage({
-      type: 'weilin_prompt_ui_prompt_finish_prompt',
-      data: jsonStr
-    }, '*')
-    // console.log('postMessageToWindowsPrompt sent with lora:', jsonStr);
+  tempInputText.value = inputText.value
+  const putJson = {
+    prompt: inputText.value,
+    temp_prompt: tokens.value
   }
+  const jsonStr = JSON.stringify(putJson)
+  window.postMessage({
+    type: 'weilin_prompt_ui_prompt_finish_prompt',
+    data: jsonStr
+  }, '*')
 }
 
 
 // 显示控制栏
 const showControls = (index, event) => {
-  // 框选模式下不显示控制菜单
-  if (isBoxSelectMode.value) {
-    return;
-  }
-
   // 清除任何现有的定时器
   if (hideTimeout.value) {
     clearTimeout(hideTimeout.value)
@@ -1646,9 +1457,7 @@ const showControls = (index, event) => {
     top: `${rect.bottom + window.scrollY + rect.height + 10}px`,
     left: `${rect.left + rect.width / 2}px`
   };
-  if (!tokens.value[index].isLoraTag) {
-    showTagTipsBox.value = true;
-  }
+  showTagTipsBox.value = true;
 }
 
 
@@ -1699,12 +1508,6 @@ const handleMouseLeave = (index) => {
 const handleControlsLeave = () => {
   isOverControls.value = false
   handleMouseLeave(activeControls.value)
-  // 确保框选模式在离开控制栏后重置
-  setTimeout(() => {
-    if (!isOverControls.value) {
-      isBoxSelectMode.value = false
-    }
-  }, 100)
 }
 
 // 隐藏控制栏
@@ -1929,13 +1732,6 @@ watch(tokens, (newTokens) => {
   updateInputText()
 }, { deep: true })
 
-watch(selectedLoras, (newLoras) => {
-  // console.log(newLoras)
-  // finishPromptPutItHistory()
-  finishPromptPutItHistory()
-  unsavedChanges.value = true
-}, { deep: true })
-
 // 切换语言选择器
 const toggleLanguageSelector = () => {
   showLanguageSelector.value = !showLanguageSelector.value
@@ -2042,538 +1838,11 @@ onMounted(() => {
     restoreTextareaHeight();
   });
 
-  // 添加框选功能的事件监听 - 修复嵌套nextTick问题
-  // 直接在主nextTick后绑定事件，不再使用嵌套的nextTick
-  setTimeout(() => {
-    // 优先通过ref获取元素
-    if (!tokensContainerRef.value) {
-      tokensContainerRef.value = document.querySelector('.tokens-container')
-    }
-
-    if (tokensContainerRef.value) {
-      // 移除可能存在的旧监听器，避免重复绑定
-      tokensContainerRef.value.removeEventListener('mousedown', handleMouseDown)
-      tokensContainerRef.value.removeEventListener('mousemove', handleMouseMove)
-      tokensContainerRef.value.removeEventListener('mouseup', handleMouseUp)
-      tokensContainerRef.value.removeEventListener('mouseleave', handleMouseUp)
-
-      // 重新绑定监听器
-      tokensContainerRef.value.addEventListener('mousedown', handleMouseDown)
-      tokensContainerRef.value.addEventListener('mousemove', handleMouseMove)
-      tokensContainerRef.value.addEventListener('mouseup', handleMouseUp)
-      tokensContainerRef.value.addEventListener('mouseleave', handleMouseUp)
-
-      // 确保容器有合适的样式允许框选
-      tokensContainerRef.value.style.userSelect = 'none';
-      tokensContainerRef.value.style.cursor = 'default';
-
-      console.log('框选功能事件监听器绑定成功')
-    } else {
-      console.warn('未能找到tokens-container元素，框选功能可能无法正常工作')
-    }
-  }, 100); // 短暂延迟确保DOM完全渲染
-})
-
-onBeforeUnmount(() => {
-  // 清理框选功能的事件监听器
-  if (tokensContainerRef.value) {
-    tokensContainerRef.value.removeEventListener('mousedown', handleMouseDown)
-    tokensContainerRef.value.removeEventListener('mousemove', handleMouseMove)
-    tokensContainerRef.value.removeEventListener('mouseup', handleMouseUp)
-    tokensContainerRef.value.removeEventListener('mouseleave', handleMouseUp)
-  }
-  // 移除选择框
-  removeSelectionBox()
-})
-
-
-// 处理鼠标按下事件，开始框选 - 增强稳定版
-const handleMouseDown = (event) => {
-  // 只有在按下左键且没有Ctrl/Cmd键时才开始框选
-  if (event.button === 0 && !event.ctrlKey && !event.metaKey) {
-    // 检查点击目标是否在标签容器内且不是标签本身或控制元素
-    const tokenItem = event.target.closest('.token-item-box, .token-item, .lora-tag-icon, .newline-token, .tab-token, .delete-btn, .weight-control, .bracket-btn, .translate-button, .tag-tips-box, .token-controls')
-    const tokensContainer = tokensContainerRef.value
-
-    // 如果点击的是空白区域，记录起始位置但不立即创建选择框
-    if (tokensContainer && !tokenItem) {
-      // 重置所有相关状态变量，确保开始新的框选操作前状态是干净的
-      isPotentialBoxSelection.value = false
-      isSelecting.value = false
-      isUpdatingSelectionBox.value = false
-      isUpdatingSelectedTokens.value = false
-
-      // 在开始新的框选前，先关闭任何已存在的操作菜单
-      closeSelectionActions()
-
-      // 移除任何可能残留的选择框
-      removeSelectionBox()
-
-      // 获取容器的位置，将选择框限制在容器内
-      const containerRect = tokensContainer.getBoundingClientRect()
-      selectionStart.value = {
-        x: Math.max(event.clientX, containerRect.left),
-        y: Math.max(event.clientY, containerRect.top)
-      }
-      selectionEnd.value = {
-        x: Math.max(event.clientX, containerRect.left),
-        y: Math.max(event.clientY, containerRect.top)
-      }
-
-      // 标记为潜在的框选操作，但不立即开始框选
-      isPotentialBoxSelection.value = true
-
-      // 记录日志以便调试
-      console.log('记录框选起始位置')
-
-      // 正常的左键点击应该允许默认行为，比如让文本框失焦
-      // 不再阻止默认行为和冒泡，以保留正常的左键功能
-    }
-  }
-}
-
-// 处理鼠标移动事件，更新框选区域 - 流畅版
-const handleMouseMove = (event) => {
-  // 如果是潜在的框选操作（已按下鼠标但尚未开始框选）
-  if (isPotentialBoxSelection.value && tokensContainerRef.value && !isSelecting.value) {
-    // 计算鼠标移动的距离
-    const moveDistance = Math.sqrt(
-      Math.pow(event.clientX - selectionStart.value.x, 2) +
-      Math.pow(event.clientY - selectionStart.value.y, 2)
-    )
-
-    // 如果移动距离超过阈值（例如3像素），才真正开始框选
-    if (moveDistance > 3) {
-      // 强制阻止默认行为和冒泡，防止浏览器默认的文本选择
-      event.preventDefault()
-      event.stopPropagation()
-
-      // 进入框选模式
-      isSelecting.value = true
-      isBoxSelectMode.value = true
-
-      // 清空选中的标签
-      selectedTokens.value = []
-
-      // 创建选择框元素
-      createSelectionBox()
-
-      console.log('开始实际框选')
-    }
-  }
-
-  // 已经处于框选模式，更新选择框
-  if (isSelecting.value && tokensContainerRef.value) {
-    // 强制阻止默认行为和冒泡，防止浏览器默认的文本选择
-    event.preventDefault()
-    event.stopPropagation()
-
-    // 获取容器的位置，将选择框限制在容器内
-    const containerRect = tokensContainerRef.value.getBoundingClientRect()
-    selectionEnd.value = {
-      x: Math.min(Math.max(event.clientX, containerRect.left), containerRect.right),
-      y: Math.min(Math.max(event.clientY, containerRect.top), containerRect.bottom)
-    }
-
-    // 确保选择框至少有最小尺寸可见
-    const minSize = 5
-    if (Math.abs(selectionEnd.value.x - selectionStart.value.x) < minSize) {
-      selectionEnd.value.x = selectionStart.value.x + minSize;
-    }
-    if (Math.abs(selectionEnd.value.y - selectionStart.value.y) < minSize) {
-      selectionEnd.value.y = selectionStart.value.y + minSize;
-    }
-
-    // 分离选择框更新和标签选中状态更新
-    // 1. 选择框更新：使用requestAnimationFrame保持流畅动画，不使用节流
-    // 添加防御性检查，确保即使isUpdatingSelectionBox被卡住也能继续更新
-    if (!isUpdatingSelectionBox.value || (Date.now() - lastUpdateTime.value > 100)) {
-      isUpdatingSelectionBox.value = true
-      requestAnimationFrame(() => {
-        updateSelectionBox()
-        isUpdatingSelectionBox.value = false
-      })
-    }
-
-    // 2. 标签选中状态更新：使用节流控制，减少性能消耗
-    const currentTime = Date.now()
-    if (!isUpdatingSelectedTokens.value && (currentTime - lastUpdateTime.value > throttleInterval)) {
-      lastUpdateTime.value = currentTime
-      isUpdatingSelectedTokens.value = true
-      requestAnimationFrame(() => {
-        updateSelectedTokens()
-        isUpdatingSelectedTokens.value = false
-      })
-    }
-  }
-}
-
-// 处理鼠标释放事件，结束框选 - 稳定版
-const handleMouseUp = () => {
-  // 清理潜在的框选状态
-  isPotentialBoxSelection.value = false
-
-  if (isSelecting.value) {
-    // 先保存选中的标签数量，然后才结束框选模式
-    const selectedCount = selectedTokens.value.length
-
-    // 确保所有状态变量都被正确重置
-    isSelecting.value = false
-    isBoxSelectMode.value = false // 退出框选模式
-    isUpdatingSelectionBox.value = false
-    isUpdatingSelectedTokens.value = false
-
-    // 移除选择框
-    removeSelectionBox()
-
-    // 如果有选中的标签，显示操作菜单
-    if (selectedCount > 0) {
-      showSelectionActionsMenu()
-    }
-  }
-}
-
-// 创建选择框元素 - 持久稳定版
-const createSelectionBox = () => {
-  try {
-    // 先检查是否已经有选择框存在
-    let selectionBox = document.getElementById(selectionBoxId)
-    if (selectionBox) {
-      // 如果存在，先移除它
-      document.body.removeChild(selectionBox)
-    }
-
-    // 创建新的选择框
-    selectionBox = document.createElement('div')
-    selectionBox.id = selectionBoxId
-
-    // 增强选择框的可见性，使用更醒目的样式
-    selectionBox.style.cssText = `
-      position: fixed;
-      background-color: rgba(66, 133, 244, 0.4);
-      border: 2px dashed #4285f4;
-      box-shadow: 0 0 12px rgba(66, 133, 244, 0.6);
-      pointer-events: none;
-      z-index: 99999;
-      transition: none;
-      opacity: 1;
-      display: block;
-    `
-
-    document.body.appendChild(selectionBox)
-    console.log('选择框已创建')
-    updateSelectionBox()
-  } catch (error) {
-    console.error('创建选择框失败:', error)
-    // 重置状态，确保后续操作不受影响
-    isUpdatingSelectionBox.value = false
-  }
-}
-
-// 更新选择框位置和大小 - 增强版
-const updateSelectionBox = () => {
-  try {
-    let selectionBox = document.getElementById(selectionBoxId)
-    // 如果选择框不存在，重新创建它
-    if (!selectionBox && isSelecting.value) {
-      createSelectionBox()
-      selectionBox = document.getElementById(selectionBoxId)
-      if (!selectionBox) return
-    }
-
-    const left = Math.min(selectionStart.value.x, selectionEnd.value.x)
-    const top = Math.min(selectionStart.value.y, selectionEnd.value.y)
-    const width = Math.abs(selectionEnd.value.x - selectionStart.value.x)
-    const height = Math.abs(selectionEnd.value.y - selectionStart.value.y)
-
-    // 确保选择框有足够的大小可见
-    const minSize = 5
-    const effectiveWidth = Math.max(width, minSize)
-    const effectiveHeight = Math.max(height, minSize)
-
-    if (selectionBox) {
-      selectionBox.style.left = `${left}px`
-      selectionBox.style.top = `${top}px`
-      selectionBox.style.width = `${effectiveWidth}px`
-      selectionBox.style.height = `${effectiveHeight}px`
-    }
-  } catch (error) {
-    console.error('更新选择框失败:', error)
-    // 重置状态，确保后续操作不受影响
-    isUpdatingSelectionBox.value = false
-  }
-}
-
-// 移除选择框元素
-const removeSelectionBox = () => {
-  try {
-    const selectionBox = document.getElementById(selectionBoxId)
-    if (selectionBox) {
-      document.body.removeChild(selectionBox)
-    }
-  } catch (error) {
-    console.error('移除选择框失败:', error)
-  }
-}
-
-// 更新选中的标签索引（框选时使用）
-const updateSelectedTokens = () => {
-  selectedTokens.value = []
-
-  const left = Math.min(selectionStart.value.x, selectionEnd.value.x)
-  const top = Math.min(selectionStart.value.y, selectionEnd.value.y)
-  const right = Math.max(selectionStart.value.x, selectionEnd.value.x)
-  const bottom = Math.max(selectionStart.value.y, selectionEnd.value.y)
-
-  // 获取所有类型的标签容器元素
-  const tokenBoxes = document.querySelectorAll('.token-item-box')
-
-  tokenBoxes.forEach((box, index) => {
-    // 获取标签内部的实际显示元素
-    const tokenElement = box.querySelector('.token-item, .lora-tag-icon, .newline-token, .tab-token')
-    if (!tokenElement) return
-
-    const rect = box.getBoundingClientRect()
-
-    // 检查标签是否与选择框有交集
-    const isInSelection = rect.right >= left && rect.left <= right && rect.bottom >= top && rect.top <= bottom
-
-    if (isInSelection) {
-      selectedTokens.value.push(index)
-    }
-  })
-
-  // 应用选中样式
-  applySelectedStyle()
-}
-
-// 应用选中标签的视觉效果
-const applySelectedStyle = () => {
-  // 获取所有类型的标签容器元素
-  const tokenBoxes = document.querySelectorAll('.token-item-box')
-
-  // 避免重复操作DOM，先记录需要更新的元素
-  const toSelect = []
-  const toDeselect = []
-
-  tokenBoxes.forEach((box, index) => {
-    if (selectedTokens.value.includes(index)) {
-      toSelect.push(box)
-    } else {
-      toDeselect.push(box)
-    }
-  })
-
-  // 批量更新DOM，减少重排重绘
-  toSelect.forEach(box => {
-    // 为整个标签容器添加选中类，通过CSS优先级确保显示在禁用样式之上
-    box.classList.add('token-item-box-selected')
-  })
-
-  toDeselect.forEach(box => {
-    // 移除视觉反馈
-    box.classList.remove('token-item-box-selected')
-    // 清除之前可能设置的内联样式
-    box.style.border = ''
-    box.style.boxShadow = ''
-    box.style.backgroundColor = box.dataset.originalBgColor || ''
-  })
-}
-
-// 显示框选操作菜单
-const showSelectionActionsMenu = () => {
-  if (selectedTokens.value.length > 0) {
-    // 计算选择区域的中心位置作为菜单显示位置
-    const left = Math.min(selectionStart.value.x, selectionEnd.value.x)
-    const top = Math.min(selectionStart.value.y, selectionEnd.value.y)
-    const right = Math.max(selectionStart.value.x, selectionEnd.value.x)
-    const bottom = Math.max(selectionStart.value.y, selectionEnd.value.y)
-
-    // 设置菜单位置在选择区域中央
-    selectionActionsPosition.value = {
-      top: `${top - 50}px`,
-      left: `${(left + right) / 2}px`
-    }
-
-    showSelectionActions.value = true
-
-    // 添加点击外部关闭菜单的事件监听
-    setTimeout(() => {
-      document.addEventListener('click', closeSelectionActionsOnClickOutside)
-    }, 0)
-  }
-}
-
-// 复制选中的标签文本
-const copySelectedTokens = () => {
-  if (selectedTokens.value.length === 0) return
-
-  // 按顺序获取选中标签的文本
-  const sortedIndices = [...selectedTokens.value].sort((a, b) => a - b)
-  const texts = sortedIndices.map(index => tokens.value[index].text)
-  const combinedText = texts.join(', ')
-
-  // 复制到剪贴板
-  navigator.clipboard.writeText(combinedText).then(() => {
-    // 可以添加一个简单的提示
-    const tempMessage = document.createElement('div')
-    tempMessage.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background-color: #4caf50;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 4px;
-      z-index: 999999;
-    `
-    tempMessage.textContent = '已复制到剪贴板'
-    document.body.appendChild(tempMessage)
-
-    setTimeout(() => {
-      document.body.removeChild(tempMessage)
-    }, 2000)
-  })
-
-  // 关闭菜单并清除选中状态
-  closeSelectionActions()
-}
-
-// 禁用选中的标签
-const disableSelectedTokens = () => {
-  if (selectedTokens.value.length === 0) return
-
-  selectedTokens.value.forEach(index => {
-    if (tokens.value[index] && !tokens.value[index].isHidden) {
-      // 不修改标签文本，只设置隐藏状态（与双击禁用行为一致）
-      tokens.value[index].isHidden = true
-      tokens.value[index].hiddenHint = t('promptBox.hiddenHint') // 使用国际化提示
-    }
-  })
-
-  updateInputText()
-  finishPromptPutItHistory()
-
-  // 关闭菜单并清除选中状态
-  closeSelectionActions()
-}
-
-// 启用选中的标签
-const enableSelectedTokens = () => {
-  if (selectedTokens.value.length === 0) return
-
-  selectedTokens.value.forEach(index => {
-    if (tokens.value[index] && tokens.value[index].isHidden) {
-      // 只需要清除隐藏状态，不需要恢复原始文本（与双击禁用行为一致）
-      tokens.value[index].isHidden = false
-      tokens.value[index].hiddenHint = ''
-    }
-  })
-
-  updateInputText()
-  finishPromptPutItHistory()
-
-  // 关闭菜单并清除选中状态
-  closeSelectionActions()
-}
-
-// 删除选中的标签（替代原来的showBulkDeleteConfirmation）
-const deleteSelectedTokens = () => {
-  if (selectedTokens.value.length > 0) {
-    if (confirm(`确定要删除选中的 ${selectedTokens.value.length} 个标签吗？`)) {
-      bulkDeleteSelectedTokens()
-    } else {
-      // 如果取消删除，清除选中状态
-      clearSelectedTokens()
-    }
-  }
-}
-
-// 关闭选择操作菜单
-const closeSelectionActions = () => {
-  showSelectionActions.value = false
-  document.removeEventListener('click', closeSelectionActionsOnClickOutside)
-  clearSelectedTokens()
-}
-
-// 点击外部关闭选择操作菜单
-const closeSelectionActionsOnClickOutside = (event) => {
-  const actionsMenu = document.querySelector('.token-controls')
-  if (actionsMenu && !actionsMenu.contains(event.target)) {
-    closeSelectionActions()
-  }
-}
-
-// 批量删除选中的标签
-const bulkDeleteSelectedTokens = () => {
-  if (selectedTokens.value.length === 0) return
-
-  // 确保按照从后往前的顺序删除，避免索引偏移
-  const sortedIndices = [...selectedTokens.value].sort((a, b) => b - a)
-
-  // 先删除tokens数组中的元素
-  sortedIndices.forEach(index => {
-    tokens.value.splice(index, 1)
-  })
-
-  // 然后更新输入文本
-  updateInputText()
-  finishPromptPutItHistory()
-
-  // 清除选中状态
-  clearSelectedTokens()
-}
-
-// 清除选中的标签
-const clearSelectedTokens = () => {
-  // 处理所有带有选中类的标签，确保移除所有选中样式
-  const selectedBoxes = document.querySelectorAll('.token-item-box-selected')
-  selectedBoxes.forEach(box => {
-    // 移除选中类
-    box.classList.remove('token-item-box-selected')
-    // 清除可能的内联样式
-    box.style.border = ''
-    box.style.boxShadow = ''
-    box.style.backgroundColor = box.dataset.originalBgColor || ''
-  })
-
-  // 清空选中状态数组
-  selectedTokens.value = []
-
-  // 如果操作菜单可见，也关闭它
-  if (showSelectionActions.value) {
-    showSelectionActions.value = false
-    document.removeEventListener('click', closeSelectionActionsOnClickOutside)
-  }
-}
-
-// 处理点击空白区域取消框选状态
-const handleClickToClearSelection = (event) => {
-  // 只有当有选中项时才需要处理
-  if (selectedTokens.value.length === 0) return;
-
-  // 检查点击目标是否在标签容器内且不是标签本身、控制元素或操作菜单
-  const tokenItem = event.target.closest('.token-item-box, .token-item, .token-controls, .delete-btn, .weight-control, .bracket-btn, .translate-button, .tag-tips-box');
-  const tokensContainer = tokensContainerRef.value;
-
-  // 如果点击的是文本框或完全在标签容器外部的空白区域，则清除选中状态
-  if (event.target === inputAreaRef.value ||
-    (!tokenItem && (!tokensContainer || !tokensContainer.contains(event.target)))) {
-    clearSelectedTokens();
-  }
-}
-
-// 组件挂载时添加事件监听
-onMounted(() => {
-  // 添加点击事件监听，点击空白处或文本框时清除框选状态
-  document.addEventListener('click', handleClickToClearSelection);
 })
 
 // 组件卸载时清理事件监听
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
-  // 移除点击清除框选的事件监听
-  document.removeEventListener('click', handleClickToClearSelection)
   if (historyTimer.value) {
     clearTimeout(historyTimer.value);
   }
@@ -2584,15 +1853,6 @@ onUnmounted(() => {
     textarea.removeEventListener('click', updateAutocompletePosition);
     textarea.removeEventListener('input', updateAutocompletePosition);
   }
-  // 移除框选功能的事件监听
-  if (tokensContainerRef.value) {
-    tokensContainerRef.value.removeEventListener('mousedown', handleMouseDown)
-    tokensContainerRef.value.removeEventListener('mousemove', handleMouseMove)
-    tokensContainerRef.value.removeEventListener('mouseup', handleMouseUp)
-    tokensContainerRef.value.removeEventListener('mouseleave', handleMouseUp)
-  }
-  // 清理选择框
-  removeSelectionBox()
 })
 
 // 处理消息
@@ -2627,65 +1887,8 @@ const handleMessage = (event) => {
 
   } else if (event.data.type === 'weilin_prompt_ui_translate_setting') {
     initTranslate()
-  } else if (event.data.type === 'weilin_prompt_ui_selectLora') {
-    // console.log(event.data.lora)
-    if (event.data.lora.loraWorks != undefined && event.data.lora.loraWorks.length > 0) {
-      // 在输入框末尾添加标签文本
-      const currentText = inputText.value
-      const tagText = event.data.lora.loraWorks
-
-      // 检查当前文本是否为空或是否以空格结尾
-      if (currentText === '') {
-        inputText.value = tagText
-      } else if (currentText.endsWith(' ')) {
-        inputText.value = currentText + ', ' + tagText + ',';
-      } else {
-        inputText.value = currentText + ', ' + tagText + ',';
-      }
-
-      lastInputValue.value = inputText.value; // 更新上一次的输入内容
-      // 触发输入事件以更新词组
-      processInput()
-    }
   } else if (event.data.type === 'weilin_prompt_ui_prompt_inner_get_node_tag_template_id_go_random_response') {
     onClickLocalTemplateRandomTag(event.data.data)
-  } else if (event.data.type === 'weilin_prompt_ui_addLoraTag_inner') {
-    // console.log(event.data.lora)
-    if (event.data.lora.loraWorks != undefined && event.data.lora.loraWorks.length > 0) {
-      // 在输入框末尾添加标签文本
-      const currentText = inputText.value
-      const tagText = event.data.lora.tag + (event.data.lora.loraWorks === '' ? "" : ", " + event.data.lora.loraWorks)
-
-      // 检查当前文本是否为空或是否以空格结尾
-      if (currentText === '') {
-        inputText.value = tagText
-      } else if (currentText.endsWith(' ')) {
-        inputText.value = currentText + ', ' + tagText + ',';
-      } else {
-        inputText.value = currentText + ', ' + tagText + ',';
-      }
-
-      lastInputValue.value = inputText.value; // 更新上一次的输入内容
-      // 触发输入事件以更新词组
-      processInput()
-    } else {
-      // 在输入框末尾添加标签文本
-      const currentText = inputText.value
-      const tagText = event.data.lora.tag
-
-      // 检查当前文本是否为空或是否以空格结尾
-      if (currentText === '') {
-        inputText.value = tagText
-      } else if (currentText.endsWith(' ')) {
-        inputText.value = currentText + ', ' + tagText + ',';
-      } else {
-        inputText.value = currentText + ', ' + tagText + ',';
-      }
-
-      lastInputValue.value = inputText.value; // 更新上一次的输入内容
-      // 触发输入事件以更新词组
-      processInput()
-    }
   }
 }
 
@@ -2934,10 +2137,6 @@ const setPromptText = (text) => {
       inputText.value = jsonStr.prompt
       lastInputValue.value = inputText.value; // 更新上一次的输入内容
 
-      if (jsonStr.lora && jsonStr.lora != "") {
-        selectedLoras.value = jsonStr.lora
-      }
-
       if (jsonStr.temp_prompt && jsonStr.temp_prompt != "") {
         // console.log(jsonStr.temp_prompt)
         const tempDataJson = jsonStr.temp_prompt
@@ -2947,20 +2146,11 @@ const setPromptText = (text) => {
           tokens.value = tempDataJson.tokens
           isOldVersion = true
         }
-        if (tempDataJson.lora && tempDataJson.lora.length > 0 && tempDataJson.lora != "") {
-          selectedLoras.value = tempDataJson.lora
-          isOldVersion = true
-        }
 
         if (!isOldVersion && tempDataJson.length > 0 && tempDataJson != "") {
           tokens.value = tempDataJson
         }
 
-      }
-
-      if (jsonStr.temp_lora && jsonStr.temp_lora.length > 0 && jsonStr.temp_lora != "") {
-        const tempDataJson = jsonStr.temp_lora
-        selectedLoras.value = tempDataJson
       }
 
       processInput()
@@ -2970,187 +2160,6 @@ const setPromptText = (text) => {
     }
   }
 }
-
-// 拖拽状态管理
-const isDragging = ref(false);
-const dragStartIndex = ref(null);
-const draggedTokens = ref([]); // 存储被批量拖动的标签索引
-
-// 防抖控制
-let dragUpdateTimer = null;
-const dragUpdateDelay = 50; // 拖拽更新延迟，单位毫秒
-
-// 存储当前拖拽操作的临时状态
-let dragTempState = null;
-
-// 初始化拖拽状态
-const initializeDragState = (index, useMultipleSelection = false) => {
-  // 重置所有拖拽相关状态
-  isDragging.value = true;
-  dragStartIndex.value = null;
-  draggedTokens.value = [];
-
-  if (useMultipleSelection && selectedTokens.value.length > 1 && selectedTokens.value.includes(index)) {
-    // 批量拖拽模式
-    draggedTokens.value = [...selectedTokens.value].sort((a, b) => a - b);
-  } else {
-    // 单个拖拽模式
-    selectedTokens.value = [];
-    dragStartIndex.value = index;
-  }
-
-  // 初始化临时状态，用于在拖拽过程中进行计算
-  dragTempState = {
-    originalTokens: [...tokens.value],
-    draggedItems: draggedTokens.value.length > 0
-      ? draggedTokens.value.map(i => tokens.value[i])
-      : [tokens.value[index]]
-  };
-};
-
-const handleDragStart = (index, event) => {
-  // 如果当前在框选模式中，不触发拖拽
-  if (isBoxSelectMode.value) {
-    event.preventDefault();
-    return;
-  }
-
-  // 初始化拖拽状态
-  initializeDragState(index, true);
-
-  event.dataTransfer.effectAllowed = 'move';
-};
-
-// 计算插入位置的辅助函数
-const calculateInsertPosition = (originalTokens, draggedIndexes, targetIndex) => {
-  // 计算在原始数组中，有多少被拖动的元素位于目标索引之前
-  const elementsBeforeIndex = draggedIndexes.filter(i => i < targetIndex).length;
-
-  // 调整插入位置，考虑被删除的元素
-  let insertIndex = Math.max(0, targetIndex - elementsBeforeIndex);
-
-  // 确保插入位置在有效范围内
-  const validRange = originalTokens.length - draggedIndexes.length;
-  insertIndex = Math.min(insertIndex, validRange);
-
-  return insertIndex;
-};
-
-// 执行拖拽更新的函数
-const performDragUpdate = (targetIndex) => {
-  if (!dragTempState) return;
-
-  const newTokens = [...dragTempState.originalTokens];
-  const draggedIndexes = draggedTokens.value.length > 0 ? draggedTokens.value : [dragStartIndex.value];
-
-  // 保存要拖动的元素内容，用于后续重新映射选中状态
-  const draggedElements = draggedIndexes.map(idx => dragTempState.originalTokens[idx]);
-
-  // 从后往前删除，避免索引错误
-  for (let i = draggedIndexes.length - 1; i >= 0; i--) {
-    const idx = draggedIndexes[i];
-    if (idx < newTokens.length) {
-      newTokens.splice(idx, 1);
-    }
-  }
-
-  // 计算插入位置
-  const insertIndex = calculateInsertPosition(
-    dragTempState.originalTokens,
-    draggedIndexes,
-    targetIndex
-  );
-
-  // 插入被拖动的元素
-  dragTempState.draggedItems.forEach((item, i) => {
-    newTokens.splice(insertIndex + i, 0, item);
-  });
-
-  // 更新tokens数组和输入文本
-  tokens.value = newTokens;
-  updateInputText();
-
-  // 如果是批量拖拽且有选中的标签，更新选中状态
-  if (draggedTokens.value.length > 0 && selectedTokens.value.length > 0) {
-    // 创建新的选中索引数组，确保它只包含当前可见且有效的标签索引
-    const newSelectedTokens = [];
-
-    // 查找新位置的拖动元素索引
-    for (let i = 0; i < newTokens.length; i++) {
-      // 通过内容匹配确定元素位置（对于复杂对象，可能需要使用唯一标识符）
-      const token = newTokens[i];
-      if (draggedElements.some(dragged => dragged.text === token.text)) {
-        newSelectedTokens.push(i);
-      }
-    }
-
-    // 更新选中状态
-    selectedTokens.value = newSelectedTokens;
-
-    // 在下一个DOM更新周期应用选中样式，确保DOM已更新
-    setTimeout(() => {
-      applySelectedStyle();
-    }, 0);
-  }
-};
-
-const handleDragOver = (index, event) => {
-  // 如果当前在框选模式中，不处理拖拽
-  if (isBoxSelectMode.value) {
-    event.preventDefault();
-    return;
-  }
-  event.preventDefault();
-
-  // 检查是否在拖拽状态
-  if (!isDragging.value) return;
-
-  // 检查目标索引是否有效
-  if (index < 0 || index >= tokens.value.length) return;
-
-  // 检查目标索引是否在被拖动的元素中
-  if (draggedTokens.value.length > 0 && draggedTokens.value.includes(index)) {
-    return;
-  }
-
-  // 如果是单个拖拽，检查是否拖到了自己上面
-  if (draggedTokens.value.length === 0 && dragStartIndex.value === index) {
-    return;
-  }
-
-  // 清除之前的定时器
-  if (dragUpdateTimer) {
-    clearTimeout(dragUpdateTimer);
-  }
-
-  // 设置新的定时器，延迟更新以减少闪烁
-  dragUpdateTimer = setTimeout(() => {
-    performDragUpdate(index);
-  }, dragUpdateDelay);
-};
-
-const handleDrop = (index, event) => {
-  event.preventDefault();
-
-  // 清除定时器和重置拖拽状态
-  if (dragUpdateTimer) {
-    clearTimeout(dragUpdateTimer);
-    dragUpdateTimer = null;
-  }
-
-  // 执行最终的拖拽更新
-  if (isDragging.value && dragTempState) {
-    performDragUpdate(index);
-  }
-
-  // 重置拖拽相关状态，但保留选中状态(selectedTokens)
-  isDragging.value = false;
-  dragStartIndex.value = null;
-  draggedTokens.value = [];
-  dragTempState = null;
-};
-
-
 
 const updateInputText = () => {
   // 更新输入文本，保持原有格式，但排除隐藏的tokens
@@ -3330,7 +2339,6 @@ const shortcodeToPath = (shortcode) => {
 const clearAllPrompt = () => {
   inputText.value = '';
   tokens.value = [];
-  selectedLoras.value = [];
   lastInputValue.value = '';
   // 如有其它需要清空的内容可一并处理
   updateInputText();

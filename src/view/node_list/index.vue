@@ -1,14 +1,14 @@
 <template>
-  <div :class="`${prefix}lora-stack`">
-    <div :class="`${prefix}lora-content`">
-      <div :class="`${prefix}lora-body`">
-        <div :class="`${prefix}lora-list`">
-          <div v-for="item in nodeLists" :key="item.id" class="lora-item">
-            <div class="lora-info">
-              <div class="lora-header">
-                <span class="lora-name" :title="item.title">#{{ item.id }} - {{ item.title }}</span>
+  <div :class="`${prefix}node-list-stack`">
+    <div :class="`${prefix}node-list-content`">
+      <div :class="`${prefix}node-list-body`">
+        <div :class="`${prefix}node-list-list`">
+          <div v-for="item in nodeLists" :key="item.id" class="node-item">
+            <div class="node-info">
+              <div class="node-header">
+                <span class="node-name" :title="item.title">#{{ item.id }} - {{ item.title }}</span>
               </div>
-              <div class="lora-weights">
+              <div class="node-weights">
                 <div class="weight-item">
                   <div class="text-label" :title="item.text">
                     {{ item.text }}
@@ -39,7 +39,7 @@
 
   const nodeLists = ref([])
 
-  // 监听来自Lora管理器的消息
+  // 监听节点列表更新消息
   window.addEventListener('message', (event) => {
     if (event.data.type === 'weilin_prompt_ui_update_node_list_info') {
       nodeLists.value = event.data.nodeList
@@ -57,7 +57,7 @@
 </script>
 
 <style scoped>
-  .weilin_prompt_ui_lora-stack {
+  .weilin_prompt_ui_node-list-stack {
     top: 0;
     left: 0;
     height: 100%;
@@ -68,7 +68,7 @@
     box-sizing: border-box;
   }
 
-  .weilin_prompt_ui_lora-content {
+  .weilin_prompt_ui_node-list-content {
     width: 100%;
     height: 100%;
     display: flex;
@@ -76,7 +76,7 @@
     margin-left: 0;
   }
 
-  .weilin_prompt_ui_lora-header {
+  .weilin_prompt_ui_node-list-header {
     padding: 8px 16px;
     border-bottom: 1px solid var(--weilin-prompt-ui-border-color);
     display: flex;
@@ -87,7 +87,7 @@
     border-top-left-radius: 8px;
   }
 
-  .weilin_prompt_ui_lora-header h3 {
+  .weilin_prompt_ui_node-list-header h3 {
     margin: 0;
     font-size: 16px;
     color: var(--weilin-prompt-ui-primary-text);
@@ -112,18 +112,18 @@
     fill: var(--weilin-prompt-ui-secondary-text);
   }
 
-  .weilin_prompt_ui_lora-body {
+  .weilin_prompt_ui_node-list-body {
     flex: 1;
     overflow-y: auto;
   }
 
-  .weilin_prompt_ui_lora-list {
+  .weilin_prompt_ui_node-list-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
 
-  .weilin_prompt_ui_lora-title {
+  .weilin_prompt_ui_node-list-title {
     margin: 0;
     font-size: 16px;
     color: var(--weilin-prompt-ui-primary-text);
@@ -151,7 +151,7 @@
     fill: var(--weilin-prompt-ui-secondary-text);
   }
 
-  .lora-item {
+  .node-item {
     background: var(--weilin-prompt-ui-secondary-bg);
     border: 1px solid var(--weilin-prompt-ui-border-color);
     border-radius: 8px;
@@ -160,18 +160,18 @@
     transition: all 0.3s ease;
   }
 
-  .lora-item:hover {
+  .node-item:hover {
     border-color: var(--weilin-prompt-ui-primary-color);
     box-shadow: 0 2px 8px var(--weilin-prompt-ui-shadow-color);
   }
 
-  .lora-info {
+  .node-info {
     display: flex;
     flex-direction: column;
     width: 100%;
   }
 
-  .lora-header {
+  .node-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -180,7 +180,7 @@
     border-bottom: 1px solid var(--weilin-prompt-ui-border-color);
   }
 
-  .lora-name {
+  .node-name {
     font-size: 14px;
     font-weight: 500;
     color: var(--weilin-prompt-ui-primary-text);
@@ -190,7 +190,7 @@
     max-width: 200px;
   }
 
-  .lora-weights {
+  .node-weights {
     padding: 12px;
     background: var(--weilin-prompt-ui-secondary-bg);
     display: flex;
@@ -227,7 +227,7 @@
     min-width: 60px;
   }
 
-  .lora-weight {
+  .node-weight {
     flex: 1;
     width: 100%;
     padding: 6px 8px;
@@ -239,11 +239,11 @@
     transition: all 0.3s ease;
   }
 
-  .lora-weight:hover {
+  .node-weight:hover {
     border-color: var(--weilin-prompt-ui-primary-color);
   }
 
-  .lora-weight:focus {
+  .node-weight:focus {
     border-color: var(--weilin-prompt-ui-primary-color);
     outline: none;
     box-shadow: 0 0 0 2px var(--weilin-prompt-ui-primary-color-fade);

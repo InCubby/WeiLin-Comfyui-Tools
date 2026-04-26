@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
   
 ### [🇨🇳 简体中文](README.md) | [🇺🇸 English](README_EN.md)
 
@@ -79,7 +79,6 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 >
 > 1. Fixed the missing style of the hover ball menu
 >
-> 2. Fix some known bugs (last Lora heap can't be removed, Tag prompt empty issue, negative Tag weight issue)
 >
 > 3. New feature: One click clear function, can clear all the content
 >
@@ -160,9 +159,7 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 >
 > 1. Fixed known bugs
 >
-> 2. New function (test) :Lora can be loaded in the form of Tag (only the omnipotent prompt word editor is effective) Click on the Lora manager below the editor to add the Tag. The way that our plugin can identify is' ' '<wlr:Lora name: model weight: text weight >' ' '
 >
-> 3. Fixed issues with Lora manager subdirectory loading
 >
 > 4. Fixed a bug with Tag click sorting in Tag manager
 >
@@ -171,7 +168,6 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 >
 > 1. Fixed known bugs
 >
-> 2. Changed the size and position of the Lora hover card
 >
 > 3. Feature upgrade: The hover ball can be customized with skin and color
 >
@@ -191,25 +187,20 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 >
 > 11. New node function: automatic random Tag, set the template can be used, each node's random template is different and can be customized
 >
-> 12. Modified the Lora manager, added the function of displaying all secondary directories, and changed the height problem of the directory bar
 >
 
 > 0.0.53 Public Beta Version 2025-04-30
 >
-> 1. Feature optimization: Fixed the issue that Lora details button style could not be seen in daytime mode
 >
 > 2. Repair the issues [#14](https://github.com/weilin9999/WeiLin-Comfyui-Tools/issues/14#issuecomment-2840561525) When the first line has only one Tag, a newline is triggered without the trailing comma
 >
 
 > 0.0.52 Public Beta Version Last updated: 2025-04-28
 >
-> 1. New feature: Within the Lora detailed interface, you can customize your own fields
 >
-> 2. New feature: When the mouse hoses over a Lora card within the plugin (non-node) UI, the basic information of Lora can be displayed
 >
 > 3. Fixed the known bugs
 >
-> 4. When Lora acquires data from C Station, it can also obtain the cover at the same time
 >
 
 > 0.0.48 Public Beta Version 2025-04-25
@@ -234,7 +225,6 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 >
 > 3. New addition: Record the height of the input box. Each time it is opened, it will maintain the height of the previous state
 >
-> 4. Fixed the issue of incomplete loading of the Lora manager
 >
 
 > 0.0.42 Public Beta Version 2025-04-22
@@ -255,27 +245,21 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 >
 > 1. Fixed the node running error problem and fixed some known bugs
 >
-> 2. Modify the Lora heap node. You can operate Lora heap directly on the node
 >
 
 > 0.0.38 Public Beta Version 2025-04-14
 >
 > 1. Fixed some known bugs
 >
-> 2. Only Lora heap nodes are added
 >
-> 3. Optimize Lora Manager and add a shortcut window of Lora Manager in the UI main interface
 >
-> 4. The shortcut button of Lora heap is added to the node, and the information of Lora heap of the node can be displayed directly by clicking it
 >
 
 > 0.0.37 Public Beta Version 2025-04-13
 >
 > 1. Fixed some known bugs
 >
-> 2. Optimized the logjam problem of Lora manager
 >
-> 3. Added basic model display and Lora Raw data display in Lora details
 >
 > 4. Added the Tag operation prompt
 >
@@ -291,7 +275,6 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 
 > 0.0.35 Public Beta Version 2025-04-07
 >
-> 1. The new feature can hide Lora and hide Tag functions, which can temporarily block Lora and Tag you want
 >
 
 > 0.0.34 Public Beta Version 2025-04-06
@@ -335,7 +318,6 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 >
 > 1. The search Tag is highlighted, and you can choose to automatically add the search Tag to the prompt words
 >
-> 2. Modify the prompt words in Lora detail page to add the function of hiding and expanding
 >
 > 3. Modify the Tag editing operation nowhere method and add an edit mode selection
 
@@ -345,17 +327,14 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 >
 > 2. Modify the test translation error prompt to avoid misleading
 >
-> 3. Hide the Lora box to make the node cleaner
 
 > 0.0.24 2025-03-25 Public Beta Version
 >
 > 1. The translation library function has been added in the UI settings. You can replace the third-party translation with the translation library function. To use it, simply install the translation library by clicking "Install". It is convenient to use and has a complete translation function. -- v0.0.23 2025-03-24 
 >
-> 2. New Node: Lora is not loaded. The absence of the Lora information box for this node can reduce the node size -- v0.0.23 2025-03-24 
 >
 > 3. Fixed the issue where history records were not being saved and the problem of the names of favorites not being displayed -- v0.0.23 2025-03-24 
 >
-> 4. Fixed the issue where the last item in the Lora stack was not being deleted -- v0.0.23 2025-03-24 
 >
 > 5. Optimized the issue of translation timeout or local data acquisition timeout caused by too many tags -- v0.0.23 2025-03-24 
 >
@@ -371,9 +350,7 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 
 > 0.0.19 2025-03-17 Public Beta Version
 >
->1. Split the prompt words of the node and the text of Lora to make it more intuitive.
 >
->2. Added the function of searching for Lora, enabling users to find the Lora they want more quickly.
 
 > 0.0.18 Public Beta Version 2025-03-03
 >
@@ -398,9 +375,7 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 >
 > 1. Fixed known bugs
 >
-> 2. New Features -Lora supports one-click caching of all Lora files
 >
-> 3. New feature - Support to load the corresponding Lora prompt words at the same time when loading Lora (need to set the prompt words for Lora to take effect!)
 
 > 0.0.12 Public beta version introduction
 >
@@ -448,7 +423,6 @@ WeiLin-Comfyui-Tools
 ├── dist - compiled front-end files
 ├── init.json - file for saving AI service keys
 ├── js_node - JS business code for comfyui
-├── lora_userdatas - local data for user Lora
 ├── pyproject.toml - repository file for comfyui
 ├── requirements.txt - file for checking third-party library installation
 ├── src - front-end source code
