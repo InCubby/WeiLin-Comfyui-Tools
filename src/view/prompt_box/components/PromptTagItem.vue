@@ -1,18 +1,26 @@
 <template>
   <div
-    class="token-item-box"
-    :draggable="!token.isEditing"
-    :style="{ backgroundColor: token.color }"
-    :class="{
-      'token-item-box-disabled': token.isHidden,
-      'token-item-box-drag-source': isDragSource
-    }"
-    @dragstart="emit('drag-start', index, $event)"
-    @dragend="emit('drag-end', index, $event)"
+    class="token-item-wrapper"
     @dragover.prevent="emit('drag-over', index, $event)"
     @drop="emit('drop', index, $event)"
-    @dblclick="emit('toggle-hidden', index)"
   >
+    <div
+      class="token-item-drop-indicator"
+      :class="{ 'token-item-drop-indicator-active': showDropIndicator }"
+    ></div>
+
+    <div
+      class="token-item-box"
+      :draggable="!token.isEditing"
+      :style="{ backgroundColor: token.color }"
+      :class="{
+        'token-item-box-disabled': token.isHidden,
+        'token-item-box-drag-source': isDragSource
+      }"
+      @dragstart="emit('drag-start', index, $event)"
+      @dragend="emit('drag-end', index, $event)"
+      @dblclick="emit('toggle-hidden', index)"
+    >
     <div
       v-if="token.text === '\n'"
       class="newline-token"
@@ -78,10 +86,10 @@
       </button>
     </div>
 
-    <div
-      class="translation-result"
-      v-if="token.text !== '\n' && token.text !== '\t' && !token.isLoraTag"
-    >
+      <div
+        class="translation-result"
+        v-if="token.text !== '\n' && token.text !== '\t' && !token.isLoraTag"
+      >
       <div
         v-if="isTextTranslatable(token.text)"
         @click="emit('translate-click', token.text, token)"
@@ -100,6 +108,7 @@
         </svg>
       </div>
       <span class="translated-text">{{ token.translate ? token.translate : '' }}</span>
+      </div>
     </div>
   </div>
 
@@ -125,6 +134,10 @@
       default: true
     },
     isDragSource: {
+      type: Boolean,
+      default: false
+    },
+    showDropIndicator: {
       type: Boolean,
       default: false
     },
@@ -156,6 +169,23 @@
 </script>
 
 <style scoped>
+  .token-item-wrapper {
+    display: inline-flex;
+    align-items: stretch;
+  }
+
+  .token-item-drop-indicator {
+    width: 3px;
+    margin: 3px 3px 3px 0;
+    border-radius: 999px;
+    background: transparent;
+    flex: 0 0 auto;
+  }
+
+  .token-item-drop-indicator-active {
+    background: #58b8ff;
+  }
+
   .token-item {
     overflow: visible;
     color: var(--weilin-prompt-ui-primary-text);

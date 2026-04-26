@@ -170,17 +170,13 @@
       </button>
     </div>
 
-    <div class="tokens-container" v-if="tokens.length > 0" ref="tokensContainerRef">
-      <div
-        v-if="isDragging && dropIndicatorStyle.display === 'block'"
-        class="token-drop-indicator"
-        :style="dropIndicatorStyle"
-      ></div>
+    <div class="tokens-container" v-if="tokens.length > 0">
       <template v-for="(token, index) in tokens" :key="'tag-wrapper-' + index">
         <PromptTagItem
           :token="token"
           :index="index"
           :is-drag-source="isDragging && dragStartIndex === index"
+          :show-drop-indicator="shouldShowDropIndicator(index)"
           :show-delete-button="showDeleteButton"
           :is-text-translatable="isTextTranslatable"
           @drag-start="handleDragStart"
@@ -721,83 +717,11 @@ const isDragging = ref(false)
 const dragStartIndex = ref(null)
 const dropSlotIndex = ref(null)
 const didDrop = ref(false)
-const tokensContainerRef = ref(null)
-const dropIndicatorStyle = ref({
-  display: 'none',
-  left: '0px',
-  top: '0px',
-  height: '24px'
-})
-const DROP_INDICATOR_WIDTH = 3
-let dragVisualRafId = 0
-let pendingDropVisual = null
 
-const hideDropIndicator = () => {
-  dropIndicatorStyle.value.display = 'none'
-}
-
-const getEventElement = (event, selector) => {
-  const current = event?.currentTarget
-  if (current && typeof current.closest === 'function') {
-    const matchedCurrent = current.closest(selector)
-    if (matchedCurrent) return matchedCurrent
-  }
-  const target = event?.target
-  if (target && typeof target.closest === 'function') {
-    return target.closest(selector)
-  }
-  return null
-}
-
-const scheduleDropVisualUpdate = (slotIndex, element, preferCenter = false) => {
-  pendingDropVisual = { slotIndex, element, preferCenter }
-  if (dragVisualRafId) return
-
-  dragVisualRafId = requestAnimationFrame(() => {
-    dragVisualRafId = 0
-    if (!pendingDropVisual) return
-    const { slotIndex: nextSlot, element: nextElement, preferCenter: center } = pendingDropVisual
-    pendingDropVisual = null
-    setDropSlot(nextSlot)
-    const container = tokensContainerRef.value
-    if (!nextElement || !container) return
-
-    // 每帧只读取一次布局信息，避免在高频 dragover 下反复触发布局计算。
-    const rect = nextElement.getBoundingClientRect()
-    const containerRect = container.getBoundingClientRect()
-    const tokenElements = Array.from(container.querySelectorAll('.token-item-box'))
-    const prevRect = nextSlot > 0 ? tokenElements[nextSlot - 1]?.getBoundingClientRect() : null
-    const nextRect = nextSlot < tokenElements.length ? tokenElements[nextSlot]?.getBoundingClientRect() : null
-    const computed = window.getComputedStyle(container)
-    const gap = Number.parseFloat(computed.columnGap || computed.gap || '0') || 0
-    const halfGap = gap / 2
-
-    // 按插槽语义计算蓝条 X：在相邻 Tag 中点，或在首尾位置取半个 gap。
-    let indicatorLeftViewport = null
-    if (prevRect && nextRect) {
-      const betweenWidth = nextRect.left - prevRect.right
-      indicatorLeftViewport = prevRect.right + (betweenWidth - DROP_INDICATOR_WIDTH) / 2
-    } else if (nextRect) {
-      indicatorLeftViewport = nextRect.left - halfGap - DROP_INDICATOR_WIDTH / 2
-    } else if (prevRect) {
-      indicatorLeftViewport = prevRect.right + halfGap - DROP_INDICATOR_WIDTH / 2
-    } else {
-      const fallbackX = center ? rect.left + rect.width / 2 : rect.left
-      indicatorLeftViewport = fallbackX - DROP_INDICATOR_WIDTH / 2
-    }
-    if (indicatorLeftViewport === null) return
-
-    // 将视口坐标换算为容器内坐标，用于绝对定位蓝条。
-    const indicatorHeight = Math.max(18, rect.height - 8)
-    const left = indicatorLeftViewport - containerRect.left
-    const top = rect.top - containerRect.top + (rect.height - indicatorHeight) / 2
-    dropIndicatorStyle.value = {
-      display: 'block',
-      left: `${left}px`,
-      top: `${top}px`,
-      height: `${indicatorHeight}px`
-    }
-  })
+const shouldShowDropIndicator = (index) => {
+  if (!isDragging.value || dropSlotIndex.value !== index) return false
+  if (dragStartIndex.value === null) return false
+  return dropSlotIndex.value !== dragStartIndex.value && dropSlotIndex.value !== dragStartIndex.value + 1
 }
 
 const initializeDragState = (index) => {
@@ -805,19 +729,12 @@ const initializeDragState = (index) => {
   dragStartIndex.value = index
   dropSlotIndex.value = null
   didDrop.value = false
-  hideDropIndicator()
 }
 
 const resetDragState = () => {
   isDragging.value = false
   dragStartIndex.value = null
   dropSlotIndex.value = null
-  pendingDropVisual = null
-  if (dragVisualRafId) {
-    cancelAnimationFrame(dragVisualRafId)
-    dragVisualRafId = 0
-  }
-  hideDropIndicator()
 }
 
 const setTokensInPlace = (newTokens) => {
@@ -887,12 +804,7 @@ const handleDragOver = (index, event) => {
   if (event.dataTransfer) {
     event.dataTransfer.dropEffect = 'move'
   }
-  const tokenEl = getEventElement(event, '.token-item-box')
-  if (tokenEl) {
-    scheduleDropVisualUpdate(index, tokenEl, false)
-  } else {
-    scheduleDropVisualUpdate(index, null, false)
-  }
+  setDropSlot(index)
 }
 
 const handleDrop = (index, event) => {
@@ -905,12 +817,7 @@ const handleSlotDragOver = (slotIndex, event) => {
   if (event.dataTransfer) {
     event.dataTransfer.dropEffect = 'move'
   }
-  const endZone = getEventElement(event, '.token-drop-end-zone')
-  if (endZone) {
-    scheduleDropVisualUpdate(slotIndex, endZone, true)
-  } else {
-    scheduleDropVisualUpdate(slotIndex, null, true)
-  }
+  setDropSlot(slotIndex)
 }
 
 const handleSlotDrop = (slotIndex, event) => {
@@ -1063,11 +970,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('storage', handleStorageChange)
-  pendingDropVisual = null
-  if (dragVisualRafId) {
-    cancelAnimationFrame(dragVisualRafId)
-    dragVisualRafId = 0
-  }
   if (hideTimeout.value) {
     clearTimeout(hideTimeout.value)
     hideTimeout.value = null
@@ -1097,18 +999,8 @@ defineExpose({
 
 .tokens-container {
   position: relative;
-  column-gap: 9px;
+  column-gap: 3px;
   row-gap: 8px;
-}
-
-.token-drop-indicator {
-  position: absolute;
-  z-index: 20;
-  width: 3px;
-  background: #58b8ff;
-  border-radius: 999px;
-  box-shadow: none;
-  pointer-events: none;
 }
 
 .token-drop-end-zone {
