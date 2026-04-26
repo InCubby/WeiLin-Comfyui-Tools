@@ -1,6 +1,7 @@
 <template>
   <div
     class="token-item-wrapper"
+    ref="wrapperRef"
     @dragover.prevent="emit('drag-over', index, $event)"
     @drop="emit('drop', index, $event)"
   >
@@ -117,6 +118,7 @@
 </template>
 
 <script setup>
+  import { nextTick, onMounted, onUpdated, ref } from 'vue'
   import { useI18n } from 'vue-i18n'
 
   const { t } = useI18n()
@@ -171,6 +173,28 @@
   const setInputRef = (el) => {
     emit('register-input-ref', props.index, el)
   }
+
+  const wrapperRef = ref(null)
+
+  const syncWrapperWidthByRenderedSize = () => {
+    const wrapper = wrapperRef.value
+    if (!wrapper) return
+
+    wrapper.style.width = 'auto'
+    const renderedWidth = wrapper.getBoundingClientRect().width
+    const ceilWidth = Math.ceil(renderedWidth)
+    if (!Number.isFinite(ceilWidth) || ceilWidth <= 0) return
+    wrapper.style.width = `${ceilWidth}px`
+  }
+
+  onMounted(async () => {
+    await nextTick()
+    syncWrapperWidthByRenderedSize()
+  })
+
+  onUpdated(() => {
+    syncWrapperWidthByRenderedSize()
+  })
 </script>
 
 <style scoped>
