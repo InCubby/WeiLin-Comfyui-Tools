@@ -45,18 +45,6 @@
     </div>
 
     <div class="prompt-input-translate-area">
-      <div style="display: flex; align-items: center;">
-        <input
-          type="text"
-          :value="localTranslateText"
-          class="prompt-input-translate-area-textarea"
-          @input="localTranslateText = $event.target.value"
-          @keyup.enter="handleTranslateEnter()"
-          :placeholder="t('promptBox.translatePlaceholder')"
-        />
-        <button class="translate-btn" style="margin-left: 8px;" @click="handleTranslateEnter()">翻译</button>
-      </div>
-
       <button
         v-if="isTranslateTagEnabled"
         class="translate-btn random-tag-settings-btn"
@@ -74,37 +62,6 @@
           />
         </svg>
         <span style="margin-left: 5px;" class="action-text">{{ t('promptBox.oneClickTranslate') }}</span>
-      </button>
-
-      <button
-        v-if="isRandomTagSettingsEnabled"
-        class="translate-btn random-tag-settings-btn"
-        @click="openRandomTagSettings"
-        :title="t('promptBox.randomTagSettings')"
-      >
-        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="utils-item-icon" width="24" height="24">
-          <path
-            d="M512 409.6c-56.32 0-102.4 46.08-102.4 102.4s46.08 102.4 102.4 102.4 102.4-46.08 102.4-102.4-46.08-102.4-102.4-102.4z m0 153.6c-28.16 0-51.2-23.04-51.2-51.2s23.04-51.2 51.2-51.2 51.2 23.04 51.2 51.2-23.04 51.2-51.2 51.2z"
-          />
-          <path
-            d="M512 204.8c-25.6 0-51.2 2.56-76.8 7.68l-15.36-61.44c-2.56-10.24-10.24-17.92-20.48-20.48-10.24-2.56-20.48 0-28.16 7.68l-76.8 76.8c-5.12 5.12-7.68 12.8-7.68 20.48s2.56 15.36 7.68 20.48l76.8 76.8c5.12 5.12 12.8 7.68 20.48 7.68 2.56 0 5.12 0 7.68-2.56 10.24-2.56 17.92-10.24 20.48-20.48l15.36-61.44c25.6-5.12 51.2-7.68 76.8-7.68 140.8 0 256 115.2 256 256s-115.2 256-256 256-256-115.2-256-256c0-25.6 2.56-51.2 7.68-76.8l61.44-15.36c10.24-2.56 17.92-10.24 20.48-20.48 2.56-10.24 0-20.48-7.68-28.16l-76.8-76.8c-5.12-5.12-12.8-7.68-20.48-7.68s-15.36 2.56-20.48 7.68l-76.8 76.8c-7.68 7.68-10.24 17.92-7.68 28.16 2.56 10.24 10.24 17.92 20.48 20.48l61.44 15.36c-5.12 25.6-7.68 51.2-7.68 76.8 0 168.96 138.24 307.2 307.2 307.2s307.2-138.24 307.2-307.2-138.24-307.2-307.2-307.2z"
-          />
-        </svg>
-        <span class="action-text">{{ t('promptBox.randomTagSettings') }}</span>
-      </button>
-
-      <button
-        v-if="isRandomTagEnabled"
-        class="translate-btn random-tag-btn"
-        @click="oneClickRandomTag"
-        :title="t('promptBox.oneClickRandomTag')"
-      >
-        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="utils-item-icon" width="24" height="24">
-          <path
-            d="M832 512c0-176-144-320-320-320S192 336 192 512s144 320 320 320 320-144 320-320z m-384 0c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m128-128c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m-256 0c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m128-128c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m256 256c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m-256 0c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m-128 128c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m256 0c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z"
-          />
-        </svg>
-        <span class="action-text">{{ t('promptBox.oneClickRandomTag') }}</span>
       </button>
 
       <button
@@ -309,8 +266,6 @@ const props = defineProps({
   autocompleteResults: { type: Array, default: () => [] },
   selectedAutocompleteIndex: { type: Number, default: 0 },
   isTranslateTagEnabled: { type: Boolean, default: false },
-  isRandomTagSettingsEnabled: { type: Boolean, default: false },
-  isRandomTagEnabled: { type: Boolean, default: false },
   isDeleteButtonEnabled: { type: Boolean, default: false },
   isClearAllEnabled: { type: Boolean, default: false },
   isClearDisabledEnabled: { type: Boolean, default: false },
@@ -321,8 +276,6 @@ const props = defineProps({
   saveTextareaHeight: { type: Function, required: true },
   closeAutocomplete: { type: Function, required: true },
   selectAutocomplete: { type: Function, required: true },
-  openRandomTagSettings: { type: Function, required: true },
-  oneClickRandomTag: { type: Function, required: true },
   isTextTranslatable: { type: Function, required: true }
 })
 
@@ -369,7 +322,6 @@ const BRACKET_PAIRS = Object.freeze(
 const BRACKET_CLOSE_SET = new Set(Object.values(BRACKET_MAP))
 
 const showDeleteButton = ref(localStorage.getItem('weilin_prompt_ui_show_delete_button') !== 'false')
-const localTranslateText = ref('')
 
 const saveShowDeleteButtonSetting = () => {
   localStorage.setItem('weilin_prompt_ui_show_delete_button', String(showDeleteButton.value))
@@ -387,7 +339,6 @@ const handleStorageChange = (e) => {
 }
 
 const handleClearAllClick = () => {
-  localTranslateText.value = ''
   emit('clear-all')
 }
 
@@ -400,33 +351,11 @@ const extractTranslatedText = (res) => {
   return translated
 }
 
-const translateTextByMode = async (sourceText, useInputEndpoint = false) => {
+const translateTextByMode = async (sourceText) => {
   const trimmed = sourceText?.trim()
   if (!trimmed) return ''
-  const res = useInputEndpoint
-    ? await translatorApi.translaterInputText('', trimmed)
-    : await translatorApi.translaterText('', trimmed)
+  const res = await translatorApi.translaterText('', trimmed)
   return extractTranslatedText(res)
-}
-
-const handleTranslateEnter = async () => {
-  const sourceText = localTranslateText.value.trim()
-  if (!sourceText) return
-  try {
-    const translated = await translateTextByMode(sourceText, true)
-    if (!translated) return
-    props.tokens.push({
-      text: translated,
-      translate: sourceText,
-      isPunctuation: false,
-      isEditing: false,
-      isHidden: false,
-      color: ''
-    })
-    localTranslateText.value = ''
-  } catch {
-    // Keep current behavior: ignore failed request and keep user input.
-  }
 }
 
 const generateUniqueId = () => {
@@ -939,7 +868,7 @@ const oneClickTranslatePrompt = async () => {
 
 const translateFunction = async (texts, token) => {
   try {
-    const translated = await translateTextByMode(texts, false)
+    const translated = await translateTextByMode(texts)
     if (translated) {
       token.translate = translated
     }

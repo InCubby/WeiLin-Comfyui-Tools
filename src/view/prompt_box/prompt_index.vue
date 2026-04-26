@@ -104,20 +104,6 @@
         </div>
 
         <div class="action-item">
-          <button class="tag-manager-btn" @click="openLoraManager" :title="t('controls.loraManager')">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" class="tag-icon" width="24" height="24">
-              <path
-                d="M129 128h350v80H209v224h270v80H129V128zM129 895V576h768v319H129z m80-239v159h608V656H209zM730 356c19.882 0 36-16.118 36-36s-16.118-36-36-36-36 16.118-36 36 16.118 36 36 36z">
-              </path>
-              <path
-                d="M578.517 214.386a32.002 32.002 0 0 0-16.01 27.731l0.058 155.918a31.998 31.998 0 0 0 16 27.701l135.156 78.033a32.002 32.002 0 0 0 31.99 0.006l135.058-77.909a32.002 32.002 0 0 0 16.01-27.731l-0.058-155.918a32 32 0 0 0-16-27.701l-135.157-78.033a31.998 31.998 0 0 0-31.989-0.005l-135.058 77.908z m67.002 58.058l84.033-48.591 84.181 48.715 0.034 95.24-84.034 48.591-84.18-48.714-0.034-95.241z">
-              </path>
-            </svg>
-            <span class="action-text">{{ t('controls.loraManager') }}</span>
-          </button>
-        </div>
-
-        <div class="action-item">
           <button class="tag-manager-btn" @click="openHistoryBox" :title="t('controls.history')">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" class="tag-icon" width="24" height="24">
               <path
@@ -128,17 +114,6 @@
               </path>
             </svg>
             <span class="action-text">{{ t('controls.history') }}</span>
-          </button>
-        </div>
-
-        <!-- 新增 AI 对话按钮 -->
-        <div class="action-item">
-          <button class="tag-manager-btn" @click="openAIChat" :title="t('controls.aiChat')">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="tag-icon" width="24" height="24">
-              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-              <path d="M6 14h12v2H6zm0-3h12v2H6zm0-3h12v2H6z" />
-            </svg>
-            <span class="action-text">{{ t('controls.aiChat') }}</span>
           </button>
         </div>
 
@@ -159,21 +134,6 @@
                 d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
             </svg>
             <span class="action-text">{{ t('controls.shareCloudData') }}</span>
-          </button>
-        </div>
-
-        <div class="action-item">
-          <button class="tag-manager-btn" @click="openBilibili" :title="t('controls.tutorialVideo')">
-            <svg t="1745234292993" class="tag-icon" viewBox="0 0 1024 1024" version="1.1"
-              xmlns="http://www.w3.org/2000/svg" p-id="1496" width="128" height="128">
-              <path
-                d="M204.288 63.488c-8.704 8.192-16.896 20.48-18.944 26.624-3.584 11.776 12.8 62.464 20.48 62.464S235.52 176.128 235.52 184.32c0 16.384-17.92 26.112-47.104 26.112-34.816 0-104.448 27.648-128.512 51.2-9.216 8.704-26.112 33.792-37.888 56.32L0 358.4v469.504l21.504 40.448c24.576 47.616 35.84 59.392 82.944 84.992l40.96 22.528h722.944l40.96-19.968c51.712-24.576 72.704-45.056 95.744-94.72l17.92-38.4v-231.424l0.512-231.424-17.92-36.352c-9.216-20.48-28.16-47.104-42.496-59.904-31.232-30.208-86.528-54.272-122.368-54.272-54.272 0-65.024-22.528-26.624-57.856 20.48-18.432 23.04-25.088 23.04-45.568 0-19.968-3.584-28.16-16.896-41.984-9.216-9.216-22.528-16.896-29.696-16.896-11.776 0-34.304 9.216-40.448 16.896-1.536 1.536-35.84 35.328-75.776 74.24l-73.216 71.168-83.456-0.512c-45.568 0-88.064-2.56-93.696-4.608-5.632-2.56-38.4-31.232-72.704-65.024C249.856 40.448 235.008 32.256 204.288 63.488z m652.8 262.656c5.12 0.512 19.968 9.216 31.744 20.48l21.504 19.968 1.536 217.088c1.024 197.12 0.512 218.112-8.704 236.032-14.336 27.136-34.816 40.448-65.536 41.984-14.336 0.512-173.568 0.512-353.28 0l-326.144-1.536-45.056-45.056V373.248l20.992-22.528c15.872-17.92 25.6-23.552 41.984-25.088 16.384-1.024 634.88-0.512 680.96 0.512z"
-                p-id="1497"></path>
-              <path
-                d="M279.04 502.272c-20.48 22.016-20.992 25.088-20.992 66.56 0 39.936 1.024 44.544 17.92 64 29.184 33.28 55.808 32.256 84.48-2.56 11.264-12.8 12.8-22.016 13.312-64 0-47.104-0.512-48.64-19.968-68.096-27.136-27.648-47.616-26.112-74.752 4.096z m393.216-3.584c-18.944 18.944-19.968 20.992-19.968 69.12 0 47.616 0.512 49.664 18.432 67.072 24.576 23.552 35.84 26.624 58.368 13.824 29.184-16.896 39.936-43.52 36.864-90.624-2.56-35.328-4.608-41.984-22.016-59.904-25.088-25.6-45.568-25.6-71.68 0.512z"
-                p-id="1498"></path>
-            </svg>
-            <span class="action-text">{{ t('controls.tutorialVideo') }}</span>
           </button>
         </div>
 
@@ -223,8 +183,6 @@
           :autocomplete-results="autocompleteResults"
           :selected-autocomplete-index="selectedAutocompleteIndex"
           :is-translate-tag-enabled="isTranslateTagEnabled"
-          :is-random-tag-settings-enabled="isRandomTagSettingsEnabled"
-          :is-random-tag-enabled="isRandomTagEnabled"
           :is-delete-button-enabled="isDeleteButtonEnabled"
           :is-clear-all-enabled="isClearAllEnabled"
           :is-clear-disabled-enabled="isClearDisabledEnabled"
@@ -235,70 +193,41 @@
           :save-textarea-height="saveTextareaHeight"
           :close-autocomplete="closeAutocomplete"
           :select-autocomplete="selectAutocomplete"
-          :open-random-tag-settings="openRandomTagSettings"
-          :one-click-random-tag="oneClickRandomTag"
           :is-text-translatable="isTextTranslatable"
           @clear-all="clearAllPrompt"
           @clear-disabled="clearDisabledTags"
         />
 
-      <!-- Lora管理器容器 -->
-      <div class="tag-manager-section">
-
-        <!-- 框选操作菜单 -->
-        <div v-show="showSelectionActions" class="token-controls" :style="selectionActionsPosition"
-          @mouseenter="isOverControls = true" @mouseleave="handleControlsLeave">
-          <div class="weilin-comfyui-selection-actions-content">
-            <div class="weilin-comfyui-selection-actions-count">选中 {{ selectedTokens.length }} 个标签</div>
-            <div class="weilin-comfyui-selection-actions-buttons">
-              <button class="delete-btn copy-btn" @click="copySelectedTokens" title="复制">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
-                </svg>
-              </button>
-              <button class="delete-btn" @click="disableSelectedTokens" title="禁用">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="10" fill="none" stroke="#ff4d4f" stroke-width="2" />
-                  <path d="M8.5 8.5l7 7" stroke="#ff4d4f" stroke-width="2" stroke-linecap="round" />
-                </svg>
-              </button>
-              <button class="delete-btn enable-btn" @click="enableSelectedTokens" title="启用">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                </svg>
-              </button>
-              <button class="delete-btn" @click="deleteSelectedTokens" title="删除">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                </svg>
-              </button>
-            </div>
+      <div v-show="showSelectionActions" class="token-controls" :style="selectionActionsPosition"
+        @mouseenter="isOverControls = true" @mouseleave="handleControlsLeave">
+        <div class="weilin-comfyui-selection-actions-content">
+          <div class="weilin-comfyui-selection-actions-count">选中 {{ selectedTokens.length }} 个标签</div>
+          <div class="weilin-comfyui-selection-actions-buttons">
+            <button class="delete-btn copy-btn" @click="copySelectedTokens" title="复制">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+              </svg>
+            </button>
+            <button class="delete-btn" @click="disableSelectedTokens" title="禁用">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" fill="none" stroke="#ff4d4f" stroke-width="2" />
+                <path d="M8.5 8.5l7 7" stroke="#ff4d4f" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </button>
+            <button class="delete-btn enable-btn" @click="enableSelectedTokens" title="启用">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+              </svg>
+            </button>
+            <button class="delete-btn" @click="deleteSelectedTokens" title="删除">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+              </svg>
+            </button>
           </div>
-        </div>
-
-        <div class="tag-manager-header" @click="toggleLoraManager">
-          <div class="header-left">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" class="tag-icon" width="24" height="24">
-              <path
-                d="M129 128h350v80H209v224h270v80H129V128zM129 895V576h768v319H129z m80-239v159h608V656H209zM730 356c19.882 0 36-16.118 36-36s-16.118-36-36-36-36 16.118-36 36 16.118 36 36 36z">
-              </path>
-              <path
-                d="M578.517 214.386a32.002 32.002 0 0 0-16.01 27.731l0.058 155.918a31.998 31.998 0 0 0 16 27.701l135.156 78.033a32.002 32.002 0 0 0 31.99 0.006l135.058-77.909a32.002 32.002 0 0 0 16.01-27.731l-0.058-155.918a32 32 0 0 0-16-27.701l-135.157-78.033a31.998 31.998 0 0 0-31.989-0.005l-135.058 77.908z m67.002 58.058l84.033-48.591 84.181 48.715 0.034 95.24-84.034 48.591-84.18-48.714-0.034-95.241z">
-              </path>
-            </svg>
-            <span class="section-title">{{ t('controls.loraManager') }}</span>
-          </div>
-          <div class="header-right">
-            <svg class="collapse-icon" :class="{ 'is-collapsed': !showLoraManager }" viewBox="0 0 24 24">
-              <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z" />
-            </svg>
-          </div>
-        </div>
-        <div class="lora-manager-container" v-show="showLoraManager">
-          <LoraManager :loraManager="'prompt_inner'" />
         </div>
       </div>
 
@@ -344,7 +273,6 @@ import { translatorApi } from '@/api/translator'
 import { historyApi } from '@/api/history'
 import message from '@/utils/message'
 import { autocompleteApi } from '@/api/autocomplete'
-import LoraManager from "@/view/lora_manager/lora_index.vue"
 import RandomSetting from './components/random_setting.vue'
 import { randomTagApi } from '@/api/random_tag'
 import pako from 'pako'
@@ -2049,11 +1977,6 @@ const openTagManager = () => {
   window.parent.postMessage({ type: 'weilin_prompt_ui_openTagManager_prompt' }, '*')
 }
 
-const openLoraManager = () => {
-  // 发送消息给父窗口
-  window.parent.postMessage({ type: 'weilin_prompt_ui_openLoraManager' }, '*')
-}
-
 const openHistoryBox = () => {
   // 发送消息给父窗口
   window.parent.postMessage({ type: 'weilin_prompt_ui_openHistoryManager' }, '*')
@@ -2065,14 +1988,6 @@ const showTagManager = ref(true)
 // 切换标签管理器显示状态
 const toggleTagManager = () => {
   showTagManager.value = !showTagManager.value
-}
-
-// 添加折叠状态控制
-const showLoraManager = ref(false)
-
-// 切换Lora管理器显示状态
-const toggleLoraManager = () => {
-  showLoraManager.value = !showLoraManager.value
 }
 
 const resizeObserver = ref(null)
@@ -3300,11 +3215,6 @@ const updateInputText = () => {
   if (!suppressUnsavedOnce) unsavedChanges.value = true
 };
 
-// AI对话
-const openAIChat = () => {
-  window.parent.postMessage({ type: 'weilin_prompt_ui_openAiWindow' }, '*')
-}
-
 const openGitHub = () => {
   window.open('https://github.com/weilin9999/WeiLin-Comfyui-Tools', '_blank')
 }
@@ -3352,41 +3262,6 @@ const toggleHidden = (index) => {
     // 更新输入文本，排除隐藏的tokens
     updateInputText();
   }
-};
-
-const openBilibili = () => {
-  window.open('https://www.bilibili.com/list/288025756/?sid=4690314&spm_id_from=333.1387.0.0&oid=114342431298474&bvid=BV1txdfYxE7X', '_blank');
-};
-
-// 一键随机Tag方法
-const oneClickRandomTag = async () => {
-  if (props.promptManager == "prompt_global") {
-    try {
-      await randomTagApi.goRandomTemplate().then((res) => {
-        if (res.code === 200) {
-          // console.log(res.random_tags)
-          inputText.value = res.random_tags
-          nextTick(() => {
-            // 触发输入处理
-            processInput();
-          })
-        } else {
-          message({ type: "warn", str: res.info });
-        }
-      }).catch((err) => {
-        console.error(err);
-        message({ type: "warn", str: 'message.networkError' });
-      });
-    } catch (error) {
-      message({ type: "warn", str: 'message.networkError' });
-      console.error('Error loading random tag settings:', error)
-    }
-  } else {
-    window.postMessage({
-      type: 'weilin_prompt_ui_prompt_inner_get_node_tag_template_id_gorandom'
-    }, '*')
-  }
-
 };
 
 const onClickLocalTemplateRandomTag = async (name) => {
@@ -3450,11 +3325,6 @@ const shortcodeToPath = (shortcode) => {
     console.error('解析短码时出错:', error);
     return '';
   }
-};
-
-// 打开随机Tag设置对话框
-const openRandomTagSettings = () => {
-  randomSettingItem.value.open(props.promptManager)
 };
 
 const clearAllPrompt = () => {
