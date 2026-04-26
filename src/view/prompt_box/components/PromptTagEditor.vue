@@ -772,10 +772,16 @@ const showSelectionActionsMenu = () => {
 const handleSelectionMouseDown = (event) => {
   if (event.button !== 0 || event.ctrlKey || event.metaKey || isDragging.value) return
 
-  const interactiveTarget = event.target.closest(
-    '.token-item-box, .token-item, .newline-token, .tab-token, .delete-btn, .weight-control, .bracket-btn, .translate-button, .tag-tips-box, .token-controls'
+  // 规则收敛：
+  // 1. 光标在 Tag 上 -> 只走拖拽逻辑（由子组件阻止冒泡到这里）
+  // 2. 光标不在 Tag 上 -> 走框选逻辑
+  const isOnTag = !!event.target.closest('.token-item-box')
+  if (isOnTag) return
+
+  const blockedTarget = event.target.closest(
+    '.delete-btn, .weight-control, .bracket-btn, .translate-button, .tag-tips-box, .token-controls, .selection-actions-controls'
   )
-  if (interactiveTarget) return
+  if (blockedTarget) return
 
   const point = getContainerPointer(event)
   selectionStart.value = point

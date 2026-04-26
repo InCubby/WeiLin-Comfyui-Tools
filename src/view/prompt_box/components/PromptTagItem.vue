@@ -15,6 +15,7 @@
         'token-item-box-drop-target': showDropIndicator,
         'token-item-box-selected': isSelected
       }"
+      @mousedown.stop
       @dragstart="emit('drag-start', index, $event)"
       @dragend="emit('drag-end', index, $event)"
       @dblclick="emit('toggle-hidden', index)"
