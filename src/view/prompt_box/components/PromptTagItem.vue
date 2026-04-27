@@ -12,8 +12,7 @@
         'token-item-box-disabled': token.isHidden,
         'token-item-box-drag-source': isDragSource,
         'token-item-box-dragging': isDragging,
-        'token-item-box-drop-target': showDropIndicator,
-        'token-item-box-selected': isSelected
+        'token-item-box-drop-target': showDropIndicator
       }"
       @mousedown.stop
       @dragstart="emit('drag-start', index, $event)"
@@ -126,10 +125,6 @@
       default: false
     },
     showDropIndicator: {
-      type: Boolean,
-      default: false
-    },
-    isSelected: {
       type: Boolean,
       default: false
     },
@@ -395,17 +390,6 @@
 
   .token-item-box-disabled > * {
     position: relative;
-    z-index: 2;
-  }
-
-  .token-item-box-selected {
-    border: 2px solid #4285f4 !important;
-    box-shadow: 0 0 8px #4285f455;
-    background-color: rgb(66 133 244 / 0.08) !important;
-    transition:
-      border-color 0.2s,
-      box-shadow 0.2s,
-      background-color 0.2s;
     z-index: 2;
   }
 

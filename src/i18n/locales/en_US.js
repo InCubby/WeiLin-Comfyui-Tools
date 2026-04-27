@@ -41,19 +41,11 @@ export default {
       english: 'English',
       close: 'Close',
       auto_detect: 'Auto Detect',
-      setting_floating_ball: 'Setting Floating Ball',
       setting_prompt_box: 'Setting Prompt Box',
       setting_function_toggles: 'Function Toggle Settings',
       setting_function_toggles_full: 'Function Toggle Settings (Reopen window to take effect)',
       enableClearDisabled: 'Enable Clear Disabled',
       enablePromptCommaShow: 'Show Prompt Comma',
-      floatingBallCount: 'Floating Ball Count',
-      floatingBallCountPlaceholder: 'Please enter the number of floating balls',
-      floatingBallSize: 'Width of suspended ball',
-      floatingBallSizePlaceholder: 'Please enter the width of the suspension ball',
-      floatingBallHeight: 'Height of suspended ball',
-      floatingBallHeightPlaceholder: 'Please input the height of the suspension ball',
-      enableFloatingBall: 'Enable Floating Ball',
       enableCommaConversion: 'Enable Comma Conversion',
       enablePeriodConversion: 'Enable Period Conversion',
       enableBracketConversion: 'Enable Bracket Conversion',
@@ -111,17 +103,7 @@ export default {
       testingTranslater: 'Test translation',
       inputTestTranslaterPlaceholder: 'Please enter the content to be translated',
       outPutTestTranslaterPlaceholder: 'The translation result will be displayed here',
-      errorPrompt: 'Read the prompt node failed',
-      skinSetting: 'skin setting',
-      defaultSkin: 'default skin',
-      customSkin: 'custom skin',
-      uploadSkin: 'upload skin',
-      bgSetting: 'background setting',
-      gradientBg: 'gradient color',
-      transparentBg: 'transparent',
-      gradientColor: 'gradient color select',
-      borderRadius: 'border radius',
-      resetToDefault: 'reset to default'
+      errorPrompt: 'Read the prompt node failed'
     }
   },
   controls: {
@@ -132,7 +114,6 @@ export default {
     lightMode: 'Light Mode',
     tagManager: 'Tag Manager',
     history: 'History',
-    aiChat: 'AI Chat',
     github: 'Github Home',
     shareCloudData: 'Share Cloud Data',
     tutorialVideo: 'Tutorial Video',
@@ -374,23 +355,6 @@ export default {
     edit_favorite: 'Edit favorite',
     delete_favorite: 'Delete favorite',
     use_favorite: 'Use favorite'
-  },
-  floatingBall: {
-    promptBox: 'open Global Prompt Box',
-    tagManager: 'open Tag Manager',
-    aiWindow: 'open AI Chat',
-    restoreWindow: 'reset all windows',
-    openNodeListWindow: 'open Node List',
-    tranToWeb: 'Image to Web Utils',
-    openSetting: 'open Setting'
-  },
-  aiWindow: {
-    windowTitle: 'AI Chat Window',
-    newChat: 'New Chat',
-    chatName: 'Chat',
-    thinking: 'Thinking...',
-    send: 'Send',
-    inputMessage: 'Enter your message...'
   },
   translaterService: {
     niutrans: 'niutrans',

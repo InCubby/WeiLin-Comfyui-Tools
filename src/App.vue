@@ -56,22 +56,6 @@
       <HistoryManager />
     </DraggableWindow>
 
-    <!-- AI窗口 -->
-    <DraggableWindow
-      name="aiWindow"
-      v-if="windows.ai_window.visible"
-      :title="t('aiWindow.windowTitle')"
-      :position="windows.ai_window.position"
-      :size="windows.ai_window.size"
-      :z-index="windowManager.getZIndex('ai_window')"
-      @update:position="updatePosition('ai_window', $event)"
-      @update:size="updateSize('ai_window', $event)"
-      @active="windowManager.setActiveWindow('ai_window')"
-      @close="closeWindow('ai_window')"
-    >
-      <AiWindow />
-    </DraggableWindow>
-
     <!-- 节点列表快捷窗口 -->
     <DraggableWindow
       name="nodeListWindow"
@@ -120,9 +104,6 @@
       <DanbooruManagerWindow ref="danbooruManagerRef" />
     </DraggableWindow>
 
-    <!-- 悬浮球 -->
-    <FloatingBall v-if="isFloatingBallEnabled" />
-
     <!-- 版本更新提示 -->
     <div v-if="showVersionUpdate" class="version-update-notification">
       <div class="version-update-content">
@@ -145,8 +126,6 @@
   import TagManager from './view/tag_manager/tag_index.vue'
   import HistoryManager from './view/history_manager/history_index.vue'
   import { windowManager } from '@/utils/windowManager'
-  import FloatingBall from '@/components/FloatingBall.vue'
-  import AiWindow from '@/view/ai_window/ai_window.vue'
   import NodeListWindow from '@/view/node_list/index.vue'
   import CloudWindow from '@/view/cloud/index.vue'
   import DanbooruManagerWindow from '@/view/danbooru/danbooru_manager.vue'
@@ -156,14 +135,6 @@
 
   // 初始化 i18n
   const { t } = useI18n()
-
-  const isFloatingBallEnabled = ref(
-    localStorage.getItem('weilin_prompt_ui_floatingBallEnabled') === 'true'
-  )
-  if (!localStorage.getItem('weilin_prompt_ui_floatingBallEnabled')) {
-    localStorage.setItem('weilin_prompt_ui_floatingBallEnabled', 'true')
-    isFloatingBallEnabled.value = true
-  }
 
   const thisEditPromptId = ref('')
   const STORAGE_PREFIX = 'weilin_tools_'
@@ -222,12 +193,6 @@
       visible: false,
       is_default_close: false,
       position: { x: 300, y: 300 },
-      size: { width: 800, height: 600 }
-    },
-    ai_window: {
-      visible: false,
-      is_default_close: false,
-      position: { x: 400, y: 400 },
       size: { width: 800, height: 600 }
     },
     node_list_window: {
@@ -396,12 +361,6 @@
         position: { x: 300, y: 300 },
         size: { width: 800, height: 600 }
       },
-      ai_window: {
-        visible: false,
-        is_default_close: false,
-        position: { x: 400, y: 400 },
-        size: { width: 800, height: 600 }
-      },
       node_list_window: {
         visible: false,
         is_default_close: false,
@@ -495,9 +454,6 @@
     } else if (event.data.type === 'weilin_prompt_ui_openHistoryManager') {
       windows.value.history.visible = true
       windowManager.setActiveWindow('history')
-    } else if (event.data.type === 'weilin_prompt_ui_openAiWindow') {
-      windows.value.ai_window.visible = true
-      windowManager.setActiveWindow('ai_window')
     } else if (event.data.type === 'weilin_prompt_ui_open_node_list_window') {
       windows.value.node_list_window.visible = true
       windowManager.setActiveWindow('node_list_window')
@@ -523,9 +479,6 @@
       windowManager.setActiveWindow('tag')
     } else if (event.data.type === 'weilin_prompt_ui_prompt_update_prompt_global') {
       globalPrompt.value = event.data.data
-    } else if (event.data.type === 'weilin_prompt_ui_floating_ball_setting') {
-      isFloatingBallEnabled.value =
-        localStorage.getItem('weilin_prompt_ui_floatingBallEnabled') === 'true'
     } else if (event.data.type === 'weilin_prompt_ui_restore_window') {
       restoreWindowsToDefault()
     } else if (event.data.type === 'weilin_prompt_ui_open_cloud_window') {
