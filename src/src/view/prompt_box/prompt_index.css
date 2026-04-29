@@ -6,12 +6,42 @@
   flex-direction: row;
   box-sizing: border-box;
   overflow: hidden;
-  background: var(--weilin-prompt-ui-primary-bg);
+  background: rgb(45 45 45);
   transition: width 0.3s ease;
 }
 
-.weilin_prompt_ui_main-content {
+.weilin_prompt_ui_panel-shell {
   height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgb(25 26 28);
+  box-sizing: border-box;
+  padding: 4px 8px;
+}
+
+.weilin_prompt_ui_panel-shell--label {
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
+  flex: 0 0 280px;
+  margin-right: 8px;
+}
+
+.weilin_prompt_ui_panel-shell--label > * {
+  height: 100%;
+  background: transparent;
+  border-right: none;
+}
+
+.weilin_prompt_ui_panel-shell--main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.weilin_prompt_ui_main-content {
+  flex: 1 1 auto;
   min-height: 0;
   min-width: 0;
   display: flex;
@@ -1141,7 +1171,7 @@
 .center-container {
   display: flex;
   flex-wrap: nowrap;
-  flex: 0 0 auto;
+  flex: 0 0 64px;
   height: 64px;
   min-height: 64px;
   max-height: 64px;
@@ -1218,3 +1248,4 @@
 .quick-delete-btn:active svg {
   filter: brightness(0.85);
 }
+

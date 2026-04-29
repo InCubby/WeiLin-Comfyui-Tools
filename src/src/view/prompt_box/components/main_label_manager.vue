@@ -819,8 +819,8 @@
     flex-direction: column;
     box-sizing: border-box;
     padding: 12px 8px 12px 4px;
-    border-right: 1px solid var(--weilin-prompt-ui-border-color);
-    background: var(--weilin-prompt-ui-primary-bg);
+    border-right: none;
+    background: transparent;
     height: 100%;
     min-height: 0;
     overflow: hidden;

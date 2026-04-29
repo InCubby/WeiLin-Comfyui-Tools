@@ -15,14 +15,9 @@
       </div>
 
       <!-- 内容区域 -->
-      <div
-        class="weilin_prompt_ui_window-content"
-        :style="contentStyle"
-        @scroll="handleScroll"
-      >
-        <slot></slot>
+      <div class="weilin_prompt_ui_window-content" :style="contentStyle" @scroll="handleScroll">
+        <slot />
       </div>
-
     </div>
   </Teleport>
 </template>
@@ -321,7 +316,7 @@
 <style scoped>
   .weilin_prompt_ui_draggable-window {
     position: absolute;
-    background: var(--weilin-prompt-ui-primary-bg);
+    background: rgb(45 45 45);
     border: 1px solid var(--weilin-prompt-ui-border-color);
     border-radius: 8px;
     box-shadow: 0 2px 12px 0 rgb(0 0 0 / 0.1);
@@ -336,7 +331,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 8px 12px;
-    background: var(--weilin-prompt-ui-secondary-bg);
+    background: transparent;
     cursor: move;
     user-select: none;
   }
@@ -367,8 +362,8 @@
 
   .weilin_prompt_ui_window-content {
     flex: 1;
-    padding: 16px;
-    background: var(--weilin-prompt-ui-primary-bg);
+    padding: 0 8px 8px;
+    background: transparent;
   }
 
   .weilin_prompt_ui_window-content::-webkit-scrollbar {

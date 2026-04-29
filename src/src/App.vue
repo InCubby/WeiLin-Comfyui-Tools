@@ -353,11 +353,6 @@
     initTheme()
     // 添加消息监听
     window.addEventListener('message', handleMessage)
-
-    // getTagsData();
-
-    // 检查版本更新
-    checkForUpdates()
   })
 
   // 初始化主题
@@ -428,7 +423,7 @@
 
     const DEFAULT_GOL_WINDOWS = {
       prompt: {
-        visible: false,
+        visible: true,
         is_default_close: false,
         position: { x: 100, y: 100 },
         size: { width: 600, height: 400 }
@@ -696,70 +691,11 @@
       }
     }
   }
-
-  // 检查版本更新
-  const checkForUpdates = async () => {
-    try {
-      // 检查是否禁用了版本更新提醒
-      const isRemindDisabled = localStorage.getItem(VERSION_UPDATE_REMIND_KEY) === 'false'
-      if (isRemindDisabled) {
-        console.info('WeiLin-Comfyui-Tools 版本更新提醒已禁用')
-        return
-      }
-
-      const response = await fetch(
-        'https://raw.githubusercontent.com/weilin9999/WeiLin-Comfyui-Tools/refs/heads/main/src/src/utils/version.js'
-      )
-      if (!response.ok) {
-        console.error('获取版本信息失败:', response.status)
-        return
-      }
-
-      const text = await response.text()
-      // 使用正则表达式提取版本号
-      const versionMatch = text.match(/export const version = "([^"]+)"/)
-
-      if (versionMatch && versionMatch[1]) {
-        const remoteVersion = versionMatch[1]
-        console.info(`WeiLin-Comfyui-Tools GitHub版本： ${remoteVersion}`)
-        // 比较版本号
-        if (remoteVersion !== localVersion) {
-          // 显示更新提示
-          versionUpdateMessage.value = `WeiLin-Comfyui-Tools 发现新版本 ${remoteVersion}，当前版本 ${localVersion}`
-          showVersionUpdate.value = true
-
-          // 10秒后自动关闭
-          if (versionUpdateTimer.value) {
-            clearTimeout(versionUpdateTimer.value)
-          }
-          versionUpdateTimer.value = setTimeout(() => {
-            showVersionUpdate.value = false
-            versionUpdateTimer.value = null
-          }, 10000)
-
-          console.info(
-            `WeiLin-Comfyui-Tools 发现新版本 ${remoteVersion}，当前版本 ${localVersion} GitHub链接：https://github.com/weilin9999/WeiLin-Comfyui-Tools`
-          )
-        }
-      }
-    } catch (error) {
-      console.error('WeiLin-Comfyui-Tools 检查更新失败:', error)
-    }
-  }
 </script>
 
 <style scoped>
-  .main-container {
-    width: 100%;
-    height: 100%;
-  }
 
-  /* 确保所有对话框都在窗口之上 */
-  :deep(.dialog-overlay) {
-    z-index: 9999 !important;
-  }
-
-  /* 版本更新提示样式 */
+/* 版本更新提示样式 */
   .version-update-notification {
     position: fixed;
     right: 10px;
@@ -839,7 +775,5 @@
     justify-content: flex-end;
     margin-top: 10px;
     gap: 5px;
-
-    /* 添加按钮间距 */
   }
 </style>
