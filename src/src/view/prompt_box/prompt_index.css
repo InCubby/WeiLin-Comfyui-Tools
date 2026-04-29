@@ -989,8 +989,6 @@
   padding: 2px 5px;
   border-radius: 3px;
   pointer-events: none;
-
-  /* 确保不会干扰文本输入 */
 }
 
 /* 暗色主题适配 */

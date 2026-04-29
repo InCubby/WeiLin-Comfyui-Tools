@@ -9,7 +9,6 @@
     <LoraStack v-if="props.promptManager === 'prompt'" :is-open="loraOpen" :selected-loras="selectedLoras"
       @close="closeLora" />
     <!-- 主标签管理器（左侧边栏） -->
-    <!-- <MainLabelManager ref="mainLabelManagerRef" :selected-id="selectedMainLabelId" @select="onSelectMainLabel" /> -->
     <MainLabelManager v-if="isLabelManagerVisible" ref="mainLabelManagerRef" :selected-id="selectedMainLabelId"
       @select="onSelectMainLabel" />
     <!-- 主要内容容器 -->
@@ -18,14 +17,6 @@
       <!-- 操作栏 -->
       <div class="center-container">
 
-        <!-- <div class="action-item">
-      <button class="tag-manager-btn" @click="toggleLabelManager" :title="t(isLabelManagerVisible ? 'controls.hideSidebar' : 'controls.showSidebar')">
-        <svg class="sidebar-toggle-icon" :class="{ 'is-closed': !isLabelManagerVisible }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-          <path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-        </svg>
-        <span class="action-text">{{ t('controls.sidebar') }}</span>
-      </button>
-    </div> -->
         <div class="action-item">
           <button class="tag-manager-btn" @click="toggleLabelManager"
             :title="isLabelManagerVisible ? '收起标签栏' : '展开标签栏'">
@@ -209,7 +200,6 @@
       <div class="weilin_prompt_ui_main-scroll">
         <div style="position: relative;" ref="parentCneterBox">
           <!-- 输入框区域 -->
-          <!-- 移除事件 @change="finishPromptPutItHistory" -->
         <textarea v-model="inputText" class="input-area" @input="handleInput" :placeholder="t('promptBox.placeholder')"
           @keydown="handleKeydown" @blur="onBlur" rows="6" ref="inputAreaRef" @mouseup="saveTextareaHeight"
           @resize="saveTextareaHeight"></textarea>
@@ -218,24 +208,6 @@
         <div class="token-counter">
           {{ tokenCount }} tokens
         </div>
-
-        <style>
-          .token-counter {
-            position: absolute;
-            bottom: 5px;
-            left: 5px;
-            z-index: 10;
-            color: #aaa;
-            background-color: #f0f0f0;
-            /* 灰色背景，可调整深浅 */
-            padding: 2px 6px;
-            /* 给文字一点内边距，看起来更清晰 */
-            border-radius: 4px;
-            /* 圆角，可选 */
-            user-select: none;
-            /* 禁止文字被选中 */
-          }
-        </style>
 
         <!-- 自动补全窗口 -->
         <div class="autocomplete-container" ref="autocompleteContainerRef" :style="{
@@ -863,14 +835,8 @@ const mainContentWidth = computed(() => {
   const left = (loraOpen.value ? 300 : 0) + labelManagerWidth; // Lora(可变) + 主标签管理器(可变)
   return `calc(100% - ${left}px)`;
 });
-// const mainContentWidth = computed(() => {
-//   const left = (loraOpen.value ? 300 : 0) + 280 // Lora(可变) + 主标签管理器(固定)
-//   return `calc(100% - ${left}px)`
-// })
-
 let suppressUnsavedOnce = false
 const onSelectMainLabel = (item) => {
-  // console.log('onSelectMainLabel', item)
   if (!item) {
     selectedMainLabelId.value = null
     inputText.value = ''
@@ -1301,7 +1267,6 @@ const calculateAutocompletePosition = async () => {
 
     const textarea = inputAreaRef.value;
     const cursorPos = textarea.selectionStart;
-    // console.log(textarea,cursorPos)
 
     // 确保自动补全窗口已经渲染
     await nextTick();
@@ -1594,56 +1559,6 @@ const processInput = async () => {
     while (i < str.length) {
       const char = str[i];
 
-      // 处理开括号
-      // if ('([{<'.includes(char)) {
-      //   // 检测前一个字符是否是逗号或空格，或者是否是字符串开头
-      //   const prevChar = i > 0 ? str[i - 1] : '';
-      //   const isValidStart = prevChar === '' || prevChar === ',' || prevChar === ' ';
-
-      //   if (isValidStart) {
-      //     if (bracketStack.length === 0 && buffer.trim()) {
-      //       // 如果这是第一层括号且缓冲区不为空，按逗号分割并添加
-      //       segments.push(...buffer.split(',').filter(Boolean).map(s => s.trim()));
-      //       buffer = '';
-      //     }
-      //     bracketStack.push(char);
-      //     buffer += char;
-      //   } else {
-      //     // 如果不是有效开始，按普通字符处理
-      //     buffer += char;
-      //   }
-      // }
-      // // 处理闭括号
-      // else if (')]}>'.includes(char)) {
-      //   const lastBracket = bracketStack[bracketStack.length - 1];
-      //   if (('(' === lastBracket && ')' === char) ||
-      //     ('[' === lastBracket && ']' === char) ||
-      //     ('{' === lastBracket && '}' === char) ||
-      //     ('<' === lastBracket && '>' === char)) {
-
-      //     // 只有在存在对应的开括号时才进行后续检测
-      //     if (bracketStack.length > 0) {
-      //       // 检测后一个字符是否是逗号或空格，或者是否是字符串结尾
-      //       const nextChar = i < str.length - 1 ? str[i + 1] : '';
-      //       const isValidEnd = nextChar === '' || nextChar === ',' || nextChar === ' ';
-
-      //       if (isValidEnd) {
-      //         bracketStack.pop();
-      //         buffer += char;
-
-      //         // 如果括号全部匹配完成，添加整个括号内容
-      //         if (bracketStack.length === 0) {
-      //           segments.push(buffer.trim());
-      //           buffer = '';
-      //         }
-      //       } else {
-      //         // 如果不是有效结束，按普通字符处理
-      //         buffer += char;
-      //       }
-      //     }
-      //   }
-      // }
-
       // 处理换行符
       if (char === '\n') {
         if (buffer.trim()) {
@@ -1863,7 +1778,6 @@ const processInput = async () => {
   }
   // ✅ 修复：减少延迟时间从1000ms到100ms
   proceTimeout.value = setTimeout(() => {
-    // console.log('处理历史记录');
     finishPromptPutItHistory();
   }, 100);  // 从1000改为100
   postMessageToWindowsPrompt();
@@ -1894,26 +1808,12 @@ const processInput = async () => {
     currentIndex = endIndex;
   }
 
-  // 处理翻译
-  // for (let i = 0; i < tokens.value.length; i++) {
-  //   if (tokens.value[i].text.length > 0 && !tokens.value[i].translate) {
-  //     let cleanedTrSegment = tokens.value[i].text;
-  //     const text = extractText(cleanedTrSegment.trim());
-  //     translatorApi.getTranslateLocal(text).then(res => {
-  //       const translate = res;
-  //       tokens.value[i].translate = translate.translated.translate;
-  //       tokens.value[i].color = translate.translated.color;
-  //     });
-  //   }
-  // }
-
   // 计算token数量（简单实现，可根据实际分词算法调整）
   tokenCount.value = calculateTokens(inputText.value)
 };
 
 const oneClickTranslatePrompt = async () => {
 
-  // if (localStorage.getItem('weilin_prompt_ui_translater_setting') == 'translater') {
   const batchSize = 50; // 每批处理的数量
   let currentIndex = 0;
   let processedCount = 0;
@@ -2010,61 +1910,6 @@ const oneClickTranslatePrompt = async () => {
   }
 
   console.log(`批量翻译完成！总共处理 ${processedCount}/${totalCount} 个项目`);
-  // }
-
-  // else {
-
-  //   const batchSize = 2; // 每批最多2个
-  //   let currentIndex = 0;
-  //   const MAX_TOKEN_LENGTH = 20; // 超过20单独翻译
-
-  //   while (currentIndex < tokens.value.length) {
-  //     let batchTranslateData = [];
-  //     let batchTokenIds = [];
-  //     let batchTokenLength = 0;
-  //     let batchCount = 0;
-
-  //     // 收集本批次
-  //     for (let i = currentIndex; i < tokens.value.length; i++) {
-  //       const token = tokens.value[i];
-  //       if (
-  //         token.translate &&
-  //         /[a-zA-Z]/.test(token.translate) &&
-  //         !(typeof token.text === 'string' && token.text.startsWith('<wlr'))
-  //       ) {
-  //         const textToTranslate = token.text;
-  //         const textLen = textToTranslate.length;
-
-  //         if (textLen > MAX_TOKEN_LENGTH) {
-  //           // 单独翻译
-  //           const jsonString = JSON.stringify([{ index: token.id, text: textToTranslate, translate: '' }]);
-  //           await tryTranslate(jsonString, [token.id]);
-  //           currentIndex = i + 1;
-  //           break;
-  //         } else {
-  //           batchTranslateData.push({ index: token.id, text: textToTranslate, translate: '' });
-  //           batchTokenIds.push(token.id);
-  //           batchTokenLength += textLen;
-  //           batchCount++;
-  //         }
-  //       }
-
-  //       // 满2个就发起翻译
-  //       if (batchCount === batchSize) {
-  //         break;
-  //       }
-  //     }
-
-  //     if (batchTranslateData.length > 0) {
-  //       const jsonString = JSON.stringify(batchTranslateData);
-  //       await tryTranslate(jsonString, batchTokenIds);
-  //     }
-
-  //     // 跳过已处理的token
-  //     currentIndex += batchCount > 0 ? batchCount : 1;
-  //   }
-
-  // }
 
 };
 
@@ -2099,7 +1944,6 @@ const tryTranslate = async (jsonString, tokenIds) => {
 const tempInputText = ref('')
 
 const finishPromptPutItHistory = () => {
-  // console.log('finishPromptPutItHistory 被调用', new Error().stack);
   // 去除空格、换行和制表符
   const trimmedInput = inputText.value.replace(/[\s\t\n]+/g, '');
   if (selectedLoras.value.length > 0) {
@@ -2156,7 +2000,6 @@ const postMessageToWindowsPrompt = () => {
       type: 'weilin_prompt_ui_prompt_finish_prompt',
       data: jsonStr
     }, '*')
-    // console.log('postMessageToWindowsPrompt sent with lora:', jsonStr);
   } else {
     tempInputText.value = inputText.value
     const putJson = {
@@ -2170,7 +2013,6 @@ const postMessageToWindowsPrompt = () => {
       type: 'weilin_prompt_ui_prompt_finish_prompt',
       data: jsonStr
     }, '*')
-    // console.log('postMessageToWindowsPrompt sent with lora:', jsonStr);
   }
 }
 
@@ -2487,7 +2329,6 @@ watch(tokens, (newTokens) => {
 }, { deep: true })
 
 watch(selectedLoras, (newLoras) => {
-  // console.log(newLoras)
   // finishPromptPutItHistory()
   finishPromptPutItHistory()
   unsavedChanges.value = true
@@ -3198,7 +3039,6 @@ const handleMessage = (event) => {
   } else if (event.data.type === 'weilin_prompt_ui_translate_setting') {
     initTranslate()
   } else if (event.data.type === 'weilin_prompt_ui_selectLora') {
-    // console.log(event.data.lora)
     if (event.data.lora.loraWorks != undefined && event.data.lora.loraWorks.length > 0) {
       // 在输入框末尾添加标签文本
       const currentText = inputText.value
@@ -3220,7 +3060,6 @@ const handleMessage = (event) => {
   } else if (event.data.type === 'weilin_prompt_ui_prompt_inner_get_node_tag_template_id_go_random_response') {
     onClickLocalTemplateRandomTag(event.data.data)
   } else if (event.data.type === 'weilin_prompt_ui_addLoraTag_inner') {
-    // console.log(event.data.lora)
     if (event.data.lora.loraWorks != undefined && event.data.lora.loraWorks.length > 0) {
       // 在输入框末尾添加标签文本
       const currentText = inputText.value
@@ -3269,59 +3108,24 @@ const initTranslate = async () => {
     localStorage.setItem('weilin_prompt_ui_targetLanguage', savedTargetLanguage);
   }
   if (savedSourceLanguage !== 'auto') {
-    // translate.language.setLocal(savedSourceLanguage);
   }
-  // translate.language.setDefaultTo(savedTargetLanguage);
 
   // 解决common命名空间翻译未生效问题：强制触发Vue I18n更新
   await nextTick();
 }
 
 const translateFunction = (texts, token) => {
-  // if (localStorage.getItem('weilin_prompt_ui_translater_setting') == 'network') {
-  //   translate.request.translateText(texts, function (data) {
-  //     if (data.result > 0) {
-  //       const translatedText = data.text.map(item => item.replace(/[\[\]“”]/g, '')).join(', ');
-  //       token.translate = translatedText
-  //     }
-  //     //打印翻译结果
-  //     // console.log(data);
-  //   });
-  // } else if (localStorage.getItem('weilin_prompt_ui_translater_setting') == 'translater') {
   translatorApi.translaterText('', texts).then(res => {
-    // console.log(res)
     if (res.data.length > 0) {
       token.translate = res.data;
     }
   })
-  // } else {
-
-  //   let needTranslateData = { index: token.id, text: token.text, translate: '' }
-  //   const jsonString = JSON.stringify(needTranslateData)
-
-  //   translatorApi.translaterText(jsonString, "").then(res => {
-  //     if (res) {
-  //       if (res.data) {
-  //         const jsonData = JSON.parse(res.data)
-  //         // console.log(jsonData)
-  //         token.translate = jsonData.translate
-  //       }
-  //     }
-  //   })
-  //   // translatorApi.translaterText(texts).then(res => {
-  //   //   // console.log(res)
-  //   //   if (res.text.length > 0) {
-  //   //     token.translate = res.text;
-  //   //   }
-  //   // })
-  // }
 }
 
 const finishTranslateEnter = () => {
 
   // API翻译
   translatorApi.translaterInputText('', translateText.value).then(res => {
-    // console.log(res)
     if (res.data.length > 0) {
       tokens.value.push({
         text: res.data,
@@ -3335,92 +3139,6 @@ const finishTranslateEnter = () => {
       updateInputText()
     }
   })
-
-  // if (localStorage.getItem('weilin_prompt_ui_translater_setting') == 'network') {
-  //   // const restran = translate.language.recognition(translateText.value)
-  //   // var obj = {
-  //   //   from: restran.languageName,
-  //   //   to: 'english',
-  //   //   texts: [translateText.value]
-  //   // }
-
-  //   // translate.request.translateText(obj, function (data) {
-  //   //   if (data.result > 0) {
-  //   //     const translatedText = data.text.map(item => item.replace(/[\[\]“”]/g, '')).join(', ');
-  //   //     tokens.value.push({
-  //   //       text: translatedText,
-  //   //       translate: translateText.value,
-  //   //       isPunctuation: false,
-  //   //       isEditing: false,
-  //   //       isHidden: false,
-  //   //       color: ''
-  //   //     });
-  //   //     translateText.value = ''
-  //   //     updateInputText()
-  //   //   }
-  //   //   //打印翻译结果
-  //   //   // console.log(data);
-  //   // });
-  // } else if (localStorage.getItem('weilin_prompt_ui_translater_setting') == 'translater') {
-  //   // API翻译
-  //   translatorApi.translaterInputText('', translateText.value).then(res => {
-  //     // console.log(res)
-  //     if (res.text.length > 0) {
-  //       tokens.value.push({
-  //         text: res.data,
-  //         translate: translateText.value,
-  //         isPunctuation: false,
-  //         isEditing: false,
-  //         isHidden: false,
-  //         color: ''
-  //       });
-  //       translateText.value = ''
-  //       updateInputText()
-  //     }
-  //   })
-
-  // } else {
-
-  //   let needTranslateData = { text: translateText.value, translate: '' }
-  //   const jsonString = JSON.stringify(needTranslateData)
-
-  //   translatorApi.translaterInputText(jsonString, "").then(res => {
-  //     if (res) {
-  //       if (res.data) {
-  //         const jsonData = JSON.parse(res.data)
-  //         // console.log(jsonData)
-  //         // token.translate = jsonData.translate
-
-  //         tokens.value.push({
-  //           text: jsonData.translate,
-  //           translate: translateText.value,
-  //           isPunctuation: false,
-  //           isEditing: false,
-  //           isHidden: false,
-  //           color: ''
-  //         });
-  //         translateText.value = ''
-  //         updateInputText()
-  //       }
-  //     }
-  //   })
-
-  //   // translatorApi.translaterInputText(translateText.value).then(res => {
-  //   //   // console.log(res)
-  //   //   if (res.text.length > 0) {
-  //   //     tokens.value.push({
-  //   //       text: res.text,
-  //   //       translate: translateText.value,
-  //   //       isPunctuation: false,
-  //   //       isEditing: false,
-  //   //       isHidden: false,
-  //   //       color: ''
-  //   //     });
-  //   //     translateText.value = ''
-  //   //     updateInputText()
-  //   //   }
-  //   // })
-  // }
 
 }
 
@@ -3644,7 +3362,6 @@ const closeAutocomplete = () => {
 };
 
 const setPromptText = (text) => {
-  // console.log(text)
   if (text.length > 0) {
     try {
       const jsonStr = JSON.parse(text)
@@ -3657,9 +3374,7 @@ const setPromptText = (text) => {
       }
 
       if (jsonStr.temp_prompt && jsonStr.temp_prompt != "") {
-        // console.log(jsonStr.temp_prompt)
         const tempDataJson = jsonStr.temp_prompt
-        // console.log(tempDataJson)
         let isOldVersion = false
         if (tempDataJson.tokens && tempDataJson.tokens.length > 0 && tempDataJson.tokens != "") {
           tokens.value = tempDataJson.tokens
@@ -3683,7 +3398,6 @@ const setPromptText = (text) => {
 
       processInput()
     } catch (error) {
-      // console.log('读取数据错误：', error)
       message({ type: "warn", str: 'promptBox.settings.errorPrompt' });
     }
   }
@@ -3997,7 +3711,6 @@ const oneClickRandomTag = async () => {
     try {
       await randomTagApi.goRandomTemplate().then((res) => {
         if (res.code === 200) {
-          // console.log(res.random_tags)
           inputText.value = res.random_tags
           nextTick(() => {
             // 触发输入处理
@@ -4026,7 +3739,6 @@ const onClickLocalTemplateRandomTag = async (name) => {
   try {
     await randomTagApi.goRandomTemplatePath(name).then((res) => {
       if (res.code === 200) {
-        // console.log(res.random_tags)
         inputText.value = res.random_tags
         nextTick(() => {
           // 触发输入处理
@@ -4165,4 +3877,5 @@ defineExpose({
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.9);
 }
+
 </style>
