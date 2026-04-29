@@ -155,17 +155,6 @@
 
     <loraDetail ref="loraDetailLoraStackRef" />
 
-    <!-- 版本更新提示 -->
-    <div v-if="showVersionUpdate" class="version-update-notification">
-      <div class="version-update-content">
-        <span>{{ versionUpdateMessage }}</span>
-        <div class="version-update-actions">
-          <button class="goto-github-btn" @click="goToGitHub">前往GitHub</button>
-          <button class="no-remind-btn" @click="noRemindUpdate">不再提醒</button>
-          <button class="close-version-update" @click="closeVersionUpdate">×</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -185,7 +174,6 @@
   import DanbooruManagerWindow from '@/view/danbooru/danbooru_manager.vue'
   import { translatorApi } from '@/api/translator'
   import loraDetail from '@/view/lora_manager/lora_detail.vue'
-  import { version as localVersion } from './utils/version'
   import message from '@/utils/message'
 
   // 初始化 i18n
@@ -202,35 +190,6 @@
   const isDark = ref(localStorage.getItem(THEME_KEY) === 'dark')
   // 全局提示词
   const globalPrompt = ref('')
-
-  // 检查版本更新
-  const showVersionUpdate = ref(false)
-  const versionUpdateMessage = ref('')
-  const versionUpdateTimer = ref(null)
-  // 在现有的版本更新相关变量后添加
-  const VERSION_UPDATE_REMIND_KEY = `${STORAGE_PREFIX}version_update_remind`
-
-  // 关闭版本更新提示
-  const closeVersionUpdate = () => {
-    showVersionUpdate.value = false
-    if (versionUpdateTimer.value) {
-      clearTimeout(versionUpdateTimer.value)
-      versionUpdateTimer.value = null
-    }
-  }
-  // 跳转到GitHub
-  const goToGitHub = () => {
-    window.open('https://github.com/weilin9999/WeiLin-Comfyui-Tools', '_blank')
-    closeVersionUpdate()
-  }
-
-  // 修改现有的函数
-  // 不再提醒版本更新
-  const noRemindUpdate = () => {
-    // 将当前远程版本保存到localStorage，表示此版本不再提醒
-    localStorage.setItem(VERSION_UPDATE_REMIND_KEY, 'false')
-    closeVersionUpdate()
-  }
 
   // 默认窗口配置
   const DEFAULT_WINDOWS = {
@@ -381,11 +340,6 @@
     // 移除消息监听
     window.removeEventListener('message', handleMessage)
 
-    // 清除版本更新定时器
-    if (versionUpdateTimer.value) {
-      clearTimeout(versionUpdateTimer.value)
-      versionUpdateTimer.value = null
-    }
   })
 
   // 关闭窗口
@@ -695,85 +649,4 @@
 
 <style scoped>
 
-/* 版本更新提示样式 */
-  .version-update-notification {
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-    z-index: 9999;
-    background-color: var(--primary-color, #4caf50);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 0.2);
-    max-width: 350px;
-    animation: slideIn 0.3s ease-out;
-  }
-
-  .version-update-content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .version-update-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 10px;
-  }
-
-  .goto-github-btn {
-    background-color: white;
-    color: var(--primary-color, #4caf50);
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    margin-right: 10px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-
-  .close-version-update {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 0 5px;
-  }
-
-  @keyframes slideIn {
-    from {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-
-  .no-remind-btn {
-    background-color: rgb(255 255 255 / 0.8);
-    color: var(--primary-color, #4caf50);
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    margin-right: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
-  }
-
-  .no-remind-btn:hover {
-    background-color: rgb(255 255 255 / 0.9);
-  }
-
-  /* 调整按钮容器的间距 */
-  .version-update-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 10px;
-    gap: 5px;
-  }
 </style>
