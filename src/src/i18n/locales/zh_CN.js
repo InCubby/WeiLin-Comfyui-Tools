@@ -48,16 +48,8 @@ export default {
       enableRandomTagSettings: '启用随机标签设置',
       enableTranslateTag: '启用一键翻译标签',
       enableClearDisabled: '启用一键清空禁用',
-      setting_floating_ball: '悬浮球设置',
       setting_prompt_box: '提示词设置',
       enablePromptCommaShow: '显示提示词逗号',
-      floatingBallCount: '悬浮球数量',
-      floatingBallCountPlaceholder: '请输入悬浮球数量',
-      floatingBallSize: '悬浮球宽度',
-      floatingBallSizePlaceholder: '请输入悬浮球宽度',
-      floatingBallHeight: '悬浮球高度',
-      floatingBallHeightPlaceholder: '请输入悬浮球高度',
-      enableFloatingBall: '启用悬浮球',
       enableCommaConversion: '启用逗号转换，全角逗号转为半角逗号',
       enablePeriodConversion: '启用句号转换，全角句号转为半角句号',
       enableBracketConversion: '启用括号转换，全角括号转为半角括号',
@@ -433,16 +425,6 @@ export default {
     edit_favorite: '编辑收藏',
     delete_favorite: '删除收藏',
     use_favorite: '使用收藏'
-  },
-  floatingBall: {
-    promptBox: '打开全局提示词',
-    tagManager: '打开标签管理',
-    loraManager: '打开Lora管理',
-    aiWindow: '打开AI对话',
-    restoreWindow: '重置所有窗口',
-    openNodeListWindow: '打开节点列表',
-    tranToWeb: '图片转换工具',
-    openSetting: '打开设置'
   },
   aiWindow: {
     windowTitle: 'AI对话窗口',

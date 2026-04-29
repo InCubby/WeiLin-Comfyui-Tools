@@ -22,12 +22,6 @@
             {{ t('promptBox.settings.setting_auto_complete_limit') }}
           </li>
           <li
-            :class="{ 'weilin-comfyui-active': selectedSetting === 'setting_floating_ball' }"
-            @click="selectSetting('setting_floating_ball')"
-          >
-            {{ t('promptBox.settings.setting_floating_ball') }}
-          </li>
-          <li
             :class="{ 'weilin-comfyui-active': selectedSetting === 'setting_prompt_box' }"
             @click="selectSetting('setting_prompt_box')"
           >
@@ -303,108 +297,6 @@
             </button>
           </div>
         </div>
-        <div v-if="selectedSetting === 'setting_floating_ball'">
-          <h3>{{ t('promptBox.settings.setting_floating_ball') }}</h3>
-          <div
-            class="weilin-comfyui-floating-ball-settings"
-            style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px"
-          >
-            <div class="weilin-comfyui-settings-column">
-              <div class="weilin-comfyui-setting-item">
-                <label>
-                  <input type="checkbox" v-model="isFloatingBallEnabled" />
-                  {{ t('promptBox.settings.enableFloatingBall') }}
-                </label>
-              </div>
-              <div class="weilin-comfyui-setting-item">
-                <label>{{ t('promptBox.settings.floatingBallCount') }}</label>
-                <input
-                  type="number"
-                  v-model.number="savedFloatingBallCount"
-                  min="1"
-                  max="100"
-                  :placeholder="t('promptBox.settings.floatingBallCountPlaceholder')"
-                />
-              </div>
-              <div class="weilin-comfyui-setting-item">
-                <label>{{ t('promptBox.settings.floatingBallSize') }}</label>
-                <input
-                  type="number"
-                  v-model.number="savedFloatingBallSize"
-                  min="5"
-                  max="999999"
-                  :placeholder="t('promptBox.settings.floatingBallSizePlaceholder')"
-                />
-              </div>
-              <div class="weilin-comfyui-setting-item">
-                <label>{{ t('promptBox.settings.floatingBallHeight') }}</label>
-                <input
-                  type="number"
-                  v-model.number="savedFloatingBallHeight"
-                  min="5"
-                  max="999999"
-                  :placeholder="t('promptBox.settings.floatingBallHeightPlaceholder')"
-                />
-              </div>
-            </div>
-            <div class="weilin-comfyui-settings-column">
-              <div class="weilin-comfyui-setting-item">
-                <label>{{ t('promptBox.settings.skinSetting') }}</label>
-                <select v-model="ballSkinType">
-                  <option value="default">
-                    {{ t('promptBox.settings.defaultSkin') }}
-                  </option>
-                  <option value="custom">
-                    {{ t('promptBox.settings.customSkin') }}
-                  </option>
-                </select>
-              </div>
-              <div class="weilin-comfyui-setting-item" v-if="ballSkinType === 'custom'">
-                <label>{{ t('promptBox.settings.uploadSkin') }}</label>
-                <input type="file" accept="image/*" @change="handleSkinUpload" ref="skinUploader" />
-                <div class="weilin-comfyui-skin-preview" v-if="customSkinUrl">
-                  <img :src="customSkinUrl" alt="Custom Skin Preview" />
-                </div>
-              </div>
-            </div>
-            <div class="weilin-comfyui-setting-item" style="grid-column: span 2">
-              <label>{{ t('promptBox.settings.bgSetting') }}</label>
-              <select v-model="bgType">
-                <option value="gradient">
-                  {{ t('promptBox.settings.gradientBg') }}
-                </option>
-                <option value="transparent">
-                  {{ t('promptBox.settings.transparentBg') }}
-                </option>
-              </select>
-            </div>
-            <div
-              class="weilin-comfyui-setting-item"
-              v-if="bgType === 'gradient'"
-              style="grid-column: span 2"
-            >
-              <label>{{ t('promptBox.settings.gradientColor') }}</label>
-              <div style="display: flex; gap: 10px; align-items: center">
-                <input type="color" v-model="gradientColor1" />
-                <input type="color" v-model="gradientColor2" />
-                <button @click="resetGradientColors" style="margin-left: 10px; width: 200px">
-                  {{ t('promptBox.settings.resetToDefault') }}
-                </button>
-              </div>
-            </div>
-            <div class="weilin-comfyui-setting-item" style="grid-column: span 2">
-              <label>{{ t('promptBox.settings.borderRadius') }}</label>
-              <input type="number" v-model.number="ballBorderRadius" min="0" max="50" />
-            </div>
-            <button
-              class="weilin-comfyui-save-button"
-              style="grid-column: span 2"
-              @click="saveFloatingBallSettings"
-            >
-              {{ t('promptBox.settings.save') }}
-            </button>
-          </div>
-        </div>
         <div v-if="selectedSetting === 'setting_prompt_box'">
           <h3>{{ t('promptBox.settings.setting_prompt_box') }}</h3>
           <div class="weilin-comfyui-floating-ball-settings">
@@ -627,24 +519,6 @@
     localStorage.getItem('weilin_prompt_ui_targetLanguage') || 'chinese_simplified'
   )
 
-  // 新增悬浮球设置相关状态
-  const savedFloatingBallCount = ref(
-    localStorage.getItem('weilin_prompt_ui_floatingBallCount') || 1
-  )
-  const savedFloatingBallSize = ref(localStorage.getItem('weilin_prompt_ui_floatingBallSize') || 66)
-  const savedFloatingBallHeight = ref(
-    localStorage.getItem('weilin_prompt_ui_floatingBallHeightSize') || savedFloatingBallSize.value
-  )
-  const isFloatingBallEnabled = ref(
-    localStorage.getItem('weilin_prompt_ui_floatingBallEnabled') === 'true'
-  )
-  const ballSkinType = ref(localStorage.getItem('weilin_prompt_ui_ballSkinType') || 'default')
-  const customSkinUrl = ref(localStorage.getItem('weilin_prompt_ui_customSkinUrl') || '')
-  const bgType = ref(localStorage.getItem('weilin_prompt_ui_bgType') || 'gradient')
-  const gradientColor1 = ref(localStorage.getItem('weilin_prompt_ui_gradientColor1') || '#6a11cb')
-  const gradientColor2 = ref(localStorage.getItem('weilin_prompt_ui_gradientColor2') || '#2575fc')
-  const ballBorderRadius = ref(localStorage.getItem('weilin_prompt_ui_ballBorderRadius') || 50)
-
   // 提示词设置
   const isCommaConversionEnabled = ref(
     localStorage.getItem('weilin_prompt_ui_comma_conversion') === 'true'
@@ -790,51 +664,6 @@
       clearDisabled: isClearDisabledEnabled.value
     })
 
-    message({ type: 'success', str: 'message.saveSuccess' })
-  }
-
-  // 添加皮肤上传处理函数
-  const handleSkinUpload = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        customSkinUrl.value = e.target.result
-        localStorage.setItem('weilin_prompt_ui_customSkinUrl', e.target.result)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const resetGradientColors = () => {
-    gradientColor1.value = '#6a11cb'
-    gradientColor2.value = '#2575fc'
-  }
-
-  // 保存悬浮球设置
-  const saveFloatingBallSettings = () => {
-    if (
-      savedFloatingBallCount.value < 1 ||
-      savedFloatingBallSize.value < 5 ||
-      savedFloatingBallHeight.value < 5
-    ) {
-      message({ type: 'warn', str: 'message.error' })
-      return
-    }
-    // 将设置存储在 localStorage 中
-    localStorage.setItem('weilin_prompt_ui_floatingBallEnabled', isFloatingBallEnabled.value)
-    localStorage.setItem('weilin_prompt_ui_floatingBallCount', savedFloatingBallCount.value)
-    localStorage.setItem('weilin_prompt_ui_floatingBallSize', savedFloatingBallSize.value)
-    localStorage.setItem('weilin_prompt_ui_floatingBallHeightSize', savedFloatingBallHeight.value)
-    localStorage.setItem('weilin_prompt_ui_ballSkinType', ballSkinType.value)
-    localStorage.setItem('weilin_prompt_ui_bgType', bgType.value)
-    localStorage.setItem('weilin_prompt_ui_gradientColor1', gradientColor1.value)
-    localStorage.setItem('weilin_prompt_ui_gradientColor2', gradientColor2.value)
-    localStorage.setItem('weilin_prompt_ui_ballBorderRadius', ballBorderRadius.value)
-    localStorage.setItem('weilin_prompt_ui_floatingBallHeightSize', savedFloatingBallHeight.value)
-
-    window.parent.postMessage({ type: 'weilin_prompt_ui_floating_ball_setting' }, '*')
-    // 显示保存成功提示
     message({ type: 'success', str: 'message.saveSuccess' })
   }
 
@@ -1183,11 +1012,6 @@
         localStorage.getItem('weilin_prompt_ui_sourceLanguage') || 'english'
       savedTargetLanguage.value =
         localStorage.getItem('weilin_prompt_ui_targetLanguage') || 'chinese_simplified'
-      // 新增悬浮球设置相关状态
-      savedFloatingBallCount.value = localStorage.getItem('weilin_prompt_ui_floatingBallCount') || 1
-      savedFloatingBallSize.value = localStorage.getItem('weilin_prompt_ui_floatingBallSize') || 5
-      isFloatingBallEnabled.value =
-        localStorage.getItem('weilin_prompt_ui_floatingBallEnabled') === 'true'
       // 提示词设置
       isCommaConversionEnabled.value =
         localStorage.getItem('weilin_prompt_ui_comma_conversion') === 'true'

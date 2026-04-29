@@ -153,8 +153,6 @@
       <DanbooruManagerWindow ref="danbooruManagerRef" />
     </DraggableWindow>
 
-    <!-- 悬浮球 -->
-    <FloatingBall v-if="isFloatingBallEnabled" />
     <loraDetail ref="loraDetailLoraStackRef" />
 
     <!-- 版本更新提示 -->
@@ -180,7 +178,6 @@
   import LoraManager from './view/lora_manager/lora_index.vue'
   import HistoryManager from './view/history_manager/history_index.vue'
   import { windowManager } from '@/utils/windowManager'
-  import FloatingBall from '@/components/FloatingBall.vue'
   import AiWindow from '@/view/ai_window/ai_window.vue'
   import NodeListWindow from '@/view/node_list/index.vue'
   import CloudWindow from '@/view/cloud/index.vue'
@@ -193,14 +190,6 @@
 
   // 初始化 i18n
   const { t } = useI18n()
-
-  const isFloatingBallEnabled = ref(
-    localStorage.getItem('weilin_prompt_ui_floatingBallEnabled') === 'true'
-  )
-  if (!localStorage.getItem('weilin_prompt_ui_floatingBallEnabled')) {
-    localStorage.setItem('weilin_prompt_ui_floatingBallEnabled', 'true')
-    isFloatingBallEnabled.value = true
-  }
 
   const thisEditPromptId = ref('')
   const STORAGE_PREFIX = 'weilin_tools_'
@@ -633,9 +622,6 @@
       windowManager.setActiveWindow('lora')
     } else if (event.data.type === 'weilin_prompt_ui_prompt_update_prompt_global') {
       globalPrompt.value = event.data.data
-    } else if (event.data.type === 'weilin_prompt_ui_floating_ball_setting') {
-      isFloatingBallEnabled.value =
-        localStorage.getItem('weilin_prompt_ui_floatingBallEnabled') === 'true'
     } else if (event.data.type === 'weilin_prompt_ui_restore_window') {
       restoreWindowsToDefault()
     } else if (event.data.type === 'weilin_prompt_ui_open_cloud_window') {
