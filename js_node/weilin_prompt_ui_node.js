@@ -128,7 +128,7 @@ function loadResourcesOnDemand() {
   
   return new Promise((resolve) => {
     let loadedCount = 0;
-    const totalResources = 4;
+    const totalResources = 2;
     
     const checkAllLoaded = () => {
       loadedCount++;
@@ -242,21 +242,13 @@ waitForApp((app) => {
     // console.log('[WeiLin] beforeRegisterNodeDef called, nodeData.name:', nodeData.name);
     
     // 检查是否是WeiLin节点
-    if (
-      nodeData.name === "WeiLinPromptUI" ||
-      nodeData.name === "WeiLinPromptUIWithoutLora" ||
-      nodeData.name === "WeiLinPromptUIOnlyLoraStack"
-    ) {
+    if (nodeData.name === "WeiLinPromptUIWithoutLora") {
       console.log('[WeiLin] ⭐ Matching node found:', nodeData.name);
       console.log('[WeiLin] Node data:', nodeData);
       console.log('[WeiLin] Node type:', nodeType);
     }
     // console.log(app)
-    if (
-      nodeData.name === "WeiLinPromptUI" ||
-      nodeData.name === "WeiLinPromptUIWithoutLora" ||
-      nodeData.name === "WeiLinPromptUIOnlyLoraStack"
-    ) {
+    if (nodeData.name === "WeiLinPromptUIWithoutLora") {
       console.log('[WeiLin] Matching node found:', nodeData.name);
       // Create node
       const onNodeCreated = nodeType.prototype.onNodeCreated;
@@ -265,7 +257,7 @@ waitForApp((app) => {
         const r = onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined;
 
         const thisNodeName = nodeData.name // 存储当前的节点名称
-        let nodeTextAreaList = [] // 按顺序载入element，name="positive" || "lora_str" || "temp_str"
+        let nodeTextAreaList = [] // 按顺序载入element，name="positive" || "temp_str"
         let nodeWidgetList = [] // 保存widget引用，用于同步更新widget.value
         const thisNodeSeed = generateUUID(); // 随机唯一种子ID
 
@@ -297,9 +289,7 @@ waitForApp((app) => {
           // 三种 WeiLin 节点统一保留 Comfy 原生缩放链，
           // 避免小画布/缩放时 dom-widget 与 canvas widget 叠层错位。
           if (
-            nodeData.name === "WeiLinPromptUI" ||
-            nodeData.name === "WeiLinPromptUIWithoutLora" ||
-            nodeData.name === "WeiLinPromptUIOnlyLoraStack"
+            nodeData.name === "WeiLinPromptUIWithoutLora"
           ) return;
           const processedDomWidgets = new Set();
           
@@ -344,13 +334,9 @@ waitForApp((app) => {
         setTimeout(fixCurrentNodeDomWidgets, 500);
         setTimeout(fixCurrentNodeDomWidgets, 1000);
 
-        if (nodeData.name === "WeiLinPromptUI" || nodeData.name === "WeiLinPromptUIWithoutLora") {
+        if (nodeData.name === "WeiLinPromptUIWithoutLora") {
           hideWidgetForGood(this, this.widgets.find(w => w.name === "temp_str"))
           hideWidgetForGood(this, this.widgets.find(w => w.name === "random_template"))
-        }
-        if (nodeData.name === "WeiLinPromptUI" || nodeData.name === "WeiLinPromptUIOnlyLoraStack") {
-          hideWidgetForGood(this, this.widgets.find(w => w.name === "lora_str"))
-          hideWidgetForGood(this, this.widgets.find(w => w.name === "temp_lora_str"))
         }
 
         for (let index = 0; index < this.widgets.length; index++) {
@@ -360,21 +346,11 @@ waitForApp((app) => {
             // thisInputElement.readOnly = true
             nodeTextAreaList[0] = thisInputElement
             nodeWidgetList[0] = widgetItem
-          } else if (widgetItem.name == "lora_str") {
-            let thisInputElement = widgetItem.element
-            thisInputElement.readOnly = true
-            nodeTextAreaList[1] = thisInputElement
-            nodeWidgetList[1] = widgetItem
           } else if (widgetItem.name == "temp_str") {
             let thisInputElement = widgetItem.element
             thisInputElement.readOnly = true
             nodeTextAreaList[2] = thisInputElement
             nodeWidgetList[2] = widgetItem
-          } else if (widgetItem.name == "temp_lora_str") {
-            let thisInputElement = widgetItem.element
-            thisInputElement.readOnly = true
-            nodeTextAreaList[3] = thisInputElement
-            nodeWidgetList[3] = widgetItem
           } else if (widgetItem.name == "random_template") {
             let thisInputElement = widgetItem.element
             thisInputElement.readOnly = true
@@ -390,8 +366,7 @@ waitForApp((app) => {
         // console.log(this)
 
         // 修改的是这部分
-        if (nodeData.name === "WeiLinPromptUI" ||
-          nodeData.name === "WeiLinPromptUIWithoutLora") {
+        if (nodeData.name === "WeiLinPromptUIWithoutLora") {
           globalNodeList.push({ seed: thisNodeSeed, text: nodeTextAreaList[0].value, id: this.id })
 
           const textarea = nodeTextAreaList[0];
@@ -421,8 +396,7 @@ waitForApp((app) => {
 
         function onTisIdChange(newId) {
           // console.log(newId)
-          if (nodeData.name === "WeiLinPromptUI" ||
-            nodeData.name === "WeiLinPromptUIWithoutLora") {
+          if (nodeData.name === "WeiLinPromptUIWithoutLora") {
             updateNodeIdBySeed(thisNodeSeed, newId);
             window.parent.postMessage({ type: 'weilin_prompt_ui_update_node_list_info', nodeList: globalNodeList }, '*')
           }
@@ -449,8 +423,7 @@ waitForApp((app) => {
           // console.log("New this.title:", newTitle);
           // 在这里可以处理新的 this.title 数据
           // 例如，将新的 this.title 传递给其他逻辑
-          if (nodeData.name === "WeiLinPromptUI" ||
-            nodeData.name === "WeiLinPromptUIWithoutLora") {
+          if (nodeData.name === "WeiLinPromptUIWithoutLora") {
             updateNodeTitleBySeed(thisNodeSeed, newTitle);
             window.parent.postMessage({ type: 'weilin_prompt_ui_update_node_list_info', nodeList: globalNodeList }, '*')
           }
@@ -486,7 +459,7 @@ waitForApp((app) => {
 
           } else if (event.data.type === 'weilin_prompt_ui_prompt_get_node_list_info') {
             // 获取节点导航信息
-            if (nodeData.name === "WeiLinPromptUI" || nodeData.name === "WeiLinPromptUIWithoutLora") {
+            if (nodeData.name === "WeiLinPromptUIWithoutLora") {
               updateNodeTextBySeed(thisNodeSeed, nodeTextAreaList[0].value);
               window.parent.postMessage({ type: 'weilin_prompt_ui_update_node_list_info', nodeList: globalNodeList }, '*')
             }
@@ -524,7 +497,7 @@ waitForApp((app) => {
         window.addEventListener('message', messageHandler, false);
 
         // 添加按钮点击事件
-        if (nodeData.name === "WeiLinPromptUI" || nodeData.name === "WeiLinPromptUIWithoutLora") {
+        if (nodeData.name === "WeiLinPromptUIWithoutLora") {
           // 节点按钮点击事件 - 打开提示词编辑器
           this.addWidget("button", localLanguage, '', async ($e) => {
             // 先加载资源（如果还未加载）
@@ -569,8 +542,7 @@ waitForApp((app) => {
           });
 
           // 元素被销毁 事件发送更新元素
-          if (nodeData.name === "WeiLinPromptUI" ||
-            nodeData.name === "WeiLinPromptUIWithoutLora") {
+          if (nodeData.name === "WeiLinPromptUIWithoutLora") {
             removeNodeBySeed(thisNodeSeed);
             window.parent.postMessage({ type: 'weilin_prompt_ui_update_node_list_info', nodeList: globalNodeList }, '*')
           }
