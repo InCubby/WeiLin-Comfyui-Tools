@@ -18,11 +18,7 @@
       @active="windowManager.setActiveWindow('prompt')"
       @close="closeWindow('prompt')"
     >
-      <PromptBox
-        :promptManager="promptManager"
-        :hasPromptLoraStack="hasPromptLoraStack"
-        ref="promptBoxRef"
-      />
+      <PromptBox :promptManager="promptManager" ref="promptBoxRef" />
     </DraggableWindow>
 
     <!-- Tag管理窗口 -->
@@ -39,22 +35,6 @@
       @close="closeWindow('tag')"
     >
       <TagManager :tagManager="tagManager" />
-    </DraggableWindow>
-
-    <!-- Lora管理窗口 -->
-    <DraggableWindow
-      name="loraManager"
-      v-if="windows.lora.visible"
-      :title="t('loraManager.windowTitle')"
-      :position="windows.lora.position"
-      :size="windows.lora.size"
-      :z-index="windowManager.getZIndex('lora')"
-      @update:position="updatePosition('lora', $event)"
-      @update:size="updateSize('lora', $event)"
-      @active="windowManager.setActiveWindow('lora')"
-      @close="closeWindow('lora')"
-    >
-      <LoraManager :loraManager="loraManager" ref="loraManagerRef" />
     </DraggableWindow>
 
     <!-- 历史记录窗口  -->
@@ -105,22 +85,6 @@
       <CloudWindow />
     </DraggableWindow>
 
-    <!-- Lora堆窗口 -->
-    <DraggableWindow
-      name="loraStackWindow"
-      v-if="windows.lora_stack_window.visible"
-      :title="t('controls.loraStack')"
-      :position="windows.lora_stack_window.position"
-      :size="windows.lora_stack_window.size"
-      :z-index="windowManager.getZIndex('lora_stack_window')"
-      @update:position="updatePosition('lora_stack_window', $event)"
-      @update:size="updateSize('lora_stack_window', $event)"
-      @active="windowManager.setActiveWindow('lora_stack_window')"
-      @close="closeWindow('lora_stack_window')"
-    >
-      <LoraStackWindow ref="loraStackRef" />
-    </DraggableWindow>
-
     <!-- Danbooru管理器窗口 -->
     <DraggableWindow
       name="DanbooruManagerWindow"
@@ -136,8 +100,6 @@
     >
       <DanbooruManagerWindow ref="danbooruManagerRef" />
     </DraggableWindow>
-
-    <loraDetail ref="loraDetailLoraStackRef" />
   </div>
 </template>
 
@@ -147,15 +109,12 @@
   import DraggableWindow from '@/components/DraggableWindow.vue'
   import PromptBox from './view/prompt_box/prompt_index.vue'
   import TagManager from './view/tag_manager/tag_index.vue'
-  import LoraManager from './view/lora_manager/lora_index.vue'
   import HistoryManager from './view/history_manager/history_index.vue'
   import { windowManager } from '@/utils/windowManager'
   import NodeListWindow from '@/view/node_list/index.vue'
   import CloudWindow from '@/view/cloud/index.vue'
-  import LoraStackWindow from '@/view/lora_manager/lora_stack.vue'
   import DanbooruManagerWindow from '@/view/danbooru/danbooru_manager.vue'
   import { translatorApi } from '@/api/translator'
-  import loraDetail from '@/view/lora_manager/lora_detail.vue'
   import message from '@/utils/message'
 
   // 初始化 i18n
@@ -163,10 +122,8 @@
 
   const thisEditPromptId = ref('')
   const STORAGE_PREFIX = 'weilin_tools_'
-  const loraManager = ref('look')
   const tagManager = ref('manager')
   const promptManager = ref('prompt_global')
-  const hasPromptLoraStack = ref(false)
   const THEME_KEY = `${STORAGE_PREFIX}theme`
   // 获取主题设置
   const isDark = ref(localStorage.getItem(THEME_KEY) === 'dark')
@@ -187,12 +144,6 @@
       position: { x: 150, y: 150 },
       size: { width: 800, height: 600 }
     },
-    lora: {
-      visible: false,
-      is_default_close: false,
-      position: { x: 200, y: 200 },
-      size: { width: 800, height: 600 }
-    },
     history: {
       visible: false,
       is_default_close: false,
@@ -210,12 +161,6 @@
       is_default_close: false,
       position: { x: 100, y: 100 },
       size: { width: 800, height: 600 }
-    },
-    lora_stack_window: {
-      visible: false,
-      is_default_close: true,
-      position: { x: 100, y: 100 },
-      size: { width: 300, height: 600 }
     },
     danbooru_manager_window: {
       visible: false,
@@ -343,15 +288,6 @@
 
   // 复原所有窗口到默认位置和大小
   const restoreWindowsToDefault = () => {
-    const LORA_DETAIL_WINDOWS = {
-      loraDetail: {
-        visible: false,
-        is_default_close: false,
-        position: { x: 150, y: 150 },
-        size: { width: 800, height: 600 }
-      }
-    }
-
     const DEFAULT_GOL_WINDOWS = {
       prompt: {
         visible: true,
@@ -363,12 +299,6 @@
         visible: false,
         is_default_close: false,
         position: { x: 150, y: 150 },
-        size: { width: 800, height: 600 }
-      },
-      lora: {
-        visible: false,
-        is_default_close: false,
-        position: { x: 200, y: 200 },
         size: { width: 800, height: 600 }
       },
       history: {
@@ -389,12 +319,6 @@
         position: { x: 100, y: 100 },
         size: { width: 800, height: 600 }
       },
-      lora_stack_window: {
-        visible: false,
-        is_default_close: true,
-        position: { x: 100, y: 100 },
-        size: { width: 300, height: 600 }
-      },
       danbooru_manager_window: {
         visible: false,
         is_default_close: true,
@@ -404,7 +328,6 @@
     }
 
     localStorage.setItem(`${STORAGE_PREFIX}windowStates`, JSON.stringify(DEFAULT_GOL_WINDOWS))
-    localStorage.setItem(`${STORAGE_PREFIX}loraDetailState`, JSON.stringify(LORA_DETAIL_WINDOWS))
 
     windows.value = getInitialWindowState()
   }
@@ -424,9 +347,6 @@
   getTranslaterSetting()
 
   const promptBoxRef = ref()
-  const loraStackRef = ref()
-  const loraManagerRef = ref()
-  const loraDetailLoraStackRef = ref()
   const danbooruManagerRef = ref()
 
   // 等待组件 ref 准备好的辅助函数
@@ -471,41 +391,12 @@
       thisEditPromptId.value = event.data.id
       promptManager.value = 'prompt'
       windows.value.prompt.visible = true
-      hasPromptLoraStack.value = false
-      if (event.data.node === 'WeiLinPromptUI') {
-        hasPromptLoraStack.value = true
-      }
       // 等待组件 ref 准备好
       waitForRef(promptBoxRef, (ref) => {
         ref.setPromptText(event.data.prompt)
         ref.setCurrentEditNodeId(event.data.id)
       })
       windowManager.setActiveWindow('prompt')
-    } else if (event.data.type === 'weilin_prompt_ui_openLoraManager') {
-      loraManager.value = 'look'
-      windows.value.lora.visible = true
-      windowManager.setActiveWindow('lora')
-    } else if (event.data.type === 'weilin_prompt_ui_openLoraManager_addLora') {
-      loraManager.value = 'addLora'
-      windows.value.lora.visible = true
-      waitForRef(loraManagerRef, (ref) => {
-        ref.openSetSeed(0, '')
-      })
-      windowManager.setActiveWindow('lora')
-    } else if (event.data.type === 'weilin_prompt_ui_openLoraManager_addLora_stack') {
-      loraManager.value = 'addLora'
-      windows.value.lora.visible = true
-      waitForRef(loraManagerRef, (ref) => {
-        ref.openSetSeed(1, event.data.seed)
-      })
-      windowManager.setActiveWindow('lora')
-    } else if (event.data.type === 'weilin_prompt_ui_openLoraManager_addLora_stack_node') {
-      loraManager.value = 'addLora'
-      windows.value.lora.visible = true
-      waitForRef(loraManagerRef, (ref) => {
-        ref.openSetSeed(2, event.data.seed)
-      })
-      windowManager.setActiveWindow('lora')
     } else if (event.data.type === 'weilin_prompt_ui_openHistoryManager') {
       windows.value.history.visible = true
       windowManager.setActiveWindow('history')
@@ -524,7 +415,6 @@
       promptManager.value = 'prompt_global'
       thisEditPromptId.value = 'global'
       windows.value.prompt.visible = true
-      hasPromptLoraStack.value = false
       waitForRef(promptBoxRef, (ref) => {
         ref.setPromptText(globalPrompt.value)
       })
@@ -533,10 +423,6 @@
       tagManager.value = 'manager'
       windows.value.tag.visible = true
       windowManager.setActiveWindow('tag')
-    } else if (event.data.type === 'weilin_prompt_ui_open_global_lora_manager') {
-      loraManager.value = 'look'
-      windows.value.lora.visible = true
-      windowManager.setActiveWindow('lora')
     } else if (event.data.type === 'weilin_prompt_ui_prompt_update_prompt_global') {
       globalPrompt.value = event.data.data
     } else if (event.data.type === 'weilin_prompt_ui_restore_window') {
@@ -544,24 +430,6 @@
     } else if (event.data.type === 'weilin_prompt_ui_open_cloud_window') {
       windows.value.cloud_window.visible = true
       windowManager.setActiveWindow('cloud_window')
-    } else if (event.data.type === 'weilin_prompt_ui_open_prompt_lora_stack_window') {
-      // WeiLinPromptUI 的 LoRA 堆窗口 - 与内嵌 LoRA 堆同步
-      windows.value.lora_stack_window.visible = true
-      waitForRef(loraStackRef, (ref) => {
-        ref.initLoraStack(event.data.prompt, event.data.seed)
-      })
-      windowManager.setActiveWindow('lora_stack_window')
-    } else if (event.data.type === 'weilin_prompt_ui_open_node_lora_stack_window') {
-      // WeiLinPromptUIOnlyLoraStack 的 LoRA 堆窗口 - 独立管理
-      windows.value.lora_stack_window.visible = true
-      waitForRef(loraStackRef, (ref) => {
-        ref.initLoraStack(event.data.prompt, event.data.seed)
-      })
-      windowManager.setActiveWindow('lora_stack_window')
-    } else if (event.data.type === 'weilin_prompt_ui_openLoraDetail') {
-      waitForRef(loraDetailLoraStackRef, (ref) => {
-        ref.open({ name: event.data.lora })
-      })
     } else if (event.data.type === 'weilin_prompt_ui_open_danbooru_manager_window') {
       windows.value.danbooru_manager_window.visible = true
       windowManager.setActiveWindow('danbooru_manager_window')

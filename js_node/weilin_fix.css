@@ -14,7 +14,6 @@
 .dom-widget.weilin-owned-dom-widget iframe,
 .dom-widget.weilin-owned-dom-widget a,
 .dom-widget.weilin-owned-dom-widget [contenteditable='true'],
-.dom-widget.weilin-owned-dom-widget .weilin-prompt-ui-container,
-.dom-widget.weilin-owned-dom-widget .weilin-lora-manager-container {
+.dom-widget.weilin-owned-dom-widget .weilin-prompt-ui-container {
     pointer-events: auto !important;
 }

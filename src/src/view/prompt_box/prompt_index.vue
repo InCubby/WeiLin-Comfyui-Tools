@@ -7,13 +7,6 @@
       </div>
     </transition>
 
-    <!-- Lora栈 -->
-    <LoraStack
-      v-if="props.promptManager === 'prompt'"
-      :is-open="loraOpen"
-      :selected-loras="selectedLoras"
-      @close="closeLora"
-    />
     <!-- 主标签管理器（左侧边栏） -->
     <div
       v-if="isLabelManagerVisible"
@@ -127,47 +120,6 @@
               />
             </svg>
             <span class="action-text">{{ t('controls.danbooruManager') }}</span>
-          </button>
-        </div>
-
-        <div class="action-item" v-if="props.hasPromptLoraStack">
-          <button class="tag-manager-btn" @click="toggleLora" :title="t('controls.loraStack')">
-            <svg
-              sxmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 1024 1024"
-              class="tag-icon"
-              width="24"
-              height="24"
-            >
-              <path
-                d="M902.5 485.1c-59-17.5-113.8-3.4-155 27.7V365.1c0-45.2-36.9-82.1-82.1-82.1H511.2c31.1-41.2 45.2-96 27.7-155C522.2 71.6 475 26.1 418 12 303.4-16.5 200.9 69.4 200.9 179.3c0 39.1 13.5 74.7 35.3 103.7H82.1C36.9 283 0 319.9 0 365.1v113.1c0 25.5 27.9 38.8 49.5 25.3 38.8-24.3 87.8-33.6 139.4-19.5 57 15.6 103.4 62.5 118.4 119.7 30.1 115.5-56.2 219.4-166.8 219.4-33.5 0-64.7-9.6-91.1-26.2C27.8 783.4 0 796.8 0 822.2v113.2c0 45.2 36.9 82.1 82.1 82.1h583.3c45.2 0 82.1-36.9 82.1-82.1V787.7c29 21.9 64.6 35.3 103.7 35.3 109.9 0 195.8-102.5 167.3-217.1-14.1-56.9-59.7-104.1-116-120.8z"
-              ></path>
-            </svg>
-            <span class="action-text">{{ t('controls.loraStack') }}</span>
-          </button>
-        </div>
-
-        <div class="action-item">
-          <button
-            class="tag-manager-btn"
-            @click="openLoraManager"
-            :title="t('controls.loraManager')"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 1024 1024"
-              class="tag-icon"
-              width="24"
-              height="24"
-            >
-              <path
-                d="M129 128h350v80H209v224h270v80H129V128zM129 895V576h768v319H129z m80-239v159h608V656H209zM730 356c19.882 0 36-16.118 36-36s-16.118-36-36-36-36 16.118-36 36 16.118 36 36 36z"
-              ></path>
-              <path
-                d="M578.517 214.386a32.002 32.002 0 0 0-16.01 27.731l0.058 155.918a31.998 31.998 0 0 0 16 27.701l135.156 78.033a32.002 32.002 0 0 0 31.99 0.006l135.058-77.909a32.002 32.002 0 0 0 16.01-27.731l-0.058-155.918a32 32 0 0 0-16-27.701l-135.157-78.033a31.998 31.998 0 0 0-31.989-0.005l-135.058 77.908z m67.002 58.058l84.033-48.591 84.181 48.715 0.034 95.24-84.034 48.591-84.18-48.714-0.034-95.241z"
-              ></path>
-            </svg>
-            <span class="action-text">{{ t('controls.loraManager') }}</span>
           </button>
         </div>
 
@@ -554,25 +506,9 @@
                 <span class="token-symbol" :title="t('promptBox.tab')">→</span>
               </div>
 
-              <!-- 为Lora标签添加特殊图标 -->
-              <div
-                v-else-if="token.isLoraTag"
-                class="lora-tag-icon"
-                :title="t('promptBox.loraTag')"
-                @mouseenter="showControls(index, $event)"
-                @mouseleave="handleMouseLeave(index)"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15">
-                  <path
-                    d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"
-                  />
-                </svg>
-                <span style="margin-left: 5px">{{ token.text }}</span>
-              </div>
-
               <!-- 普通词组 -->
               <div
-                v-else-if="token.text && !token.isLoraTag"
+                v-else-if="token.text"
                 class="token-item"
                 @mouseenter="showControls(index, $event)"
                 @mouseleave="handleMouseLeave(index)"
@@ -617,7 +553,7 @@
               <!-- 翻译结果显示 -->
               <div
                 class="translation-result"
-                v-if="token.text !== '\n' && token.text !== '\t' && !token.isLoraTag"
+                v-if="token.text !== '\n' && token.text !== '\t'"
               >
                 <div
                   v-if="isTextTranslatable(token.text)"
@@ -667,7 +603,7 @@
           @mouseleave="handleControlsLeave"
         >
           <!-- 普通Tag 添加权重输入框 -->
-          <div class="weight-control" v-if="!tokens[activeControls]?.isLoraTag">
+          <div class="weight-control">
             <input
               type="number"
               v-model="weightValue"
@@ -676,30 +612,6 @@
               @change="applyWeight"
             />
             <span class="weight-label">{{ t('promptBox.weight') }}</span>
-          </div>
-
-          <!-- Lora标签的权重控制 -->
-          <div class="lora-weight-controls" v-if="tokens[activeControls]?.isLoraTag">
-            <div class="weight-control">
-              <input
-                type="number"
-                v-model="loraModelWeight"
-                step="0.1"
-                class="weight-input"
-                @change="applyLoraWeights"
-              />
-              <span class="weight-label">{{ t('promptBox.modelWeight') }}</span>
-            </div>
-            <div class="weight-control">
-              <input
-                type="number"
-                v-model="loraTextWeight"
-                step="0.1"
-                class="weight-input"
-                @change="applyLoraWeights"
-              />
-              <span class="weight-label">{{ t('promptBox.textWeight') }}</span>
-            </div>
           </div>
 
           <!-- 收藏按钮 -->
@@ -724,7 +636,7 @@
             </svg>
           </button>
 
-          <div class="bracket-btn-group" v-if="!tokens[activeControls]?.isLoraTag">
+          <div class="bracket-btn-group">
             <div class="bracket-btn-container">
               <!-- 括号按钮 -->
               <div class="bracket-btn">()</div>
@@ -802,7 +714,7 @@
           </button>
         </div>
 
-        <!-- Lora管理器容器 -->
+        <!-- 标签管理区域 -->
         <div class="tag-manager-section">
           <!-- 框选操作菜单 -->
           <div
@@ -853,37 +765,6 @@
             </div>
           </div>
 
-          <div class="tag-manager-header" @click="toggleLoraManager">
-            <div class="header-left">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 1024 1024"
-                class="tag-icon"
-                width="24"
-                height="24"
-              >
-                <path
-                  d="M129 128h350v80H209v224h270v80H129V128zM129 895V576h768v319H129z m80-239v159h608V656H209zM730 356c19.882 0 36-16.118 36-36s-16.118-36-36-36-36 16.118-36 36 16.118 36 36 36z"
-                ></path>
-                <path
-                  d="M578.517 214.386a32.002 32.002 0 0 0-16.01 27.731l0.058 155.918a31.998 31.998 0 0 0 16 27.701l135.156 78.033a32.002 32.002 0 0 0 31.99 0.006l135.058-77.909a32.002 32.002 0 0 0 16.01-27.731l-0.058-155.918a32 32 0 0 0-16-27.701l-135.157-78.033a31.998 31.998 0 0 0-31.989-0.005l-135.058 77.908z m67.002 58.058l84.033-48.591 84.181 48.715 0.034 95.24-84.034 48.591-84.18-48.714-0.034-95.241z"
-                ></path>
-              </svg>
-              <span class="section-title">{{ t('controls.loraManager') }}</span>
-            </div>
-            <div class="header-right">
-              <svg
-                class="collapse-icon"
-                :class="{ 'is-collapsed': !showLoraManager }"
-                viewBox="0 0 24 24"
-              >
-                <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z" />
-              </svg>
-            </div>
-          </div>
-          <div class="lora-manager-container" v-show="showLoraManager">
-            <LoraManager :loraManager="'prompt_inner'" />
-          </div>
         </div>
 
         <!-- 标签管理器容器 -->
@@ -935,13 +816,11 @@
   import SettingDialog from './components/setting_dialog.vue'
   import ThemeSwitch from '@/components/ThemeSwitch.vue'
   import TagManager from '@/view/tag_manager/tag_index.vue' // 导入 TagManager 组件
-  import LoraStack from './components/lora_stack.vue'
   import MainLabelManager from './components/main_label_manager.vue'
   import { translatorApi } from '@/api/translator'
   import { historyApi } from '@/api/history'
   import message from '@/utils/message'
   import { autocompleteApi } from '@/api/autocomplete'
-  import LoraManager from '@/view/lora_manager/lora_index.vue'
   import RandomSetting from './components/random_setting.vue'
   import { randomTagApi } from '@/api/random_tag'
   import pako from 'pako'
@@ -963,10 +842,6 @@
     promptManager: {
       type: String,
       default: 'prompt_global'
-    },
-    hasPromptLoraStack: {
-      type: Boolean,
-      default: false
     }
   })
 
@@ -986,10 +861,6 @@
   const settingDialog = ref(null)
   const langBtnRef = ref(null)
   const languageSwitcherRef = ref(null)
-
-  // Lora选择信息
-  const selectedLoras = ref([])
-  const loraOpen = ref(false)
 
   // 添加自动补全相关的 ref
   const showAutocomplete = ref(false)
@@ -1157,14 +1028,6 @@
     return `token_${tokenIdCounter.value}_${Date.now()}`
   }
 
-  const toggleLora = () => {
-    loraOpen.value = !loraOpen.value
-  }
-
-  const closeLora = () => {
-    loraOpen.value = false
-  }
-
   // 左侧主标签管理器交互与主内容宽度计算
   const mainLabelManagerRef = ref(null)
   const selectedMainLabelId = ref(null)
@@ -1177,8 +1040,7 @@
     // 根据 isLabelManagerVisible 决定左侧标签管理器的宽度
     const labelManagerWidth = isLabelManagerVisible.value ? 280 : 0
     const shellGap = isLabelManagerVisible.value ? 8 : 0
-    const left = (loraOpen.value ? 300 : 0) + labelManagerWidth + shellGap // Lora + 主标签管理器 + 两栏间距
-    return `calc(100% - ${left}px)`
+    return `calc(100% - ${labelManagerWidth + shellGap}px)`
   })
   let suppressUnsavedOnce = false
   const onSelectMainLabel = (item) => {
@@ -1448,40 +1310,6 @@
 
     tokens.value[activeControls.value].text = newText
     updateInputText()
-  }
-
-  // Lora权重控制
-  const loraModelWeight = ref(0.5)
-  const loraTextWeight = ref(0.5)
-
-  // 当选择一个Lora标签时，解析其权重
-  watch(activeControls, (newVal) => {
-    if (newVal !== null && tokens.value[newVal]?.isLoraTag) {
-      // 解析Lora标签格式 <wlr:LoraName:weight1:weight2>
-      const text = tokens.value[newVal].text
-      const match = text.match(/<wlr:([^:]+):([^:]+):([^>]+)>/)
-      if (match) {
-        loraModelWeight.value = parseFloat(match[2])
-        loraTextWeight.value = parseFloat(match[3])
-      }
-    }
-  })
-
-  // 应用Lora权重
-  const applyLoraWeights = () => {
-    if (activeControls.value !== null && tokens.value[activeControls.value]?.isLoraTag) {
-      const token = tokens.value[activeControls.value]
-      const match = token.text.match(/<wlr:([^:]+):([^:]+):([^>]+)>/)
-      if (match) {
-        const loraName = match[1]
-        // 创建新的Lora标签文本
-        const newText = `<wlr:${loraName}:${loraModelWeight.value}:${loraTextWeight.value}>`
-        // 更新token文本
-        token.text = newText
-        // 更新输入文本
-        updateInputText()
-      }
-    }
   }
 
   // 修改wrapWith函数
@@ -2007,17 +1835,11 @@
       } else if (segment.trim()) {
         // 处理非空文本
         const trimmedSegment = segment.trim()
-        // 检查是否是Lora标签格式 <wlr:LoraName:weight1:weight2>
-        const isLoraTag = /^<wlr:[^:]+:\d+(\.\d+)?:\d+(\.\d+)?>$/.test(trimmedSegment)
 
         // 优先匹配非隐藏的token
         let matched = false
         for (const [index, token] of existingTokensMap) {
           if (token.text === trimmedSegment && !token.isHidden && !result.includes(token)) {
-            // 如果是已存在的token，确保更新其Lora标签状态
-            if (isLoraTag && !token.isLoraTag) {
-              token.isLoraTag = true
-            }
             result.push(token)
             existingTokensMap.delete(index)
             matched = true
@@ -2029,10 +1851,6 @@
         if (!matched) {
           for (const [index, token] of existingTokensMap) {
             if (token.text === trimmedSegment && !result.includes(token)) {
-              // 如果是已存在的token，确保更新其Lora标签状态
-              if (isLoraTag && !token.isLoraTag) {
-                token.isLoraTag = true
-              }
               result.push(token)
               existingTokensMap.delete(index)
               matched = true
@@ -2049,8 +1867,7 @@
             isPunctuation: false,
             isEditing: false,
             isHidden: false,
-            color: '',
-            isLoraTag: isLoraTag // 添加Lora标签标识
+            color: ''
           })
         }
       }
@@ -2348,80 +2165,33 @@
   const finishPromptPutItHistory = () => {
     // 去除空格、换行和制表符
     const trimmedInput = inputText.value.replace(/[\s\t\n]+/g, '')
-    if (selectedLoras.value.length > 0) {
-      if (trimmedInput.length > 0) {
-        const tempLora = selectedLoras.value.filter((lora) => !lora.hidden)
-        let putJson = {
-          prompt: inputText.value,
-          lora: '',
-          temp_prompt: tokens.value,
-          temp_lora: selectedLoras.value
-        }
-        if (tempLora.length > 0) {
-          putJson.lora = tempLora
-        }
-        const jsonStr = JSON.stringify(putJson)
-        if (tempInputText.value != jsonStr) {
-          tempInputText.value = jsonStr
-          historyApi.saveHistory({ tag: jsonStr })
-        }
-      }
-    } else {
-      if (tempInputText.value != inputText.value) {
-        const putJson = {
-          prompt: inputText.value,
-          lora: '',
-          temp_prompt: tokens.value,
-          temp_lora: ''
-        }
-        const jsonStr = JSON.stringify(putJson)
-        if (trimmedInput.length > 0) {
-          historyApi.saveHistory({ tag: jsonStr })
-        }
-      }
+    const putJson = {
+      prompt: inputText.value,
+      temp_prompt: tokens.value
+    }
+    const jsonStr = JSON.stringify(putJson)
+    if (tempInputText.value !== jsonStr && trimmedInput.length > 0) {
+      tempInputText.value = jsonStr
+      historyApi.saveHistory({ tag: jsonStr })
     }
     postMessageToWindowsPrompt()
     if (!suppressUnsavedOnce) unsavedChanges.value = true
   }
 
   const postMessageToWindowsPrompt = () => {
-    if (selectedLoras.value.length > 0) {
-      tempInputText.value = inputText.value
-      const tempLora = selectedLoras.value.filter((lora) => !lora.hidden)
-      let putJson = {
-        prompt: inputText.value,
-        lora: '',
-        temp_prompt: tokens.value,
-        temp_lora: selectedLoras.value
-      }
-      if (tempLora.length > 0) {
-        putJson.lora = tempLora
-      }
-      const jsonStr = JSON.stringify(putJson)
-      window.postMessage(
-        {
-          type: 'weilin_prompt_ui_prompt_finish_prompt',
-          data: jsonStr
-        },
-        '*'
-      )
-    } else {
-      tempInputText.value = inputText.value
-      const putJson = {
-        prompt: inputText.value,
-        lora: '',
-        temp_prompt: tokens.value,
-        temp_lora: ''
-      }
-      const jsonStr = JSON.stringify(putJson)
-      window.postMessage(
-        {
-          type: 'weilin_prompt_ui_prompt_finish_prompt',
-          data: jsonStr
-        },
-        '*'
-      )
+    const putJson = {
+      prompt: inputText.value,
+      temp_prompt: tokens.value
     }
+    const jsonStr = JSON.stringify(putJson)
+    tempInputText.value = jsonStr
+    window.postMessage(
+      {
+        type: 'weilin_prompt_ui_prompt_finish_prompt',
+        data: jsonStr
+      },
+      '*'
+    )
   }
 
   // 显示控制栏
@@ -2452,9 +2222,7 @@
       top: `${rect.bottom + window.scrollY + rect.height + 10}px`,
       left: `${rect.left + rect.width / 2}px`
     }
-    if (!tokens.value[index].isLoraTag) {
-      showTagTipsBox.value = true
-    }
+    showTagTipsBox.value = true
   }
 
   // 定义递归函数来查找最内层的权重
@@ -2751,16 +2519,6 @@
     { deep: true }
   )
 
-  watch(
-    selectedLoras,
-    (newLoras) => {
-      // finishPromptPutItHistory()
-      finishPromptPutItHistory()
-      unsavedChanges.value = true
-    },
-    { deep: true }
-  )
-
   // 切换语言选择器
   const toggleLanguageSelector = () => {
     showLanguageSelector.value = !showLanguageSelector.value
@@ -2804,11 +2562,6 @@
     window.parent.postMessage({ type: 'weilin_prompt_ui_openTagManager_prompt' }, '*')
   }
 
-  const openLoraManager = () => {
-    // 发送消息给父窗口
-    window.parent.postMessage({ type: 'weilin_prompt_ui_openLoraManager' }, '*')
-  }
-
   const openHistoryBox = () => {
     // 发送消息给父窗口
     window.parent.postMessage({ type: 'weilin_prompt_ui_openHistoryManager' }, '*')
@@ -2820,14 +2573,6 @@
   // 切换标签管理器显示状态
   const toggleTagManager = () => {
     showTagManager.value = !showTagManager.value
-  }
-
-  // 添加折叠状态控制
-  const showLoraManager = ref(false)
-
-  // 切换Lora管理器显示状态
-  const toggleLoraManager = () => {
-    showLoraManager.value = !showLoraManager.value
   }
 
   const resizeObserver = ref(null)
@@ -2932,7 +2677,7 @@
     if (event.button === 0 && !event.ctrlKey && !event.metaKey) {
       // 检查点击目标是否在标签容器内且不是标签本身或控制元素
       const tokenItem = event.target.closest(
-        '.token-item-box, .token-item, .lora-tag-icon, .newline-token, .tab-token, .delete-btn, .weight-control, .bracket-btn, .translate-button, .tag-tips-box, .token-controls'
+        '.token-item-box, .token-item, .newline-token, .tab-token, .delete-btn, .weight-control, .bracket-btn, .translate-button, .tag-tips-box, .token-controls'
       )
       const tokensContainer = tokensContainerRef.value
 
@@ -3174,9 +2919,7 @@
 
     tokenBoxes.forEach((box, index) => {
       // 获取标签内部的实际显示元素
-      const tokenElement = box.querySelector(
-        '.token-item, .lora-tag-icon, .newline-token, .tab-token'
-      )
+      const tokenElement = box.querySelector('.token-item, .newline-token, .tab-token')
       if (!tokenElement) return
 
       const rect = box.getBoundingClientRect()
@@ -3477,68 +3220,11 @@
     } else if (event.data.type === 'weilin_prompt_ui_refresh_all_data') {
     } else if (event.data.type === 'weilin_prompt_ui_translate_setting') {
       initTranslate()
-    } else if (event.data.type === 'weilin_prompt_ui_selectLora') {
-      if (event.data.lora.loraWorks != undefined && event.data.lora.loraWorks.length > 0) {
-        // 在输入框末尾添加标签文本
-        const currentText = inputText.value
-        const tagText = event.data.lora.loraWorks
-
-        // 检查当前文本是否为空或是否以空格结尾
-        if (currentText === '') {
-          inputText.value = tagText
-        } else if (currentText.endsWith(' ')) {
-          inputText.value = currentText + ', ' + tagText + ','
-        } else {
-          inputText.value = currentText + ', ' + tagText + ','
-        }
-
-        lastInputValue.value = inputText.value // 更新上一次的输入内容
-        // 触发输入事件以更新词组
-        processInput()
-      }
     } else if (
       event.data.type ===
       'weilin_prompt_ui_prompt_inner_get_node_tag_template_id_go_random_response'
     ) {
       onClickLocalTemplateRandomTag(event.data.data)
-    } else if (event.data.type === 'weilin_prompt_ui_addLoraTag_inner') {
-      if (event.data.lora.loraWorks != undefined && event.data.lora.loraWorks.length > 0) {
-        // 在输入框末尾添加标签文本
-        const currentText = inputText.value
-        const tagText =
-          event.data.lora.tag +
-          (event.data.lora.loraWorks === '' ? '' : ', ' + event.data.lora.loraWorks)
-
-        // 检查当前文本是否为空或是否以空格结尾
-        if (currentText === '') {
-          inputText.value = tagText
-        } else if (currentText.endsWith(' ')) {
-          inputText.value = currentText + ', ' + tagText + ','
-        } else {
-          inputText.value = currentText + ', ' + tagText + ','
-        }
-
-        lastInputValue.value = inputText.value // 更新上一次的输入内容
-        // 触发输入事件以更新词组
-        processInput()
-      } else {
-        // 在输入框末尾添加标签文本
-        const currentText = inputText.value
-        const tagText = event.data.lora.tag
-
-        // 检查当前文本是否为空或是否以空格结尾
-        if (currentText === '') {
-          inputText.value = tagText
-        } else if (currentText.endsWith(' ')) {
-          inputText.value = currentText + ', ' + tagText + ','
-        } else {
-          inputText.value = currentText + ', ' + tagText + ','
-        }
-
-        lastInputValue.value = inputText.value // 更新上一次的输入内容
-        // 触发输入事件以更新词组
-        processInput()
-      }
     }
   }
 
@@ -3811,30 +3497,13 @@
         inputText.value = jsonStr.prompt
         lastInputValue.value = inputText.value // 更新上一次的输入内容
 
-        if (jsonStr.lora && jsonStr.lora != '') {
-          selectedLoras.value = jsonStr.lora
-        }
-
         if (jsonStr.temp_prompt && jsonStr.temp_prompt != '') {
           const tempDataJson = jsonStr.temp_prompt
-          let isOldVersion = false
           if (tempDataJson.tokens && tempDataJson.tokens.length > 0 && tempDataJson.tokens != '') {
             tokens.value = tempDataJson.tokens
-            isOldVersion = true
-          }
-          if (tempDataJson.lora && tempDataJson.lora.length > 0 && tempDataJson.lora != '') {
-            selectedLoras.value = tempDataJson.lora
-            isOldVersion = true
-          }
-
-          if (!isOldVersion && tempDataJson.length > 0 && tempDataJson != '') {
+          } else if (tempDataJson.length > 0 && tempDataJson != '') {
             tokens.value = tempDataJson
           }
-        }
-
-        if (jsonStr.temp_lora && jsonStr.temp_lora.length > 0 && jsonStr.temp_lora != '') {
-          const tempDataJson = jsonStr.temp_lora
-          selectedLoras.value = tempDataJson
         }
 
         processInput()
@@ -4274,7 +3943,6 @@
     inputText.value = ''
     tokens.value = []
     translateText.value = ''
-    selectedLoras.value = []
     lastInputValue.value = ''
     // 如有其它需要清空的内容可一并处理
     updateInputText()

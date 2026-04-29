@@ -36,7 +36,7 @@
     <!-- 分页控制 -->
     <div class="pagination">
       <button :disabled="currentPage <= 1" @click="changePage(currentPage - 1)" class="page-btn">
-        {{ t('loraManager.prevPage') }}
+        {{ t('danbooruManager.prevPage') }}
       </button>
       <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
       <button
@@ -44,7 +44,7 @@
         @click="changePage(currentPage + 1)"
         class="page-btn"
       >
-        {{ t('loraManager.nextPage') }}
+        {{ t('danbooruManager.nextPage') }}
       </button>
       <div class="page-size-control">
         <label>{{ t('danbooruManager.pageShow') }}</label>
