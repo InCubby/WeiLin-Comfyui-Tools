@@ -191,23 +191,6 @@
           </button>
         </div>
 
-        <!-- 新增 AI 对话按钮 -->
-        <div class="action-item">
-          <button class="tag-manager-btn" @click="openAIChat" :title="t('controls.aiChat')">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              class="tag-icon"
-              width="24"
-              height="24"
-            >
-              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-              <path d="M6 14h12v2H6zm0-3h12v2H6zm0-3h12v2H6z" />
-            </svg>
-            <span class="action-text">{{ t('controls.aiChat') }}</span>
-          </button>
-        </div>
-
         <div class="action-item">
           <button class="tag-manager-btn" @click="openGitHub" :title="t('controls.github')">
             <svg
@@ -4117,11 +4100,6 @@
 
     postMessageToWindowsPrompt()
     if (!suppressUnsavedOnce) unsavedChanges.value = true
-  }
-
-  // AI对话
-  const openAIChat = () => {
-    window.parent.postMessage({ type: 'weilin_prompt_ui_openAiWindow' }, '*')
   }
 
   const openGitHub = () => {

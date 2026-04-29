@@ -136,7 +136,6 @@ export default {
     addLora: '添加Lora',
     removeLora: '移除Lora',
     lookOnLora: '查看Lora',
-    aiChat: 'AI对话',
     github: 'Github主页',
     shareCloudData: '共享云数据',
     tutorialVideo: '教程视频',
@@ -425,14 +424,6 @@ export default {
     edit_favorite: '编辑收藏',
     delete_favorite: '删除收藏',
     use_favorite: '使用收藏'
-  },
-  aiWindow: {
-    windowTitle: 'AI对话窗口',
-    newChat: '新建对话',
-    chatName: '对话',
-    thinking: '思考中...',
-    send: '发送',
-    inputMessage: '输入你的消息...'
   },
   translaterService: {
     niutrans: '小牛翻译',

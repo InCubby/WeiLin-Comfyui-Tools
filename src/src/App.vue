@@ -73,22 +73,6 @@
       <HistoryManager />
     </DraggableWindow>
 
-    <!-- AI窗口 -->
-    <DraggableWindow
-      name="aiWindow"
-      v-if="windows.ai_window.visible"
-      :title="t('aiWindow.windowTitle')"
-      :position="windows.ai_window.position"
-      :size="windows.ai_window.size"
-      :z-index="windowManager.getZIndex('ai_window')"
-      @update:position="updatePosition('ai_window', $event)"
-      @update:size="updateSize('ai_window', $event)"
-      @active="windowManager.setActiveWindow('ai_window')"
-      @close="closeWindow('ai_window')"
-    >
-      <AiWindow />
-    </DraggableWindow>
-
     <!-- 节点列表快捷窗口 -->
     <DraggableWindow
       name="nodeListWindow"
@@ -154,7 +138,6 @@
     </DraggableWindow>
 
     <loraDetail ref="loraDetailLoraStackRef" />
-
   </div>
 </template>
 
@@ -167,7 +150,6 @@
   import LoraManager from './view/lora_manager/lora_index.vue'
   import HistoryManager from './view/history_manager/history_index.vue'
   import { windowManager } from '@/utils/windowManager'
-  import AiWindow from '@/view/ai_window/ai_window.vue'
   import NodeListWindow from '@/view/node_list/index.vue'
   import CloudWindow from '@/view/cloud/index.vue'
   import LoraStackWindow from '@/view/lora_manager/lora_stack.vue'
@@ -215,12 +197,6 @@
       visible: false,
       is_default_close: false,
       position: { x: 300, y: 300 },
-      size: { width: 800, height: 600 }
-    },
-    ai_window: {
-      visible: false,
-      is_default_close: false,
-      position: { x: 400, y: 400 },
       size: { width: 800, height: 600 }
     },
     node_list_window: {
@@ -312,6 +288,8 @@
     initTheme()
     // 添加消息监听
     window.addEventListener('message', handleMessage)
+    localStorage.removeItem('aiChatHistory')
+    windows.value.prompt.visible = true
   })
 
   // 初始化主题
@@ -339,7 +317,6 @@
 
     // 移除消息监听
     window.removeEventListener('message', handleMessage)
-
   })
 
   // 关闭窗口
@@ -398,12 +375,6 @@
         visible: false,
         is_default_close: false,
         position: { x: 300, y: 300 },
-        size: { width: 800, height: 600 }
-      },
-      ai_window: {
-        visible: false,
-        is_default_close: false,
-        position: { x: 400, y: 400 },
         size: { width: 800, height: 600 }
       },
       node_list_window: {
@@ -538,9 +509,6 @@
     } else if (event.data.type === 'weilin_prompt_ui_openHistoryManager') {
       windows.value.history.visible = true
       windowManager.setActiveWindow('history')
-    } else if (event.data.type === 'weilin_prompt_ui_openAiWindow') {
-      windows.value.ai_window.visible = true
-      windowManager.setActiveWindow('ai_window')
     } else if (event.data.type === 'weilin_prompt_ui_open_node_list_window') {
       windows.value.node_list_window.visible = true
       windowManager.setActiveWindow('node_list_window')
@@ -647,6 +615,4 @@
   }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

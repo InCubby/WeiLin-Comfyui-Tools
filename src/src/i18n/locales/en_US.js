@@ -129,7 +129,6 @@ export default {
     addLora: 'Add Lora',
     removeLora: 'Remove Lora',
     lookOnLora: 'Look On Lora',
-    aiChat: 'AI Chat',
     github: 'Github Home',
     shareCloudData: 'Share Cloud Data',
     tutorialVideo: 'Tutorial Video',
@@ -420,14 +419,6 @@ export default {
     edit_favorite: 'Edit favorite',
     delete_favorite: 'Delete favorite',
     use_favorite: 'Use favorite'
-  },
-  aiWindow: {
-    windowTitle: 'AI Chat Window',
-    newChat: 'New Chat',
-    chatName: 'Chat',
-    thinking: 'Thinking...',
-    send: 'Send',
-    inputMessage: 'Enter your message...'
   },
   translaterService: {
     niutrans: 'niutrans',
