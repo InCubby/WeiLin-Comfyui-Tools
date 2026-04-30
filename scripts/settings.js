@@ -1,8 +1,5 @@
 import { app } from './app.js'
 
-const CATEGORY = ['WeiLin Prompt UI', '提示词输入']
-const getCategory = () => [...CATEGORY]
-
 const SETTING = {
   fullwidthSymbolConversion: {
     id: 'weilin.prompt_box.fullwidth_symbol_conversion',
@@ -55,7 +52,6 @@ app.registerExtension({
       name: SETTING.fullwidthSymbolConversion.name,
       type: 'boolean',
       defaultValue: SETTING.fullwidthSymbolConversion.defaultValue,
-      category: getCategory(),
       onChange: (value) => applyFullwidthSymbolConversion(!!value)
     },
     {
@@ -63,7 +59,6 @@ app.registerExtension({
       name: SETTING.underscoreToSpace.name,
       type: 'boolean',
       defaultValue: SETTING.underscoreToSpace.defaultValue,
-      category: getCategory(),
       onChange: (value) => setBool(STORAGE_KEY.underscoreToBracket, !!value)
     },
     {
@@ -71,7 +66,6 @@ app.registerExtension({
       name: SETTING.bracketEscape.name,
       type: 'boolean',
       defaultValue: SETTING.bracketEscape.defaultValue,
-      category: getCategory(),
       onChange: (value) => setBool(STORAGE_KEY.bracketEscape, !!value)
     },
     {
@@ -79,7 +73,6 @@ app.registerExtension({
       name: SETTING.commaCloseAutocomplete.name,
       type: 'boolean',
       defaultValue: SETTING.commaCloseAutocomplete.defaultValue,
-      category: getCategory(),
       onChange: (value) => setBool(STORAGE_KEY.commaCloseAutocomplete, !!value)
     }
   ],
