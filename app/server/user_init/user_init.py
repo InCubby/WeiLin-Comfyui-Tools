@@ -40,7 +40,6 @@ default_settings = {
     "translate_source_lang": "en",
     "translate_target_lang": "zh",
     "show_auto_limit": 25,
-    "random_template": "",
     "ai_info_setting": {
         "api_key": "",
         "base_url": "https://api.siliconflow.cn/v1",
@@ -168,29 +167,6 @@ def update_auto_limit_setting(new_setting: int):
     with open(init_file_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
     return True
-
-
-def get_random_template_setting():
-    """获取random_template参数，如果不存在则添加默认值"""
-    data = read_init_file() or {}
-
-    # 如果不存在random_template参数，则添加默认值
-    if "random_template" not in data:
-        data["random_template"] = ""
-        with open(init_file_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-
-    return data["random_template"]
-
-
-def update_random_template_setting(new_setting):
-    """更新random_template参数"""
-    data = read_init_file() or {}
-    data["random_template"] = new_setting
-    with open(init_file_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-    return True
-
 
 def get_ai_info_setting():
     """获取ai_info_setting参数，如果不存在则添加默认值"""

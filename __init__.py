@@ -100,11 +100,6 @@ class WeiLinPromptUIWithoutLora:
         pass
 
     @classmethod
-    def IS_CHANGED(self, auto_random, **kwargs):
-        if auto_random:
-            return float("nan")
-
-    @classmethod
     def INPUT_TYPES(self):
         return {
             "required": {
@@ -116,7 +111,6 @@ class WeiLinPromptUIWithoutLora:
                         "placeholder": placeholder_text,
                     },
                 ),
-                "auto_random": ("BOOLEAN", {"default": False}),
             },
             "optional": {
                 "temp_str": (
@@ -125,14 +119,6 @@ class WeiLinPromptUIWithoutLora:
                         "multiline": True,
                         "default": "",
                         "placeholder": "temp prompt words",
-                    },
-                ),
-                "random_template": (
-                    "STRING",
-                    {
-                        "multiline": True,
-                        "default": "",
-                        "placeholder": "random template path name",
                     },
                 ),
                 "opt_text": (ANY, {"default": ""}),
@@ -162,9 +148,7 @@ class WeiLinPromptUIWithoutLora:
     def encode(
         self,
         positive="",
-        auto_random=False,
         temp_str="",
-        random_template="",
         opt_text="",
         opt_clip=None,
         unique_id=None,
@@ -183,17 +167,6 @@ class WeiLinPromptUIWithoutLora:
             else:
                 text_dec = positive
 
-        if auto_random:
-            if len(random_template) > 0:
-                # 随机Tag获取
-                random_tag = go_run_node_auto_random_tag(random_template)
-                if len(random_tag["random_tags"]) > 0:
-                    positive = random_tag["random_tags"]
-                    if len(opt_text) > 0:
-                        text_dec = opt_text + ", " + positive
-                    else:
-                        text_dec = positive
-
         if opt_clip is not None:
             try:
                 tokens = opt_clip.tokenize(text_dec)
@@ -204,15 +177,6 @@ class WeiLinPromptUIWithoutLora:
                     print("[ERROR] CONDITIONING输出格式验证失败，返回None")
                     conditioning_output = None
 
-                if auto_random:
-                    return {
-                        "ui": {"positive": [str(positive)]},
-                        "result": (
-                            text_dec,
-                            conditioning_output,
-                            opt_clip,
-                        ),
-                    }
                 return (
                     text_dec,
                     conditioning_output,
@@ -220,29 +184,11 @@ class WeiLinPromptUIWithoutLora:
                 )
             except Exception as e:
                 print(f"[ERROR] CONDITIONING编码失败: {e}")
-                if auto_random:
-                    return {
-                        "ui": {"positive": [str(positive)]},
-                        "result": (
-                            text_dec,
-                            None,
-                            opt_clip,
-                        ),
-                    }
                 return (
                     text_dec,
                     None,
                     opt_clip,
                 )
-        if auto_random:
-            return {
-                "ui": {"positive": [str(positive)]},
-                "result": (
-                    text_dec,
-                    None,
-                    opt_clip,
-                ),
-            }
         return (
             text_dec,
             None,

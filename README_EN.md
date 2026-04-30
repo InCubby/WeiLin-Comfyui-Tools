@@ -139,7 +139,6 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 
 > 0.0.61 Public Beta Version 2025-08-06
 >
-> 1. Fixed a known BUG (running the process when the node is not loading can also cause the node to load) (random tag loading issue)
 >
 > 2. Fixed the issue where pop-up Windows were opened in some cases
 >
@@ -177,7 +176,6 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 >
 > 4. Function optimization: History information simplified display
 >
-> 5. New function: random Tag function, you can set the template, one key random Tag
 >
 > 6. Feature optimization: The category bar of the Tag manager can be changed in order and position
 >
@@ -189,7 +187,6 @@ Due to limited personal time, the frequency of updating plug-ins will not be ver
 >
 > 10. The lower left corner of the window will prompt for updates when a new version of the plugin is available
 >
-> 11. New node function: automatic random Tag, set the template can be used, each node's random template is different and can be customized
 >
 > 12. Modified the Lora manager, added the function of displaying all secondary directories, and changed the height problem of the directory bar
 >

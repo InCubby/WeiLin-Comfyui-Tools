@@ -327,7 +327,6 @@ waitForApp((app) => {
 
         if (nodeData.name === "WeiLinPromptUIWithoutLora") {
           hideWidgetForGood(this, this.widgets.find(w => w.name === "temp_str"))
-          hideWidgetForGood(this, this.widgets.find(w => w.name === "random_template"))
         }
 
         for (let index = 0; index < this.widgets.length; index++) {
@@ -342,11 +341,6 @@ waitForApp((app) => {
             thisInputElement.readOnly = true
             nodeTextAreaList[2] = thisInputElement
             nodeWidgetList[2] = widgetItem
-          } else if (widgetItem.name == "random_template") {
-            let thisInputElement = widgetItem.element
-            thisInputElement.readOnly = true
-            nodeTextAreaList[4] = thisInputElement
-            nodeWidgetList[4] = widgetItem
           }
         }
 
@@ -473,13 +467,6 @@ waitForApp((app) => {
               window.parent.postMessage({ type: 'weilin_prompt_ui_openPromptBox', id: promptBoxRandomID, prompt: data, node: nodeData.name }, '*')
             });
           
-          }else if (event.data.type === "weilin_prompt_ui_update_template_"+promptBoxRandomID) {
-            nodeTextAreaList[4].value = event.data.data
-            if (nodeWidgetList[4]) nodeWidgetList[4].value = event.data.data
-          }else if (event.data.type === "weilin_prompt_ui_get_template_"+promptBoxRandomID) {
-            window.parent.postMessage({ type: 'weilin_prompt_ui_get_template_response', id: promptBoxRandomID, data: nodeTextAreaList[4].value }, '*')
-          }else if (event.data.type === "weilin_prompt_ui_get_template_go_random_"+promptBoxRandomID) {
-            window.parent.postMessage({ type: 'weilin_prompt_ui_get_template_go_random_response', id: promptBoxRandomID, data: nodeTextAreaList[4].value }, '*')
           }
 
         };

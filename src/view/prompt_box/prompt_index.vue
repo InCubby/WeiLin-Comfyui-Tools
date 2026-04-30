@@ -316,7 +316,7 @@
           <!-- 添加一键翻译按钮 -->
           <button
             v-if="isTranslateTagEnabled"
-            class="translate-btn random-tag-settings-btn"
+            class="translate-btn translate-tag-btn"
             @click="oneClickTranslatePrompt"
             :title="t('promptBox.oneClickTranslate')"
           >
@@ -339,51 +339,6 @@
             <span style="margin-left: 5px" class="action-text">{{
               t('promptBox.oneClickTranslate')
             }}</span>
-          </button>
-
-          <!-- 添加设置随机Tag规则按钮 -->
-          <button
-            v-if="isRandomTagSettingsEnabled"
-            class="translate-btn random-tag-settings-btn"
-            @click="openRandomTagSettings"
-            :title="t('promptBox.randomTagSettings')"
-          >
-            <svg
-              viewBox="0 0 1024 1024"
-              xmlns="http://www.w3.org/2000/svg"
-              class="utils-item-icon"
-              width="24"
-              height="24"
-            >
-              <path
-                d="M512 409.6c-56.32 0-102.4 46.08-102.4 102.4s46.08 102.4 102.4 102.4 102.4-46.08 102.4-102.4-46.08-102.4-102.4-102.4z m0 153.6c-28.16 0-51.2-23.04-51.2-51.2s23.04-51.2 51.2-51.2 51.2 23.04 51.2 51.2-23.04 51.2-51.2 51.2z"
-              ></path>
-              <path
-                d="M512 204.8c-25.6 0-51.2 2.56-76.8 7.68l-15.36-61.44c-2.56-10.24-10.24-17.92-20.48-20.48-10.24-2.56-20.48 0-28.16 7.68l-76.8 76.8c-5.12 5.12-7.68 12.8-7.68 20.48s2.56 15.36 7.68 20.48l76.8 76.8c5.12 5.12 12.8 7.68 20.48 7.68 2.56 0 5.12 0 7.68-2.56 10.24-2.56 17.92-10.24 20.48-20.48l15.36-61.44c25.6-5.12 51.2-7.68 76.8-7.68 140.8 0 256 115.2 256 256s-115.2 256-256 256-256-115.2-256-256c0-25.6 2.56-51.2 7.68-76.8l61.44-15.36c10.24-2.56 17.92-10.24 20.48-20.48 2.56-10.24 0-20.48-7.68-28.16l-76.8-76.8c-5.12-5.12-12.8-7.68-20.48-7.68s-15.36 2.56-20.48 7.68l-76.8 76.8c-7.68 7.68-10.24 17.92-7.68 28.16 2.56 10.24 10.24 17.92 20.48 20.48l61.44 15.36c-5.12 25.6-7.68 51.2-7.68 76.8 0 168.96 138.24 307.2 307.2 307.2s307.2-138.24 307.2-307.2-138.24-307.2-307.2-307.2z"
-              ></path>
-            </svg>
-            <span class="action-text">{{ t('promptBox.randomTagSettings') }}</span>
-          </button>
-
-          <!-- 添加一键随机Tag按钮 -->
-          <button
-            v-if="isRandomTagEnabled"
-            class="translate-btn random-tag-btn"
-            @click="oneClickRandomTag"
-            :title="t('promptBox.oneClickRandomTag')"
-          >
-            <svg
-              viewBox="0 0 1024 1024"
-              xmlns="http://www.w3.org/2000/svg"
-              class="utils-item-icon"
-              width="24"
-              height="24"
-            >
-              <path
-                d="M832 512c0-176-144-320-320-320S192 336 192 512s144 320 320 320 320-144 320-320z m-384 0c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m128-128c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m-256 0c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m128-128c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m256 256c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m-256 0c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m-128 128c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z m256 0c0-35.2 28.8-64 64-64s64 28.8 64 64-28.8 64-64 64-64-28.8-64-64z"
-              ></path>
-            </svg>
-            <span class="action-text">{{ t('promptBox.oneClickRandomTag') }}</span>
           </button>
 
           <!-- 删除按钮显示开关 -->
@@ -796,7 +751,6 @@
     </div>
   </div>
 
-  <RandomSetting ref="randomSettingItem" />
   <favourItem ref="favourItemRef" />
 </template>
 
@@ -821,12 +775,8 @@
   import { historyApi } from '@/api/history'
   import message from '@/utils/message'
   import { autocompleteApi } from '@/api/autocomplete'
-  import RandomSetting from './components/random_setting.vue'
-  import { randomTagApi } from '@/api/random_tag'
   import pako from 'pako'
   import favourItem from './components/favour.vue'
-
-  const randomSettingItem = ref(null)
 
   const prefix = 'weilin_prompt_ui_'
   const { t } = useI18n()
@@ -954,12 +904,6 @@
   const isDeleteButtonEnabled = ref(
     localStorage.getItem('weilin_function_toggles_deleteButton') !== 'false'
   )
-  const isRandomTagEnabled = ref(
-    localStorage.getItem('weilin_function_toggles_randomTag') !== 'false'
-  )
-  const isRandomTagSettingsEnabled = ref(
-    localStorage.getItem('weilin_function_toggles_randomTagSettings') !== 'false'
-  )
   const isTranslateTagEnabled = ref(
     localStorage.getItem('weilin_function_toggles_translateTag') !== 'false'
   )
@@ -972,16 +916,12 @@
     [
       isClearAllEnabled,
       isDeleteButtonEnabled,
-      isRandomTagEnabled,
-      isRandomTagSettingsEnabled,
       isTranslateTagEnabled,
       isClearDisabledEnabled
     ],
-    ([clearAll, deleteButton, randomTag, randomTagSettings, translateTag, clearDisabled]) => {
+    ([clearAll, deleteButton, translateTag, clearDisabled]) => {
       localStorage.setItem('weilin_function_toggles_clearAll', String(clearAll))
       localStorage.setItem('weilin_function_toggles_deleteButton', String(deleteButton))
-      localStorage.setItem('weilin_function_toggles_randomTag', String(randomTag))
-      localStorage.setItem('weilin_function_toggles_randomTagSettings', String(randomTagSettings))
       localStorage.setItem('weilin_function_toggles_translateTag', String(translateTag))
       localStorage.setItem('weilin_function_toggles_clearDisabled', String(clearDisabled))
     }
@@ -993,10 +933,6 @@
       isClearAllEnabled.value = e.newValue !== 'false'
     } else if (e.key === 'weilin_function_toggles_deleteButton') {
       isDeleteButtonEnabled.value = e.newValue !== 'false'
-    } else if (e.key === 'weilin_function_toggles_randomTag') {
-      isRandomTagEnabled.value = e.newValue !== 'false'
-    } else if (e.key === 'weilin_function_toggles_randomTagSettings') {
-      isRandomTagSettingsEnabled.value = e.newValue !== 'false'
     } else if (e.key === 'weilin_function_toggles_translateTag') {
       isTranslateTagEnabled.value = e.newValue !== 'false'
     } else if (e.key === 'weilin_function_toggles_clearDisabled') {
@@ -3220,11 +3156,6 @@
     } else if (event.data.type === 'weilin_prompt_ui_refresh_all_data') {
     } else if (event.data.type === 'weilin_prompt_ui_translate_setting') {
       initTranslate()
-    } else if (
-      event.data.type ===
-      'weilin_prompt_ui_prompt_inner_get_node_tag_template_id_go_random_response'
-    ) {
-      onClickLocalTemplateRandomTag(event.data.data)
     }
   }
 
@@ -3827,66 +3758,6 @@
     )
   }
 
-  // 一键随机Tag方法
-  const oneClickRandomTag = async () => {
-    if (props.promptManager == 'prompt_global') {
-      try {
-        await randomTagApi
-          .goRandomTemplate()
-          .then((res) => {
-            if (res.code === 200) {
-              inputText.value = res.random_tags
-              nextTick(() => {
-                // 触发输入处理
-                processInput()
-              })
-            } else {
-              message({ type: 'warn', str: res.info })
-            }
-          })
-          .catch((err) => {
-            console.error(err)
-            message({ type: 'warn', str: 'message.networkError' })
-          })
-      } catch (error) {
-        message({ type: 'warn', str: 'message.networkError' })
-        console.error('Error loading random tag settings:', error)
-      }
-    } else {
-      window.postMessage(
-        {
-          type: 'weilin_prompt_ui_prompt_inner_get_node_tag_template_id_gorandom'
-        },
-        '*'
-      )
-    }
-  }
-
-  const onClickLocalTemplateRandomTag = async (name) => {
-    try {
-      await randomTagApi
-        .goRandomTemplatePath(name)
-        .then((res) => {
-          if (res.code === 200) {
-            inputText.value = res.random_tags
-            nextTick(() => {
-              // 触发输入处理
-              processInput()
-            })
-          } else {
-            message({ type: 'warn', str: res.info })
-          }
-        })
-        .catch((err) => {
-          console.error(err)
-          message({ type: 'warn', str: 'message.networkError' })
-        })
-    } catch (error) {
-      message({ type: 'warn', str: 'message.networkError' })
-      console.error('Error loading random tag settings:', error)
-    }
-  }
-
   const favourItemRef = ref(null)
   const openFavourTag = (tokenInfo) => {
     if (favourItemRef.value) {
@@ -3932,11 +3803,6 @@
       console.error('解析短码时出错:', error)
       return ''
     }
-  }
-
-  // 打开随机Tag设置对话框
-  const openRandomTagSettings = () => {
-    randomSettingItem.value.open(props.promptManager)
   }
 
   const clearAllPrompt = () => {

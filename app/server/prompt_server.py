@@ -20,7 +20,6 @@ from .fast_autocomplete.autocomplete import fuzzy_search
 from .history.collect_history_contl import *
 from .history.history_contl import *
 from .prompt_api.danbooru import *
-from .prompt_api.random_tag_template import *
 from .prompt_api.tags_manager import *
 from .translate.local_translate import translate_phrase
 from .translate.new_translate_api import api_service_translate
@@ -832,110 +831,6 @@ async def _cloud_get_local_package(request):
 
 # =====================================================================================================
 
-# =================================================== 随机Tag模板 =======================================
-
-
-@PromptServer.instance.routes.post(baseUrl + "random_template/get_template_list")
-async def _get_template_list(request):
-    try:
-        return web.json_response(get_template_list())
-    except Exception as e:
-        print(f"Error: {e}")
-        return web.Response(status=500)
-
-
-@PromptServer.instance.routes.post(baseUrl + "random_template/save_template")
-async def _save_template(request):
-    data = await request.json()
-    try:
-        return web.json_response(save_template(data["data"]))
-    except Exception as e:
-        print(f"Error: {e}")
-        return web.Response(status=500)
-
-
-@PromptServer.instance.routes.post(baseUrl + "random_template/update_template")
-async def _update_template(request):
-    data = await request.json()
-    try:
-        return web.json_response(update_template(data["name"], data["data"]))
-    except Exception as e:
-        print(f"Error: {e}")
-        return web.Response(status=500)
-
-
-@PromptServer.instance.routes.post(baseUrl + "random_template/delete_template")
-async def _delete_template(request):
-    data = await request.json()
-    try:
-        update_random_template_setting("")
-        return web.json_response(delete_template(data["name"]))
-    except Exception as e:
-        print(f"Error: {e}")
-        return web.Response(status=500)
-
-
-@PromptServer.instance.routes.post(baseUrl + "random_template/get_template_data")
-async def _get_template_data(request):
-    data = await request.json()
-    try:
-        return web.json_response(get_template_data(data["name"]))
-    except Exception as e:
-        print(f"Error: {e}")
-        return web.Response(status=500)
-
-
-@PromptServer.instance.routes.post(baseUrl + "get/setting/get_random_template_setting")
-async def _get_random_template_setting(request):
-    try:
-        setting = get_random_template_setting()  # 获取设置的参数信息
-    except Exception as e:
-        print(f"Error: {e}")
-        return web.Response(status=500)
-
-    return web.json_response({"data": setting})
-
-
-@PromptServer.instance.routes.post(
-    baseUrl + "update/setting/update_random_template_setting"
-)
-async def _update_random_template_setting(request):
-    data = await request.json()
-    try:
-        update_random_template_setting(data.get("path"))  # 获取设置的参数信息
-    except Exception as e:
-        print(f"Error: {e}")
-        return web.Response(status=500)
-
-    return web.json_response({"info": "ok"})
-
-
-@PromptServer.instance.routes.post(baseUrl + "random_template/go_random_template")
-async def _go_random_template(request):
-    try:
-        setting = get_random_template_setting()  # 获取设置的参数信息
-        if setting == "":
-            return web.json_response({"code": 300, "info": "请先应用一个模板"})
-        return web.json_response(go_radom_template(setting))
-    except Exception as e:
-        print(f"Error: {e}")
-        return web.Response(status=500)
-
-
-@PromptServer.instance.routes.post(baseUrl + "random_template/go_random_template_path")
-async def _go_random_template_path(request):
-    data = await request.json()
-    try:
-        if data.get("name") == "":
-            return web.json_response({"code": 300, "info": "请先应用一个模板"})
-        return web.json_response(go_radom_template(data.get("name")))
-    except Exception as e:
-        print(f"Error: {e}")
-        return web.Response(status=500)
-
-
-# =====================================================================================================
-
 # ================================= Danbooru标签管理 =================================
 
 
@@ -1138,11 +1033,3 @@ async def _save_tag_labels(request):
 
 print("======== WeiLin插件服务已启动 ========")
 print("======== WeiLin Server Init ========")
-
-
-def go_run_node_auto_random_tag(name):
-    try:
-        return go_radom_template(name)
-    except Exception as e:
-        print(f"Error: {e}")
-        return ""

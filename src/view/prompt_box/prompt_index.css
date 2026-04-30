@@ -1014,15 +1014,13 @@
   color: #ccc;
 }
 
-.random-tag-btn,
-.random-tag-settings-btn {
+.translate-tag-btn {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.random-tag-btn .action-text,
-.random-tag-settings-btn .action-text {
+.translate-tag-btn .action-text {
   margin-left: 4px;
 }
 

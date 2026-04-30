@@ -270,18 +270,6 @@
             </div>
             <div class="weilin-comfyui-setting-item">
               <label>
-                <input type="checkbox" v-model="isRandomTagEnabled" />
-                {{ t('promptBox.settings.enableRandomTag') }}
-              </label>
-            </div>
-            <div class="weilin-comfyui-setting-item">
-              <label>
-                <input type="checkbox" v-model="isRandomTagSettingsEnabled" />
-                {{ t('promptBox.settings.enableRandomTagSettings') }}
-              </label>
-            </div>
-            <div class="weilin-comfyui-setting-item">
-              <label>
                 <input type="checkbox" v-model="isTranslateTagEnabled" />
                 {{ t('promptBox.settings.enableTranslateTag') }}
               </label>
@@ -549,12 +537,6 @@
   const isDeleteButtonEnabled = ref(
     localStorage.getItem('weilin_function_toggles_deleteButton') !== 'false'
   ) // 默认true
-  const isRandomTagEnabled = ref(
-    localStorage.getItem('weilin_function_toggles_randomTag') !== 'false'
-  ) // 默认true
-  const isRandomTagSettingsEnabled = ref(
-    localStorage.getItem('weilin_function_toggles_randomTagSettings') !== 'false'
-  ) // 默认true
   const isTranslateTagEnabled = ref(
     localStorage.getItem('weilin_function_toggles_translateTag') !== 'false'
   ) // 默认true
@@ -646,11 +628,6 @@
   const saveFunctionToggles = () => {
     localStorage.setItem('weilin_function_toggles_clearAll', isClearAllEnabled.value)
     localStorage.setItem('weilin_function_toggles_deleteButton', isDeleteButtonEnabled.value)
-    localStorage.setItem('weilin_function_toggles_randomTag', isRandomTagEnabled.value)
-    localStorage.setItem(
-      'weilin_function_toggles_randomTagSettings',
-      isRandomTagSettingsEnabled.value
-    )
     localStorage.setItem('weilin_function_toggles_translateTag', isTranslateTagEnabled.value)
     localStorage.setItem('weilin_function_toggles_clearDisabled', isClearDisabledEnabled.value)
 
@@ -658,8 +635,6 @@
     emit('functionTogglesUpdated', {
       clearAll: isClearAllEnabled.value,
       deleteButton: isDeleteButtonEnabled.value,
-      randomTag: isRandomTagEnabled.value,
-      randomTagSettings: isRandomTagSettingsEnabled.value,
       translateTag: isTranslateTagEnabled.value,
       clearDisabled: isClearDisabledEnabled.value
     })
