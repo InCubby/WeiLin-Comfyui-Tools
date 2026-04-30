@@ -330,7 +330,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
+    padding: 8px 12px 0 12px;
     background: transparent;
     cursor: move;
     user-select: none;
@@ -362,7 +362,7 @@
 
   .weilin_prompt_ui_window-content {
     flex: 1;
-    padding: 0 8px 8px;
+    padding: 8px;
     background: transparent;
   }
 
