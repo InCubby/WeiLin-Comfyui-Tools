@@ -1,4 +1,5 @@
 from .app.nodes.weilin_prompt_ui_without_lora import WeiLinPromptUIWithoutLora
+from .app.server import prompt_server
 
 NODE_CLASS_MAPPINGS = {
     "WeiLinPromptUIWithoutLora": WeiLinPromptUIWithoutLora,
