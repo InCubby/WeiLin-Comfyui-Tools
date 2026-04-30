@@ -779,6 +779,7 @@
   import favourItem from './components/favour.vue'
 
   const prefix = 'weilin_prompt_ui_'
+  const FULLWIDTH_SYMBOL_CONVERSION_KEY = 'weilin_prompt_ui_fullwidth_symbol_conversion'
   const { t } = useI18n()
 
   const autocompleteContainerRef = ref()
@@ -1476,19 +1477,21 @@
     const cursorEnd = event.target.selectionEnd
 
     // 1. 首先处理格式转换
+    const isFullwidthSymbolConversionEnabled =
+      localStorage.getItem(FULLWIDTH_SYMBOL_CONVERSION_KEY) !== 'false'
     const formatConversions = {
       comma: {
-        enabled: localStorage.getItem('weilin_prompt_ui_comma_conversion') !== 'false',
+        enabled: isFullwidthSymbolConversionEnabled,
         pattern: /，/g,
         replace: ','
       },
       period: {
-        enabled: localStorage.getItem('weilin_prompt_ui_period_conversion') !== 'false',
+        enabled: isFullwidthSymbolConversionEnabled,
         pattern: /。/g,
         replace: '.'
       },
       bracket: {
-        enabled: localStorage.getItem('weilin_prompt_ui_bracket_conversion') !== 'false',
+        enabled: isFullwidthSymbolConversionEnabled,
         patterns: [
           { pattern: /【/g, replace: '[' },
           { pattern: /】/g, replace: ']' },
@@ -1497,7 +1500,7 @@
         ]
       },
       angleBracket: {
-        enabled: localStorage.getItem('weilin_prompt_ui_angle_bracket_conversion') !== 'false',
+        enabled: isFullwidthSymbolConversionEnabled,
         patterns: [
           { pattern: /《/g, replace: '<' },
           { pattern: /》/g, replace: '>' }
@@ -1623,53 +1626,28 @@
   // 处理输入事件 ========== 主事件处理 ==========
   const processInput = async () => {
     // 预设设置
-    let isCommaConversionEnabled =
-      localStorage.getItem('weilin_prompt_ui_comma_conversion') === 'true'
-    let isPeriodConversionEnabled =
-      localStorage.getItem('weilin_prompt_ui_period_conversion') === 'true'
-    let isBracketConversionEnabled =
-      localStorage.getItem('weilin_prompt_ui_bracket_conversion') === 'true'
-    let isAngleBracketConversionEnabled =
-      localStorage.getItem('weilin_prompt_ui_angle_bracket_conversion') === 'true'
+    let isFullwidthSymbolConversionEnabled =
+      localStorage.getItem(FULLWIDTH_SYMBOL_CONVERSION_KEY) === 'true'
     let isUnderscoreToBracketEnabled =
       localStorage.getItem('weilin_prompt_ui_underscore_to_bracket') === 'true'
 
-    if (!localStorage.getItem('weilin_prompt_ui_comma_conversion')) {
-      localStorage.setItem('weilin_prompt_ui_comma_conversion', 'true')
-      isCommaConversionEnabled = true
-    }
-    if (!localStorage.getItem('weilin_prompt_ui_period_conversion')) {
-      localStorage.setItem('weilin_prompt_ui_period_conversion', 'true')
-      isPeriodConversionEnabled = true
-    }
-    if (!localStorage.getItem('weilin_prompt_ui_bracket_conversion')) {
-      localStorage.setItem('weilin_prompt_ui_bracket_conversion', 'true')
-      isBracketConversionEnabled = true
-    }
-    if (!localStorage.getItem('weilin_prompt_ui_angle_bracket_conversion')) {
-      localStorage.setItem('weilin_prompt_ui_angle_bracket_conversion', 'true')
-      isAngleBracketConversionEnabled = true
+    if (!localStorage.getItem(FULLWIDTH_SYMBOL_CONVERSION_KEY)) {
+      localStorage.setItem(FULLWIDTH_SYMBOL_CONVERSION_KEY, 'true')
+      isFullwidthSymbolConversionEnabled = true
     }
     if (!localStorage.getItem('weilin_prompt_ui_underscore_to_bracket')) {
       localStorage.setItem('weilin_prompt_ui_underscore_to_bracket', 'false')
       isUnderscoreToBracketEnabled = false
     }
 
-    if (isCommaConversionEnabled) {
+    if (isFullwidthSymbolConversionEnabled) {
       inputText.value = inputText.value.replace(/，/g, ',')
-    }
-    if (isPeriodConversionEnabled) {
       inputText.value = inputText.value.replace(/。/g, '.')
-    }
-    if (isBracketConversionEnabled) {
       inputText.value = inputText.value
         .replace(/【/g, '[') // 中文左方括号
         .replace(/】/g, ']') // 中文右方括号
         .replace(/（/g, '(') // 中文左圆括号
         .replace(/）/g, ')') // 中文右圆括号
-    }
-    if (isAngleBracketConversionEnabled) {
-      // 替换中文书名号为英文尖括号
       inputText.value = inputText.value
         .replace(/《/g, '<') // 中文左书名号
         .replace(/》/g, '>') // 中文右书名号
@@ -3353,20 +3331,14 @@
     let tagText = autocompleteResults.value[index].text
 
     // 应用所有格式转换
-    if (localStorage.getItem('weilin_prompt_ui_comma_conversion') !== 'false') {
+    if (localStorage.getItem(FULLWIDTH_SYMBOL_CONVERSION_KEY) !== 'false') {
       tagText = tagText.replace(/，/g, ',')
-    }
-    if (localStorage.getItem('weilin_prompt_ui_period_conversion') !== 'false') {
       tagText = tagText.replace(/。/g, '.')
-    }
-    if (localStorage.getItem('weilin_prompt_ui_bracket_conversion') !== 'false') {
       tagText = tagText
         .replace(/【/g, '[')
         .replace(/】/g, ']')
         .replace(/（/g, '(')
         .replace(/）/g, ')')
-    }
-    if (localStorage.getItem('weilin_prompt_ui_angle_bracket_conversion') !== 'false') {
       tagText = tagText.replace(/《/g, '<').replace(/》/g, '>')
     }
     if (localStorage.getItem('weilin_prompt_ui_underscore_to_bracket') === 'true') {

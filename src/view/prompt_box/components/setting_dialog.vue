@@ -10,37 +10,16 @@
             {{ t('promptBox.settings.translator') }}
           </li>
           <li
-            :class="{ 'weilin-comfyui-active': selectedSetting === 'setting_function_toggles' }"
-            @click="selectSetting('setting_function_toggles')"
-          >
-            {{ t('promptBox.settings.setting_function_toggles') }}
-          </li>
-          <li
             :class="{ 'weilin-comfyui-active': selectedSetting === 'setting_auto_complete_limit' }"
             @click="selectSetting('setting_auto_complete_limit')"
           >
             {{ t('promptBox.settings.setting_auto_complete_limit') }}
           </li>
           <li
-            :class="{ 'weilin-comfyui-active': selectedSetting === 'setting_prompt_box' }"
-            @click="selectSetting('setting_prompt_box')"
-          >
-            {{ t('promptBox.settings.setting_prompt_box') }}
-          </li>
-          <li
             :class="{ 'weilin-comfyui-active': selectedSetting === 'setting_openai_box' }"
             @click="selectSetting('setting_openai_box')"
           >
             {{ t('promptBox.settings.setting_openai_box') }}
-          </li>
-          <!-- <li :class="{ 'weilin-comfyui-active': selectedSetting === 'setting_start_panel' }"
-            @click="selectSetting('setting_start_panel')">{{
-              t('promptBox.settings.setting_start_panel') }}</li> -->
-          <li
-            :class="{ 'weilin-comfyui-active': selectedSetting === 'setting_sponsor_me' }"
-            @click="selectSetting('setting_sponsor_me')"
-          >
-            {{ t('promptBox.settings.setting_sponsor_me') }}
           </li>
         </ul>
       </div>
@@ -253,88 +232,6 @@
             </button>
           </div>
         </div>
-        <div v-if="selectedSetting === 'setting_function_toggles'">
-          <h3>{{ t('promptBox.settings.setting_function_toggles_full') }}</h3>
-          <div class="weilin-comfyui-floating-ball-settings">
-            <div class="weilin-comfyui-setting-item">
-              <label>
-                <input type="checkbox" v-model="isClearAllEnabled" />
-                {{ t('promptBox.settings.enableClearAll') }}
-              </label>
-            </div>
-            <div class="weilin-comfyui-setting-item">
-              <label>
-                <input type="checkbox" v-model="isDeleteButtonEnabled" />
-                {{ t('promptBox.settings.enableDeleteButton') }}
-              </label>
-            </div>
-            <div class="weilin-comfyui-setting-item">
-              <label>
-                <input type="checkbox" v-model="isTranslateTagEnabled" />
-                {{ t('promptBox.settings.enableTranslateTag') }}
-              </label>
-            </div>
-            <div class="weilin-comfyui-setting-item">
-              <label>
-                <input type="checkbox" v-model="isClearDisabledEnabled" />
-                {{ t('promptBox.settings.enableClearDisabled') }}
-              </label>
-            </div>
-            <button class="weilin-comfyui-save-button" @click="saveFunctionToggles">
-              {{ t('promptBox.settings.save') }}
-            </button>
-          </div>
-        </div>
-        <div v-if="selectedSetting === 'setting_prompt_box'">
-          <h3>{{ t('promptBox.settings.setting_prompt_box') }}</h3>
-          <div class="weilin-comfyui-floating-ball-settings">
-            <div class="weilin-comfyui-setting-item">
-              <label>
-                <input type="checkbox" v-model="isCommaConversionEnabled" />
-                {{ t('promptBox.settings.enableCommaConversion') }}
-              </label>
-            </div>
-            <div class="weilin-comfyui-setting-item">
-              <label>
-                <input type="checkbox" v-model="isPeriodConversionEnabled" />
-                {{ t('promptBox.settings.enablePeriodConversion') }}
-              </label>
-            </div>
-            <div class="weilin-comfyui-setting-item">
-              <label>
-                <input type="checkbox" v-model="isBracketConversionEnabled" />
-                {{ t('promptBox.settings.enableBracketConversion') }}
-              </label>
-            </div>
-            <div class="weilin-comfyui-setting-item">
-              <label>
-                <input type="checkbox" v-model="isAngleBracketConversionEnabled" />
-                {{ t('promptBox.settings.enableAngleBracketConversion') }}
-              </label>
-            </div>
-            <div class="weilin-comfyui-setting-item">
-              <label>
-                <input type="checkbox" v-model="isUnderscoreToBracketEnabled" />
-                {{ t('promptBox.settings.enableUnderscoreToBracket') }}
-              </label>
-            </div>
-            <div class="weilin-comfyui-setting-item">
-              <label>
-                <input type="checkbox" v-model="isCommaCloseAutocompleteEnabled" />
-                {{ t('promptBox.settings.enableCommaCloseAutocomplete') }}
-              </label>
-            </div>
-            <div class="weilin-comfyui-setting-item">
-              <label>
-                <input type="checkbox" v-model="isBracketEscapeEnabled" />
-                {{ t('promptBox.settings.enableBracketEscape') }}
-              </label>
-            </div>
-            <button class="weilin-comfyui-save-button" @click="savePromptBoxSettings">
-              {{ t('promptBox.settings.save') }}
-            </button>
-          </div>
-        </div>
         <div v-if="selectedSetting === 'setting_openai_box'">
           <h3>{{ t('promptBox.settings.openaiSettings') }}</h3>
           <div class="weilin-comfyui-openai-settings">
@@ -450,25 +347,6 @@
             </button>
           </div>
         </div>
-        <div v-if="selectedSetting === 'setting_sponsor_me'">
-          <h3>{{ t('promptBox.settings.setting_sponsor_me') }}</h3>
-          <div class="weilin-comfyui-sponsor-me-settings">
-            <h1>{{ t('promptBox.settings.sponsorMeTip') }}</h1>
-            <h2>{{ t('promptBox.settings.sponsorMeLink') }}</h2>
-            <button class="weilin-comfyui-sponsor-me-button" @click="sponsorMe">
-              {{ t('promptBox.settings.sponsorMe') }}
-            </button>
-          </div>
-        </div>
-        <div v-if="selectedSetting === 'setting_start_panel'">
-          <h3>{{ t('promptBox.settings.setting_start_panel') }}</h3>
-          <div class="weilin-comfyui-start-panel-settings">
-            <h4>{{ t('promptBox.settings.startPanelTip') }}</h4>
-            <button class="weilin-comfyui-start-panel-button" @click="startPanel">
-              {{ t('promptBox.settings.startPanel') }}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
     <template #footer>
@@ -481,10 +359,9 @@
 
 <script setup>
   import Dialog from '@/components/Dialog.vue'
-  import { ref, onMounted, onUnmounted, defineEmits } from 'vue'
+  import { ref, onMounted, onUnmounted } from 'vue'
   import { useI18n } from 'vue-i18n'
 
-  const emit = defineEmits(['functionTogglesUpdated'])
   import { translatorApi } from '@/api/translator'
   import { autocompleteApi } from '@/api/autocomplete'
   import message from '@/utils/message'
@@ -506,43 +383,6 @@
   const savedTargetLanguage = ref(
     localStorage.getItem('weilin_prompt_ui_targetLanguage') || 'chinese_simplified'
   )
-
-  // 提示词设置
-  const isCommaConversionEnabled = ref(
-    localStorage.getItem('weilin_prompt_ui_comma_conversion') === 'true'
-  )
-  const isPeriodConversionEnabled = ref(
-    localStorage.getItem('weilin_prompt_ui_period_conversion') === 'true'
-  )
-  const isBracketConversionEnabled = ref(
-    localStorage.getItem('weilin_prompt_ui_bracket_conversion') === 'true'
-  )
-  const isAngleBracketConversionEnabled = ref(
-    localStorage.getItem('weilin_prompt_ui_angle_bracket_conversion') === 'true'
-  )
-  const isUnderscoreToBracketEnabled = ref(
-    localStorage.getItem('weilin_prompt_ui_underscore_to_bracket') === 'true'
-  )
-  const isCommaCloseAutocompleteEnabled = ref(
-    localStorage.getItem('weilin_prompt_ui_comma_close_autocomplete') === 'true'
-  )
-  const isBracketEscapeEnabled = ref(
-    localStorage.getItem('weilin_prompt_ui_bracket_escape') === 'true'
-  )
-
-  // 功能开关状态
-  const isClearAllEnabled = ref(
-    localStorage.getItem('weilin_function_toggles_clearAll') !== 'false'
-  ) // 默认true
-  const isDeleteButtonEnabled = ref(
-    localStorage.getItem('weilin_function_toggles_deleteButton') !== 'false'
-  ) // 默认true
-  const isTranslateTagEnabled = ref(
-    localStorage.getItem('weilin_function_toggles_translateTag') !== 'false'
-  ) // 默认true
-  const isClearDisabledEnabled = ref(
-    localStorage.getItem('weilin_function_toggles_clearDisabled') !== 'false'
-  ) // 默认true
 
   const selectedTranslatorService = ref('')
   const sourceLanguage = ref('')
@@ -621,45 +461,6 @@
     localStorage.setItem('weilin_prompt_ui_targetLanguage', savedTargetLanguage.value)
     window.parent.postMessage({ type: 'weilin_prompt_ui_translate_setting' }, '*')
     // 显示保存成功提示
-    message({ type: 'success', str: 'message.saveSuccess' })
-  }
-
-  // 保存功能开关设置
-  const saveFunctionToggles = () => {
-    localStorage.setItem('weilin_function_toggles_clearAll', isClearAllEnabled.value)
-    localStorage.setItem('weilin_function_toggles_deleteButton', isDeleteButtonEnabled.value)
-    localStorage.setItem('weilin_function_toggles_translateTag', isTranslateTagEnabled.value)
-    localStorage.setItem('weilin_function_toggles_clearDisabled', isClearDisabledEnabled.value)
-
-    // 通知父组件更新功能开关状态
-    emit('functionTogglesUpdated', {
-      clearAll: isClearAllEnabled.value,
-      deleteButton: isDeleteButtonEnabled.value,
-      translateTag: isTranslateTagEnabled.value,
-      clearDisabled: isClearDisabledEnabled.value
-    })
-
-    message({ type: 'success', str: 'message.saveSuccess' })
-  }
-
-  // 保存提示词设置
-  const savePromptBoxSettings = () => {
-    localStorage.setItem('weilin_prompt_ui_comma_conversion', isCommaConversionEnabled.value)
-    localStorage.setItem('weilin_prompt_ui_period_conversion', isPeriodConversionEnabled.value)
-    localStorage.setItem('weilin_prompt_ui_bracket_conversion', isBracketConversionEnabled.value)
-    localStorage.setItem(
-      'weilin_prompt_ui_angle_bracket_conversion',
-      isAngleBracketConversionEnabled.value
-    )
-    localStorage.setItem(
-      'weilin_prompt_ui_underscore_to_bracket',
-      isUnderscoreToBracketEnabled.value
-    )
-    localStorage.setItem(
-      'weilin_prompt_ui_comma_close_autocomplete',
-      isCommaCloseAutocompleteEnabled.value
-    )
-    localStorage.setItem('weilin_prompt_ui_bracket_escape', isBracketEscapeEnabled.value)
     message({ type: 'success', str: 'message.saveSuccess' })
   }
 
@@ -769,22 +570,6 @@
       })
       .catch(() => {
         message({ type: 'warn', str: 'message.networkError' })
-      })
-  }
-
-  const sponsorMe = () => {
-    window.open('https://afdian.com/a/weilin9999', '_blank')
-  }
-
-  // 启动面板
-  const startPanel = () => {
-    languageApi
-      .startPanel()
-      .then(() => {
-        message({ type: 'success', str: 'message.startPanelSuccess' })
-      })
-      .catch(() => {
-        message({ type: 'warn', str: 'message.startPanelFailed' })
       })
   }
 
@@ -987,20 +772,6 @@
         localStorage.getItem('weilin_prompt_ui_sourceLanguage') || 'english'
       savedTargetLanguage.value =
         localStorage.getItem('weilin_prompt_ui_targetLanguage') || 'chinese_simplified'
-      // 提示词设置
-      isCommaConversionEnabled.value =
-        localStorage.getItem('weilin_prompt_ui_comma_conversion') === 'true'
-      isPeriodConversionEnabled.value =
-        localStorage.getItem('weilin_prompt_ui_period_conversion') === 'true'
-      isBracketConversionEnabled.value =
-        localStorage.getItem('weilin_prompt_ui_bracket_conversion') === 'true'
-      isAngleBracketConversionEnabled.value =
-        localStorage.getItem('weilin_prompt_ui_angle_bracket_conversion') === 'true'
-      isUnderscoreToBracketEnabled.value =
-        localStorage.getItem('weilin_prompt_ui_underscore_to_bracket') === 'true'
-      isCommaCloseAutocompleteEnabled.value =
-        localStorage.getItem('weilin_prompt_ui_comma_close_autocomplete') === 'true'
-
       dialogVisible.value = true
     }
   })
@@ -1389,58 +1160,6 @@
   }
 
   .weilin-comfyui-add-button:hover {
-    background: var(--weilin-prompt-ui-btn-gradient-hover);
-  }
-
-  .weilin-comfyui-sponsor-me-settings {
-    background: var(--weilin-prompt-ui-card-bg);
-    border-radius: var(--weilin-prompt-ui-border-radius);
-    padding: 18px;
-    box-shadow: var(--weilin-prompt-ui-card-shadow);
-    text-align: center;
-  }
-
-  .weilin-comfyui-sponsor-me-button {
-    margin-top: 18px;
-    padding: 12px 32px;
-    background: var(--weilin-prompt-ui-btn-gradient);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 18px;
-    box-shadow: var(--weilin-prompt-ui-btn-shadow);
-    transition: background 0.2s;
-  }
-
-  .weilin-comfyui-sponsor-me-button:hover {
-    background: var(--weilin-prompt-ui-btn-gradient-hover);
-  }
-
-  .weilin-comfyui-start-panel-settings {
-    background: var(--weilin-prompt-ui-card-bg);
-    border-radius: var(--weilin-prompt-ui-border-radius);
-    padding: 18px;
-    box-shadow: var(--weilin-prompt-ui-card-shadow);
-    text-align: center;
-  }
-
-  .weilin-comfyui-start-panel-button {
-    margin-top: 18px;
-    padding: 12px 32px;
-    background: var(--weilin-prompt-ui-btn-gradient);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 18px;
-    box-shadow: var(--weilin-prompt-ui-btn-shadow);
-    transition: background 0.2s;
-  }
-
-  .weilin-comfyui-start-panel-button:hover {
     background: var(--weilin-prompt-ui-btn-gradient-hover);
   }
 
