@@ -445,9 +445,9 @@ WeiLin-Comfyui-Tools
 │       ├── prompt_server.py - API exposure entry
 │       ├── translate - local/offline translation Tag business layer
 │       └── user_init - user settings initialization business layer
-├── dist - compiled front-end files
+├── src/dist - compiled front-end files
 ├── init.json - file for saving AI service keys
-├── js_node - JS business code for comfyui
+├── src/public - ComfyUI extension script source (built into src/dist)
 ├── lora_userdatas - local data for user Lora
 ├── pyproject.toml - repository file for comfyui
 ├── requirements.txt - Python dependency list
@@ -458,7 +458,7 @@ WeiLin-Comfyui-Tools
 
 
 #### Front-end Source Code Instructions
-The front-end framework is Vue3 + Javascript, and yarn is used to manage dependencies. When using it, please first execute `yarn install` to install the dependencies. To compile, use `yarn run build`, which will automatically package it into the `dist` directory of the plugin. 
+The front-end framework is Vue3 + Javascript, and yarn is used to manage dependencies. When using it, please first execute `cd src && yarn install` to install the dependencies. To compile, use `cd src && yarn build`, which will automatically package it into the `src/dist` directory of the plugin.
 
 #### Submit Code
 Please clone the complete repository code. Before submitting the code, please test it once and then submit it. After my review and confirmation, the code can be merged.

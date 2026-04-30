@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import './style.css'
 import '@/styles/theme.css'
 import VueClipboard from 'vue-clipboard3'
 import { createPinia } from 'pinia' // 导入 Pinia

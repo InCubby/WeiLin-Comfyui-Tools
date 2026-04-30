@@ -462,9 +462,9 @@ WeiLin-Comfyui-Tools
 │       ├── prompt_server.py - API暴露入口
 │       ├── translate - 本地/离线翻译Tag业务层
 │       └── user_init - 用户设置初始化业务层
-├── dist - 前端编译后的文件
+├── src/dist - 前端编译后的文件
 ├── init.json - AI服务的Key保存文件
-├── js_node - comfyui的JS业务代码
+├── src/public - comfyui前端扩展脚本源码（构建后输出到src/dist）
 ├── lora_userdatas - 用户Lora的本地数据
 ├── pyproject.toml - comfyui的仓库文件
 ├── requirements.txt - Python 依赖列表
@@ -474,7 +474,7 @@ WeiLin-Comfyui-Tools
 ```
 
 #### 前端源码说明
-前端框架是Vue3+Javascript，yarn管理依赖包，使用时请先执行`yarn install`安装依赖包，编译请使用`yarn run build`，会自动打包到插件的`dist`目录中
+前端框架是Vue3+Javascript，yarn管理依赖包，使用时请先执行`cd src && yarn install`安装依赖包，编译请使用`cd src && yarn build`，会自动打包到插件的`src/dist`目录中
 
 #### 提交代码
 请克隆完整的仓库代码，提交代码时请测试一遍随后提交代码，等待我的审核确认后即可合并代码

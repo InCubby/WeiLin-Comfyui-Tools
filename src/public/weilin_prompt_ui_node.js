@@ -5,20 +5,11 @@ console.log('[WeiLin] JavaScript file loaded: weilin_prompt_ui_node.js');
 
 // 加载CSS修复文件
 (function() {
-    // 尝试多个可能的路径
-    const possiblePaths = [
-        './extensions/weilin-comfyui-tools/weilin_fix.css',
-        './extensions/weilin-comfyui-tools/js_node/weilin_fix.css',
-        './weilin_fix.css'
-    ];
-    
-    possiblePaths.forEach(path => {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.type = 'text/css';
-        link.href = path;
-        document.head.appendChild(link);
-    });
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = './weilin_fix.css';
+    document.head.appendChild(link);
     
     console.log('[WeiLin] CSS fix files loaded');
 })();

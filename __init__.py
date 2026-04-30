@@ -1,7 +1,8 @@
-# 使用官方 WEB_DIRECTORY 机制注册前端扩展目录（相对当前模块）
-WEB_DIRECTORY = "./js_node"
-
+import os
 import shutil
+
+# 使用官方 WEB_DIRECTORY 机制注册前端扩展目录（相对当前模块）
+WEB_DIRECTORY = "./src/dist"
 
 from .app.server.prompt_server import *
 

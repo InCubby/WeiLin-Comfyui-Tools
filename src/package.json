@@ -12,8 +12,7 @@
     "lint": "eslint . --ext .vue,.js",
     "lint:fix": "eslint . --ext .vue,.js --fix",
     "quality": "yarn lint",
-    "quality:fix": "yarn lint:fix",
-    "prepare": "husky"
+    "quality:fix": "yarn lint:fix"
   },
   "dependencies": {
     "axios": "^1.7.9",
@@ -35,8 +34,7 @@
     "@vitejs/plugin-vue": "^5.2.1",
     "eslint": "^8",
     "eslint-plugin-vue": "^9",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.4.0",
     "vite": "^6.0.9"
-  }
+  },
+  "packageManager": "yarn@4.14.1"
 }
