@@ -27,8 +27,8 @@ from .translate.new_translate_api import api_service_translate
 from .translate.openai_translate import openai_translate
 from .user_init.user_init import *
 
-static_path = os.path.join(os.path.dirname(__file__), "../../dist/")
-dir = os.path.join(os.path.dirname(__file__), "../../dist/javascript/")
+static_path = os.path.join(os.path.dirname(__file__), "../../src/dist/")
+dir = os.path.join(os.path.dirname(__file__), "../../src/dist/javascript/")
 baseUrl = "/weilin/prompt_ui/api/"
 
 

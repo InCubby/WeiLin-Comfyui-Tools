@@ -464,11 +464,10 @@ WeiLin-Comfyui-Tools
 │       └── user_init - 用户设置初始化业务层
 ├── dist - 前端编译后的文件
 ├── init.json - AI服务的Key保存文件
-├── install_request.py - 自动安装功能
 ├── js_node - comfyui的JS业务代码
 ├── lora_userdatas - 用户Lora的本地数据
 ├── pyproject.toml - comfyui的仓库文件
-├── requirements.txt - 安装三方库检测文件
+├── requirements.txt - Python 依赖列表
 ├── src - 前端源码
 ├── tags_templete 用户数据库文件模板 （Tag和Danbooru，如果需要修改请前往插件配套的后台面板使用）
 └── user_data 用户使用的数据库文件（不需要修改）

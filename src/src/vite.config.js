@@ -28,7 +28,7 @@ export default defineConfig({
       output: {
         globals: {},
         name: 'WeiLinPromptUI',
-        dir: '../dist/', // 明确输出到项目根目录的dist
+        dir: '../dist/', // 输出到 src/dist
         format: 'umd',
         chunkFileNames: 'javascript/[name].chunk.js',
         entryFileNames: 'javascript/[name].entry.js',

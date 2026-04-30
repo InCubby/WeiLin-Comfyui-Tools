@@ -447,11 +447,10 @@ WeiLin-Comfyui-Tools
 │       └── user_init - user settings initialization business layer
 ├── dist - compiled front-end files
 ├── init.json - file for saving AI service keys
-├── install_request.py - automatic installation function
 ├── js_node - JS business code for comfyui
 ├── lora_userdatas - local data for user Lora
 ├── pyproject.toml - repository file for comfyui
-├── requirements.txt - file for checking third-party library installation
+├── requirements.txt - Python dependency list
 ├── src - front-end source code
 ├── tags_templete - template for user database files (Tags and Danbooru, if modification is needed, please use the background panel provided with the plugin)
 └── user_data - database files used by users (no modification required) 

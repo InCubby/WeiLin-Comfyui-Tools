@@ -1,22 +1,6 @@
-import os
+# 使用官方 WEB_DIRECTORY 机制注册前端扩展目录（相对当前模块）
+WEB_DIRECTORY = "./js_node"
 
-import nodes
-
-# ComfyUI 2.0兼容性：使用nodes.EXTENSION_WEB_DIRS注册JavaScript目录
-# 必须在其他导入之前设置
-custom_node_dir = os.path.dirname(os.path.realpath(__file__))
-js_dir = os.path.join(custom_node_dir, "js_node")
-nodes.EXTENSION_WEB_DIRS["weilin-comfyui-tools"] = js_dir
-
-
-# Server Init
-from .install_request import *
-
-install_requirements()
-
-
-import json
-import locale
 import shutil
 
 from .app.server.prompt_server import *
@@ -295,7 +279,5 @@ else:
     NODE_DISPLAY_NAME_MAPPINGS = {
         "WeiLinPromptUIWithoutLora": "WeiLin Prompt Editor",
     }
-
-WEB_DIRECTORY = "./js_node"
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
