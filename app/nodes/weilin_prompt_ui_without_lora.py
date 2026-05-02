@@ -39,7 +39,14 @@ class WeiLinPromptUIWithoutLora:
     OUTPUT_NODE = True
     CATEGORY = "WeiLin Node Tools"
 
-    def encode(self, positive="", temp_str=""):
+    def encode(
+        self,
+        positive="",
+        temp_str="",
+        unique_id=None,
+        extra_pnginfo=None,
+        **kwargs,
+    ):
         try:
             json_object = json.loads(positive)
             text_dec = json_object.get("prompt", "")
